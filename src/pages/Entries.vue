@@ -2,20 +2,26 @@
   <q-page>
     <div class="q-pa-md">
       <q-list bordered separator>
-        <q-item v-for="entry in entries" :key="entry.id">
-          <q-item-section 
-            class="text-weight-bold"
-            :class="amountColor(entry.amount)">
-            {{entry.name}}
-          </q-item-section>
+        <q-slide-item v-for="entry in entries" :key="entry.id" 
+           @right="onEntrySlideRight" right-color="negative">
+            <template v-slot:right>
+              <q-icon name="delete" />
+            </template>
+          <q-item>
+            <q-item-section 
+              class="text-weight-bold"
+              :class="amountColor(entry.amount)">
+              {{entry.name}}
+            </q-item-section>
 
-          <q-item-section 
-            class="text-weight-bold"
-            :class="amountColor(entry.amount)" 
-            side>
-            {{formatCurrency(entry.amount)}}
-          </q-item-section>
-        </q-item>
+            <q-item-section 
+              class="text-weight-bold"
+              :class="amountColor(entry.amount)" 
+              side>
+              {{formatCurrency(entry.amount)}}
+            </q-item-section>
+          </q-item>
+        </q-slide-item>
       </q-list>
     </div>
     <q-footer
@@ -115,6 +121,12 @@ const addEntryFormReset = () => {
 }
 
 const addEntry = () => {
+  const newEntry = Object.assign({}, addEntryForm, {id: uid()})
+  entries.value.push(newEntry)
+  addEntryFormReset();
+}
+
+const onEntrySlideRight = () => {
   const newEntry = Object.assign({}, addEntryForm, {id: uid()})
   entries.value.push(newEntry)
   addEntryFormReset();
