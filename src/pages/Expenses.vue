@@ -21,21 +21,22 @@
             <q-icon name="delete" />
           </template>
           <q-item>
-                        <q-item-section
+            <q-item-section
               class="text-weight-bold"
               :class="amountColor(entry.amount)"
             >
-              {{ entry.name }}
-              <!-- Small check icon if paid -->
+              <q-item-label>{{ entry.name }}</q-item-label>
+              <q-item-label caption>{{ new Date(entry.date).toLocaleDateString() }}</q-item-label>
             </q-item-section>
 
             <!-- Amount section uses the negative color logic, or you can unify with the name -->
             <q-item-section
               side
+              top
               class="text-weight-bold"
               :class="amountColor(entry.amount)"
             >
-              {{ formatCurrency(entry.amount) }}
+              <q-item-label>{{ formatCurrency(entry.amount) }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-slide-item>

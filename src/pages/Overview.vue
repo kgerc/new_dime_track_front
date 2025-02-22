@@ -29,10 +29,11 @@
                 :key="idx"
               >
                 <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
-                  {{ entry.name }}
+                  <q-item-label>{{ entry.name }}</q-item-label>
+                  <q-item-label caption>{{ new Date(entry.date).toLocaleDateString() }}</q-item-label>
                 </q-item-section>
-                <q-item-section side class="text-weight-bold" :class="amountColor(entry.amount)">
-                  {{ formatCurrency(entry.amount) }}
+                <q-item-section side top class="text-weight-bold" :class="amountColor(entry.amount)">
+                  <q-item-label>{{ formatCurrency(entry.amount) }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -56,10 +57,11 @@
                 :key="idx"
               >
                 <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
-                  {{ entry.name }}
+                  <q-item-label>{{ entry.name }}</q-item-label>
+                  <q-item-label caption>{{ new Date(entry.date).toLocaleDateString() }}</q-item-label>
                 </q-item-section>
-                <q-item-section side class="text-weight-bold" :class="amountColor(entry.amount)">
-                  {{ formatCurrency(entry.amount) }}
+                <q-item-section side top class="text-weight-bold" :class="amountColor(entry.amount)">
+                  <q-item-label>{{ formatCurrency(entry.amount) }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -83,10 +85,11 @@
                 :key="idx"
               >
                 <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
-                  {{ entry.name }}
+                  <q-item-label>{{ entry.name }}</q-item-label>
+                  <q-item-label caption>{{ new Date(entry.date).toLocaleDateString() }}</q-item-label>
                 </q-item-section>
-                <q-item-section side class="text-weight-bold" :class="amountColor(entry.amount)">
-                  {{ formatCurrency(entry.amount) }}
+                <q-item-section side top class="text-weight-bold" :class="amountColor(entry.amount)">
+                  <q-item-label>{{ formatCurrency(entry.amount) }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
