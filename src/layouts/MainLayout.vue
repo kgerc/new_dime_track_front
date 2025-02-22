@@ -1,7 +1,10 @@
 <template>
   <q-layout view="hHh lpR lFf">
+    <!-- Pinned Header -->
     <q-header elevated>
       <q-toolbar>
+
+        <!-- Menu button on the left -->
         <q-btn
           flat
           dense
@@ -11,6 +14,7 @@
           @click="toggleLeftDrawer"
         />
 
+        <!-- Title in the center -->
         <q-toolbar-title>
           <div class="absolute-center">
             <q-icon name="money" />
@@ -18,9 +22,43 @@
           </div>
         </q-toolbar-title>
 
+        <!-- Right side: single language avatar + user initials avatar -->
+        <div class="row items-center q-gutter-md">
+
+          <!-- Single Language Avatar with Dropdown -->
+          <div>
+            <q-avatar
+              size="40px"
+              color="blue"
+              text-color="white"
+              class="cursor-pointer"
+              @click="languageMenu = true"
+            >
+              <q-icon name="language" />
+            </q-avatar>
+
+            <q-menu v-model="languageMenu" anchor="top right" self="top right">
+              <q-list>
+                <q-item clickable v-ripple @click="toggleLanguage('EN')">
+                  <q-item-section>EN</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple @click="toggleLanguage('PL')">
+                  <q-item-section>PL</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </div>
+
+          <!-- User Avatar with initials -->
+          <q-avatar size="40px" color="grey-8" text-color="white">
+            KG
+          </q-avatar>
+
+        </div>
       </q-toolbar>
     </q-header>
 
+    <!-- Left Drawer -->
     <q-drawer
       v-model="leftDrawerOpen"
       class="bg-primary"
@@ -30,47 +68,48 @@
       :breakpoint="767"
     >
       <q-list>
-        <q-item-label
-          class="text-white"
-          header
-        >
-          Navigation
-        </q-item-label>
-
-        <NavLink
-          v-for="link in navLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item-label class="text-white" header>Navigation</q-item-label>
+        <NavLink v-for="link in navLinks" :key="link.title" v-bind="link" />
       </q-list>
     </q-drawer>
 
+    <!-- Main content container -->
     <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import NavLink from 'components/Navigation/NavLink.vue'
+<script>
+import NavLink from 'src/components/Navigation/NavLink.vue';
 
-const navLinks = [
-  {
-    title: 'Entries',
-    icon: 'money',
-    link: '/'
+export default {
+  components: { NavLink },
+  data() {
+    return {
+      leftDrawerOpen: false,
+      languageMenu: false,
+      navLinks: [
+        { title: 'Overview', to: '/' },
+        { title: 'Savings', to: '/savings' },
+        { title: 'Expenses', to: '/expenses' },
+        { title: 'Transactions', to: '/transactions' },
+      ],
+    };
   },
-  {
-    title: 'Settings',
-    icon: 'settings',
-    link: '/settings'
-  }
-]
-
-const leftDrawerOpen = ref(false)
-
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+  methods: {
+    toggleLeftDrawer() {
+      this.leftDrawerOpen = !this.leftDrawerOpen;
+    },
+    toggleLanguage(lang) {
+      // Implement logic to change app language here
+      console.log(`Language switched to: ${lang}`);
+      this.languageMenu = false;
+    },
+  },
+};
 </script>
+
+<style scoped>
+/* No absolute positioning needed; Quasar’s "view" prop pins the header automatically. */
+</style>

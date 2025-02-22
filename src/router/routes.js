@@ -3,8 +3,11 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Entries.vue') },
+      { path: '', component: () => import('pages/Overview.vue') },
       { path: 'settings', component: () => import('pages/Settings.vue') },
+      { path: 'savings', component: () => import('pages/Savings.vue') },
+      { path: 'expenses', component: () => import('pages/Expenses.vue') },
+      { path: 'transactions', component: () => import('pages/Transactions.vue') }
     ]
   },
 
