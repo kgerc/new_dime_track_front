@@ -9,24 +9,27 @@
       <q-btn icon="arrow_forward" flat @click="nextMonth" />
     </div>
 
+    <!-- Expenses List -->
     <div class="q-pa-md">
       <q-list bordered separator>
         <q-slide-item
           v-for="entry in filteredEntries"
           :key="entry.id"
-          @right="onEntrySlideRight"
           right-color="negative"
-        >
+          >
           <template v-slot:right>
             <q-icon name="delete" />
           </template>
           <q-item>
-            <q-item-section
+                        <q-item-section
               class="text-weight-bold"
               :class="amountColor(entry.amount)"
             >
               {{ entry.name }}
+              <!-- Small check icon if paid -->
             </q-item-section>
+
+            <!-- Amount section uses the negative color logic, or you can unify with the name -->
             <q-item-section
               side
               class="text-weight-bold"
@@ -39,6 +42,7 @@
       </q-list>
     </div>
 
+    <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-transparent">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
@@ -46,7 +50,11 @@
           {{ formatCurrency(balance) }}
         </div>
       </div>
-      <q-form @submit="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+
+      <q-form
+        @submit="addEntry"
+        class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary"
+      >
         <div class="col">
           <q-input
             v-model="addEntryForm.name"
@@ -83,14 +91,17 @@ import { uid } from 'quasar'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 
-// Month/Year Filter Logic
+/* ---------------------------
+   Month/Year Filter Logic
+--------------------------- */
 const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December'
 ]
 const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
 const currentMonthName = computed(() => months[selectedMonth.value])
+
 function prevMonth() {
   selectedMonth.value--
   if (selectedMonth.value < 0) {
@@ -112,22 +123,34 @@ const entries = ref([
   { id: 'id2', name: 'Phone', amount: -14.99, date: '2025-01-12' },
   { id: 'id3', name: 'Groceries', amount: -120, date: '2025-02-01' }
 ])
+
 const filteredEntries = computed(() => {
   return entries.value.filter(entry => {
     const d = new Date(entry.date)
-    return d.getMonth() === selectedMonth.value && d.getFullYear() === selectedYear.value
+    return (
+      d.getMonth() === selectedMonth.value &&
+      d.getFullYear() === selectedYear.value
+    )
   })
 })
-const balance = computed(() => entries.value.reduce((acc, { amount }) => acc + amount, 0))
 
-// Form handling
+// Summation of all expenses (regardless of paid/unpaid)
+const balance = computed(() => {
+  return entries.value.reduce((acc, { amount }) => acc + amount, 0)
+})
+
+/* ---------------------------
+   Form Handling
+--------------------------- */
 const nameForm = ref(null)
 const addEntryFormDefault = { name: '', amount: null }
 const addEntryForm = reactive({ ...addEntryFormDefault })
+
 function addEntryFormReset() {
   Object.assign(addEntryForm, addEntryFormDefault)
   nameForm.value.focus()
 }
+
 function addEntry() {
   const newEntry = {
     ...addEntryForm,
@@ -137,7 +160,12 @@ function addEntry() {
   entries.value.push(newEntry)
   addEntryFormReset()
 }
-function onEntrySlideRight(slideItem) {
+
+/* ---------------------------
+   Slide Actions
+--------------------------- */
+// Slide right to delete
+function removeEntry(slideItem) {
   const index = entries.value.findIndex(e => e.id === slideItem.key)
   if (index !== -1) {
     entries.value.splice(index, 1)
