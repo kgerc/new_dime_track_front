@@ -16,28 +16,19 @@
           v-for="entry in filteredEntries"
           :key="entry.id"
           right-color="negative"
-          @right="removeEntry(entry.id)"
-          >
+        >
           <template v-slot:right>
-            <q-icon name="delete" />
+            <q-icon name="delete" @click="removeEntry(entry.id)" />
           </template>
           <q-item>
-            <q-item-section
-              class="text-weight-bold"
-              :class="amountColor(entry.amount)"
-            >
-              <q-item-label>{{ entry.name }}</q-item-label>
-              <q-item-label caption>{{ new Date(entry.date).toLocaleDateString() }}</q-item-label>
+            <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
+              {{ entry.name }}
+              <div class="text-grey-5 text-caption">
+                {{ new Date(entry.date).toLocaleDateString() }}
+              </div>
             </q-item-section>
-
-            <!-- Amount section uses the negative color logic, or you can unify with the name -->
-            <q-item-section
-              side
-              top
-              class="text-weight-bold"
-              :class="amountColor(entry.amount)"
-            >
-              <q-item-label>{{ formatCurrency(entry.amount) }}</q-item-label>
+            <q-item-section side class="text-weight-bold" :class="amountColor(entry.amount)">
+              {{ formatCurrency(entry.amount) }}
             </q-item-section>
           </q-item>
         </q-slide-item>
@@ -48,36 +39,17 @@
     <q-footer class="bg-transparent">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
-        <div class="col text-h6 text-right" :class="amountColor(balance)">
-          {{ formatCurrency(balance) }}
+        <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
+          {{ formatCurrency(totalBalance) }}
         </div>
       </div>
 
-      <q-form
-        @submit="addEntry"
-        class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary"
-      >
+      <q-form @submit.prevent="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="col">
-          <q-input
-            v-model="addEntryForm.name"
-            ref="nameForm"
-            outlined
-            dense
-            bg-color="white"
-            placeholder="Name"
-          />
+          <q-input v-model="addEntryForm.name" ref="nameForm" outlined dense bg-color="white" placeholder="Name" />
         </div>
         <div class="col">
-          <q-input
-            v-model.number="addEntryForm.amount"
-            input-class="text-right"
-            outlined
-            dense
-            type="number"
-            step="0.01"
-            bg-color="white"
-            placeholder="Amount"
-          />
+          <q-input v-model.number="addEntryForm.amount" input-class="text-right" outlined dense type="number" step="0.01" bg-color="white" placeholder="Amount" />
         </div>
         <div class="col col-auto">
           <q-btn round color="primary" type="submit" icon="add" />
@@ -88,21 +60,30 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
-import { uid } from 'quasar'
+import { ref, computed, onMounted, reactive } from 'vue'
+import { useExpensesStore } from 'src/stores/expensesStore'
+import { storeToRefs } from 'pinia'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 
-/* ---------------------------
-   Month/Year Filter Logic
---------------------------- */
-const months = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December'
-]
+const expensesStore = useExpensesStore()
+const { entries, totalBalance } = storeToRefs(expensesStore)
+
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
 const currentMonthName = computed(() => months[selectedMonth.value])
+
+onMounted(() => {
+  expensesStore.fetchExpenses()
+})
+
+const filteredEntries = computed(() => {
+  return entries.value.filter(entry => {
+    const d = new Date(entry.date)
+    return d.getMonth() === selectedMonth.value && d.getFullYear() === selectedYear.value
+  })
+})
 
 function prevMonth() {
   selectedMonth.value--
@@ -111,6 +92,7 @@ function prevMonth() {
     selectedYear.value--
   }
 }
+
 function nextMonth() {
   selectedMonth.value++
   if (selectedMonth.value > 11) {
@@ -119,58 +101,20 @@ function nextMonth() {
   }
 }
 
-// Expenses entries sample (make sure each has a date)
-const entries = ref([
-  { id: 'id1', name: 'Rent', amount: -999, date: '2025-01-05' },
-  { id: 'id2', name: 'Phone', amount: -14.99, date: '2025-01-12' },
-  { id: 'id3', name: 'Groceries', amount: -120, date: '2025-02-01' }
-])
-
-const filteredEntries = computed(() => {
-  return entries.value.filter(entry => {
-    const d = new Date(entry.date)
-    return (
-      d.getMonth() === selectedMonth.value &&
-      d.getFullYear() === selectedYear.value
-    )
-  })
-})
-
-// Summation of all expenses (regardless of paid/unpaid)
-const balance = computed(() => {
-  return entries.value.reduce((acc, { amount }) => acc + amount, 0)
-})
-
-/* ---------------------------
-   Form Handling
---------------------------- */
-const nameForm = ref(null)
-const addEntryFormDefault = { name: '', amount: null }
-const addEntryForm = reactive({ ...addEntryFormDefault })
-
-function addEntryFormReset() {
-  Object.assign(addEntryForm, addEntryFormDefault)
-  nameForm.value.focus()
-}
+const addEntryForm = reactive({ name: '', amount: null })
 
 function addEntry() {
-  const newEntry = {
-    ...addEntryForm,
-    id: uid(),
+  if (!addEntryForm.name || addEntryForm.amount === null) return
+  expensesStore.addExpense({
+    name: addEntryForm.name,
+    amount: addEntryForm.amount,
     date: new Date().toISOString().substring(0, 10)
-  }
-  entries.value.push(newEntry)
-  addEntryFormReset()
+  })
+  addEntryForm.name = ''
+  addEntryForm.amount = null
 }
 
-/* ---------------------------
-   Slide Actions
---------------------------- */
-// Slide right to delete
-function removeEntry(slideItemId) {
-  const index = entries.value.findIndex(e => e.id === slideItemId)
-  if (index !== -1) {
-    entries.value.splice(index, 1)
-  }
+function removeEntry(id) {
+  expensesStore.removeExpense(id)
 }
 </script>
