@@ -16,6 +16,7 @@
           v-for="entry in filteredEntries"
           :key="entry.id"
           right-color="negative"
+          @right="removeEntry(entry.id)"
           >
           <template v-slot:right>
             <q-icon name="delete" />
@@ -166,8 +167,8 @@ function addEntry() {
    Slide Actions
 --------------------------- */
 // Slide right to delete
-function removeEntry(slideItem) {
-  const index = entries.value.findIndex(e => e.id === slideItem.key)
+function removeEntry(slideItemId) {
+  const index = entries.value.findIndex(e => e.id === slideItemId)
   if (index !== -1) {
     entries.value.splice(index, 1)
   }

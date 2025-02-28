@@ -14,7 +14,7 @@
         <q-slide-item
           v-for="entry in filteredEntries"
           :key="entry.id"
-          @right="onEntrySlideRight"
+          @right="removeEntry(entry.id)"
           right-color="negative"
         >
           <template v-slot:right>
@@ -138,8 +138,8 @@ function addEntry() {
   entries.value.push(newEntry)
   addEntryFormReset()
 }
-function onEntrySlideRight(slideItem) {
-  const index = entries.value.findIndex(e => e.id === slideItem.key)
+function removeEntry(slideItemId) {
+  const index = entries.value.findIndex(e => e.id === slideItemId)
   if (index !== -1) {
     entries.value.splice(index, 1)
   }
