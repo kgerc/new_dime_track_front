@@ -7,7 +7,7 @@
     <div class="text-h6">{{ currentMonthName }} {{ selectedYear }}</div>
     <!-- Popup for Date Selection -->
     <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle"
-      offset="[0, 10]">
+      :offset="[0, 10]">
       <q-date
         v-model="selectedDate"
         mask="YYYY-MM-DD"
@@ -62,6 +62,8 @@
       @save="handleUpdateExpense"
     />
 
+    <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
+    
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-transparent">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
@@ -72,6 +74,10 @@
       </div>
 
       <q-form @submit.prevent="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+        <div class="row items-center q-pr-md">
+          <q-btn icon="category" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
+        </div>
         <div class="col">
           <q-input v-model="addEntryForm.name" ref="nameForm" outlined dense bg-color="white" placeholder="Name" />
         </div>
@@ -93,6 +99,7 @@ import { storeToRefs } from 'pinia'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
+import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
 
 const expensesStore = useExpensesStore()
 const { entries, totalBalance } = storeToRefs(expensesStore)
@@ -186,4 +193,24 @@ async function handleUpdateExpense(updatedExpense) {
   await expensesStore.updateExpense(updatedExpense)  // Call store action to update API and local store
   isDialogOpen.value = false  // Close dialog after saving
 }
+
+const isCategoryDialogOpen = ref(false)
+
+// Open new expense dialog
+function openNewExpenseDialog() {
+  selectedExpense.value = null  // Clear previous data
+  isDialogOpen.value = true
+}
+
+// Handle saving a new expense
+async function handleNewExpense(newExpense) {
+  await expensesStore.addExpense(newExpense)  // Call store action to add a new expense
+  isDialogOpen.value = false  // Close dialog after saving
+}
+
+function addCategory(newCategory) {
+  categories.value.push(newCategory)  // Add to local categories
+  isCategoryDialogOpen.value = false  // Close dialog after saving
+}
+
 </script>

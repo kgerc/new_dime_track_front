@@ -47,7 +47,6 @@
   // Watch for prop changes and update localExpense
   import { watch } from 'vue'
   watch(() => props.expense, (newExpense) => {
-    debugger;
     newExpense.paymentDate = new Date(newExpense.paymentDate).toISOString().split('T')[0]
     localExpense.value = { ...newExpense }
   }, { deep: true })
