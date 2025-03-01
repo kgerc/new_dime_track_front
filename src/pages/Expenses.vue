@@ -15,10 +15,11 @@
         <q-slide-item
           v-for="entry in filteredEntries"
           :key="entry.id"
+          @right="removeEntry(entry.id)"
           right-color="negative"
         >
           <template v-slot:right>
-            <q-icon name="delete" @click="removeEntry(entry.id)" />
+            <q-icon name="delete"/>
           </template>
           <q-item>
             <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">

@@ -30,8 +30,12 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   async function removeExpense(id) {
     try {
-      await api.delete(`/expenses/${id}`)
-      entries.value = entries.value.filter(entry => entry.id !== id)
+      const response = await api.delete(`/expenses/${id}`)
+      if (response.status === 201 || response.status === 200) { 
+        entries.value = entries.value.filter(entry => entry.id !== id)
+      } else {
+        console.error('Failed to add expense: Unexpected response status', response.status)
+      }
     } catch (error) {
       console.error('Error deleting expense:', error)
     }
