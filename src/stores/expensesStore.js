@@ -43,9 +43,9 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   async function updateExpense(updatedExpense) {
     try {
-      const response = await api.put(`/expenses/${updatedExpense.Id}`, updatedExpense)
+      const response = await api.put(`/expenses/${updatedExpense.id}`, updatedExpense)
       if (response.status === 200) {
-        const index = entries.value.findIndex(exp => exp.Id === updatedExpense.Id)
+        const index = entries.value.findIndex(exp => exp.id === updatedExpense.id)
         if (index !== -1) {
           entries.value[index] = { ...updatedExpense }
         }
