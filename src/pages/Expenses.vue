@@ -1,16 +1,34 @@
 <template>
   <q-page>
-    <!-- Month/Year Filter -->
-    <div class="row justify-center items-center q-my-md">
-      <q-btn icon="arrow_back" flat @click="prevMonth" />
-      <div class="q-mx-md text-h6">
-        {{ currentMonthName }} {{ selectedYear }}
-      </div>
-      <q-btn icon="arrow_forward" flat @click="nextMonth" />
-    </div>
+   <!-- Month/Year Filter with Border -->
+   <div class="row justify-center items-center q-my-md">
+  <q-btn icon="arrow_back" flat @click="prevMonth" />
+  <q-btn flat @click="toggleCalendar" class="q-mx-md">
+    <div class="text-h6">{{ currentMonthName }} {{ selectedYear }}</div>
+    <!-- Popup for Date Selection -->
+    <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle"
+      offset="[0, 10]">
+      <q-date
+        v-model="selectedDate"
+        mask="YYYY-MM-DD"
+        :default-year="selectedYear"
+        :default-month="selectedMonth + 1"
+        @update:model-value="updateMonthYear"
+        bordered
+        minimal
+        class="shadow-2 rounded-borders"
+      >
+        <div class="row items-center justify-end">
+          <q-btn v-close-popup label="Close" color="primary" flat />
+        </div>
+      </q-date>
+    </q-popup-proxy>
+  </q-btn>
+  <q-btn icon="arrow_forward" flat @click="nextMonth" />
+</div>
 
     <!-- Expenses List -->
-    <div class="q-pa-md">
+    <div class="q-pa-md z-0">
       <q-list bordered separator>
         <q-slide-item
           v-for="entry in filteredEntries"
@@ -19,9 +37,9 @@
           right-color="negative"
         >
           <template v-slot:right>
-            <q-icon name="delete"/>
+            <q-icon name="delete" />
           </template>
-          <q-item clickable  @click="openDialog(entry)">
+          <q-item clickable @click="openDialog(entry)">
             <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
               {{ entry.title }}
               <div class="text-grey-5 text-caption">
@@ -41,6 +59,7 @@
       v-model="isDialogOpen"
       :expense="selectedExpense"
       :categories="categories"
+      @save="handleUpdateExpense"
     />
 
     <!-- Footer: Balance & Add New Expense -->
@@ -83,10 +102,27 @@ const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
 const currentMonthName = computed(() => months[selectedMonth.value])
 
+// Calendar Picker Logic
+const selectedDate = ref(new Date().toISOString().substring(0, 10))  // For calendar selection
+const isCalendarOpen = ref(false)
+
+function toggleCalendar() {
+  isCalendarOpen.value = !isCalendarOpen.value
+}
+
+function updateMonthYear(date) {
+  const newDate = new Date(date)
+  selectedMonth.value = newDate.getMonth()
+  selectedYear.value = newDate.getFullYear()
+  isCalendarOpen.value = false  // Close the calendar after selecting
+}
+
+// Fetch expenses on mount
 onMounted(() => {
   expensesStore.fetchExpenses()
 })
 
+// Filter entries by selected month and year
 const filteredEntries = computed(() => {
   return entries.value.filter(entry => {
     const d = new Date(entry.paymentDate)
@@ -94,6 +130,7 @@ const filteredEntries = computed(() => {
   })
 })
 
+// Month navigation
 function prevMonth() {
   selectedMonth.value--
   if (selectedMonth.value < 0) {
@@ -110,6 +147,7 @@ function nextMonth() {
   }
 }
 
+// Add expense
 const addEntryForm = reactive({ name: '', amount: null })
 
 function addEntry() {
@@ -123,6 +161,7 @@ function addEntry() {
   addEntryForm.amount = null
 }
 
+// Remove expense
 function removeEntry(id) {
   expensesStore.removeExpense(id)
 }
@@ -130,6 +169,7 @@ function removeEntry(id) {
 // Expense Editing
 const isDialogOpen = ref(false)
 const selectedExpense = ref(null)
+
 // Example categories (replace with API call if needed)
 const categories = ref([
   { label: 'Food', value: 1 },
@@ -138,7 +178,12 @@ const categories = ref([
 ])
 
 function openDialog(expense) {
-  selectedExpense.value = { ...expense } // Copy to avoid direct mutation
+  selectedExpense.value = { ...expense }  // Copy to avoid direct mutation
   isDialogOpen.value = true
+}
+
+async function handleUpdateExpense(updatedExpense) {
+  await expensesStore.updateExpense(updatedExpense)  // Call store action to update API and local store
+  isDialogOpen.value = false  // Close dialog after saving
 }
 </script>

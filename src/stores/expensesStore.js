@@ -41,9 +41,25 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  async function updateExpense(updatedExpense) {
+    try {
+      const response = await api.put(`/expenses/${updatedExpense.Id}`, updatedExpense)
+      if (response.status === 200) {
+        const index = entries.value.findIndex(exp => exp.Id === updatedExpense.Id)
+        if (index !== -1) {
+          entries.value[index] = { ...updatedExpense }
+        }
+      } else {
+        console.error('Failed to update expense:', response.status)
+      }
+    } catch (error) {
+      console.error('Error updating expense:', error)
+    }
+  }
+
   const totalBalance = computed(() => {
     return entries.value.reduce((acc, { amount }) => acc + amount, 0)
   })
 
-  return { entries, fetchExpenses, addExpense, removeExpense, totalBalance }
+  return { entries, fetchExpenses, addExpense, removeExpense, updateExpense, totalBalance }
 })

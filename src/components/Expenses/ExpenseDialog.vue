@@ -6,16 +6,16 @@
         </q-card-section>
   
         <q-card-section class="q-gutter-md">
-          <q-input v-model="localExpense.Title" label="Title" outlined dense />
-          <q-input v-model="localExpense.Notes" label="Notes" outlined dense />
-          <q-input v-model.number="localExpense.Amount" label="Amount" type="number" outlined dense />
-          <q-input v-model="localExpense.Recurrence" label="Recurrence" outlined dense />
-          <q-input v-model="localExpense.PaymentDate" label="Payment Date" type="date" outlined dense />
+          <q-input v-model="localExpense.title" label="Title" outlined dense />
+          <q-input v-model="localExpense.notes" label="Notes" outlined dense />
+          <q-input v-model.number="localExpense.amount" label="Amount" type="number" outlined dense />
+          <q-input v-model="localExpense.recurrence" label="Recurrence" outlined dense />
+          <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
           
-          <q-toggle v-model="localExpense.IsPaid" label="Paid?" />
+          <q-toggle v-model="localExpense.isPaid" label="Paid?" />
   
           <q-select
-            v-model="localExpense.ExpenseCategoryId"
+            v-model="localExpense.expenseCategoryId"
             :options="categories"
             label="Category"
             outlined
