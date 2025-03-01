@@ -21,7 +21,7 @@
           <template v-slot:right>
             <q-icon name="delete"/>
           </template>
-          <q-item>
+          <q-item clickable  @click="openDialog(entry)">
             <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
               {{ entry.title }}
               <div class="text-grey-5 text-caption">
@@ -35,6 +35,13 @@
         </q-slide-item>
       </q-list>
     </div>
+
+    <!-- Expense Dialog -->
+    <ExpenseDialog
+      v-model="isDialogOpen"
+      :expense="selectedExpense"
+      :categories="categories"
+    />
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-transparent">
@@ -66,6 +73,7 @@ import { useExpensesStore } from 'src/stores/expensesStore'
 import { storeToRefs } from 'pinia'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
+import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 
 const expensesStore = useExpensesStore()
 const { entries, totalBalance } = storeToRefs(expensesStore)
@@ -117,5 +125,20 @@ function addEntry() {
 
 function removeEntry(id) {
   expensesStore.removeExpense(id)
+}
+
+// Expense Editing
+const isDialogOpen = ref(false)
+const selectedExpense = ref(null)
+// Example categories (replace with API call if needed)
+const categories = ref([
+  { label: 'Food', value: 1 },
+  { label: 'Rent', value: 2 },
+  { label: 'Transport', value: 3 }
+])
+
+function openDialog(expense) {
+  selectedExpense.value = { ...expense } // Copy to avoid direct mutation
+  isDialogOpen.value = true
 }
 </script>
