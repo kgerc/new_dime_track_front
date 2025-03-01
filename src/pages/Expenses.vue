@@ -22,9 +22,9 @@
           </template>
           <q-item>
             <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
-              {{ entry.name }}
+              {{ entry.title }}
               <div class="text-grey-5 text-caption">
-                {{ new Date(entry.date).toLocaleDateString() }}
+                {{ new Date(entry.paymentDate).toLocaleDateString() }}
               </div>
             </q-item-section>
             <q-item-section side class="text-weight-bold" :class="amountColor(entry.amount)">
@@ -80,7 +80,7 @@ onMounted(() => {
 
 const filteredEntries = computed(() => {
   return entries.value.filter(entry => {
-    const d = new Date(entry.date)
+    const d = new Date(entry.paymentDate)
     return d.getMonth() === selectedMonth.value && d.getFullYear() === selectedYear.value
   })
 })
@@ -106,9 +106,9 @@ const addEntryForm = reactive({ name: '', amount: null })
 function addEntry() {
   if (!addEntryForm.name || addEntryForm.amount === null) return
   expensesStore.addExpense({
-    name: addEntryForm.name,
+    title: addEntryForm.name,
     amount: addEntryForm.amount,
-    date: new Date().toISOString().substring(0, 10)
+    paymentDate: new Date().toISOString().substring(0, 10)
   })
   addEntryForm.name = ''
   addEntryForm.amount = null

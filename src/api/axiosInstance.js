@@ -9,7 +9,6 @@ const api = axios.create({
 api.interceptors.request.use(config => {
   const commonStore = useCommonStore()
   const token = commonStore.token
-  debugger;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }

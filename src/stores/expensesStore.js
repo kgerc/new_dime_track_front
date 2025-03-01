@@ -17,7 +17,12 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function addExpense(expense) {
     try {
       const response = await api.post('/expenses', expense)
-      entries.value.push(response.data)
+      if (response.status === 201 || response.status === 200) { 
+        // Only push if response is successful
+        entries.value.push(expense)
+      } else {
+        console.error('Failed to add expense: Unexpected response status', response.status)
+      }
     } catch (error) {
       console.error('Error adding expense:', error)
     }
