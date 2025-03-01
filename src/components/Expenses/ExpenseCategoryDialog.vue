@@ -13,8 +13,11 @@
             v-model="localCategory.color"
             class="my-input"
         >
+            <template v-slot:prepend>
+                <q-icon name="circle" :color="localCategory.color" class="q-ml-sm" />
+            </template>
             <template v-slot:append>
-            <q-icon name="colorize" class="cursor-pointer">
+            <q-icon name="colorize" class="cursor-pointer" :color="localCategory.color">
                 <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                 <q-color v-model="localCategory.color" />
                 </q-popup-proxy>
