@@ -15,8 +15,8 @@
           <q-toggle v-model="localExpense.isPaid" label="Paid?" />
   
           <q-select
-            v-model="localExpense.expenseCategoryId"
-            :options="categories"
+            v-model="categoryTitle"
+            :options="categoryTitles"
             label="Category"
             outlined
             dense
@@ -47,15 +47,34 @@
   // Watch for prop changes and update localExpense
   import { watch } from 'vue'
   watch(() => props.expense, (newExpense) => {
-    newExpense.paymentDate = new Date(newExpense.paymentDate).toISOString().split('T')[0]
-    localExpense.value = { ...newExpense }
+    if (newExpense) {
+      newExpense.paymentDate = new Date(newExpense.paymentDate).toISOString().split('T')[0]
+      localExpense.value = { ...newExpense }
+    } 
   }, { deep: true })
   
   const isOpen = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
   })
+
+  const categoryTitles = computed(() => {
+    return props.categories.map(cat => cat.title)
+  })
   
+  const categoryTitle = computed({
+  get: () => localExpense.value.expenseCategory?.title || null,
+  set: (value) => {
+      debugger;
+      const categoryByName = props.categories
+        .find(category => category.title === value);
+      if (!localExpense.value.expenseCategory) {
+        localExpense.value.expenseCategory = {}; // Create if null
+      }
+      localExpense.value.expenseCategory = categoryByName;
+    }
+  });
+
   function closeDialog() {
     emit('update:modelValue', false)
   }

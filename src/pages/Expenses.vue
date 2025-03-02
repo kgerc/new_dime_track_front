@@ -102,7 +102,7 @@ import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
 
 const expensesStore = useExpensesStore()
-const { entries, totalBalance } = storeToRefs(expensesStore)
+const { entries, totalBalance, categories } = storeToRefs(expensesStore)
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const selectedMonth = ref(new Date().getMonth())
@@ -127,6 +127,7 @@ function updateMonthYear(date) {
 // Fetch expenses on mount
 onMounted(() => {
   expensesStore.fetchExpenses()
+  expensesStore.fetchExpenseCategories()
 })
 
 // Filter entries by selected month and year
@@ -178,11 +179,6 @@ const isDialogOpen = ref(false)
 const selectedExpense = ref(null)
 
 // Example categories (replace with API call if needed)
-const categories = ref([
-  { label: 'Food', value: 1 },
-  { label: 'Rent', value: 2 },
-  { label: 'Transport', value: 3 }
-])
 
 function openDialog(expense) {
   selectedExpense.value = { ...expense }  // Copy to avoid direct mutation
@@ -208,8 +204,8 @@ async function handleNewExpense(newExpense) {
   isDialogOpen.value = false  // Close dialog after saving
 }
 
-function addCategory(newCategory) {
-  categories.value.push(newCategory)  // Add to local categories
+async function addCategory(newCategory) {
+  await expensesStore.addExpenseCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
 }
 

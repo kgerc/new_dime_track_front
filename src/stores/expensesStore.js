@@ -4,6 +4,7 @@ import api from 'src/api/axiosInstance' // Import the configured Axios instance
 
 export const useExpensesStore = defineStore('expenses', () => {
   const entries = ref([])
+  const categories = ref([])
 
   async function fetchExpenses() {
     try {
@@ -57,9 +58,32 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  async function addExpenseCategory(expenseCategory) {
+    try {
+      const response = await api.post('/expenses/category', expenseCategory)
+      if (response.status === 201 || response.status === 200) { 
+        // Only push if response is successful
+        categories.value.push(expenseCategory)
+      } else {
+        console.error('Failed to add expense: Unexpected response status', response.status)
+      }
+    } catch (error) {
+      console.error('Error adding expense:', error)
+    }
+  }
+
+  async function fetchExpenseCategories() {
+    try {
+      const response = await api.get('/expenses/categories') 
+      categories.value = response.data
+    } catch (error) {
+      console.error('Error fetching expenses:', error)
+    }
+  }
+
   const totalBalance = computed(() => {
     return entries.value.reduce((acc, { amount }) => acc + amount, 0)
   })
 
-  return { entries, fetchExpenses, addExpense, removeExpense, updateExpense, totalBalance }
+  return { entries, fetchExpenses, addExpense, removeExpense, updateExpense, totalBalance, addExpenseCategory, fetchExpenseCategories, categories }
 })

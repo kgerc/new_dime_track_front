@@ -14,7 +14,7 @@
             class="my-input"
         >
             <template v-slot:prepend>
-                <q-icon name="circle" :color="localCategory.color" class="q-ml-sm" />
+                <q-icon name="circle" :style="{ color: localCategory.color, marginLeft: '-2px' }" class="q-ml-xs"/>
             </template>
             <template v-slot:append>
             <q-icon name="colorize" class="cursor-pointer" :color="localCategory.color">
