@@ -60,7 +60,6 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   async function addExpenseCategory(expenseCategory) {
     try {
-      debugger;
       const response = await api.post('/expenses/category', expenseCategory)
       if (response.status === 201 || response.status === 200) { 
         // Only push if response is successful

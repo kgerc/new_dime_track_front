@@ -52,6 +52,7 @@
 <script setup>
 import { defineProps, defineEmits, ref, computed, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { format } from 'date-fns';
 
 const props = defineProps({
   modelValue: Boolean,  // Controls dialog visibility
@@ -90,7 +91,7 @@ watch(isOpen, (newVal) => {
   if (newVal) {
     const newExpense = props.isNewExpense
       ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
-      : { ...props.expense, paymentDate: new Date(props.expense.paymentDate).toISOString().split('T')[0] }
+      : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') }
 
     localExpense.value = newExpense
     categoryTitle.value = newExpense.expenseCategory?.title || null
