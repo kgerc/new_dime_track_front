@@ -6,7 +6,7 @@
         </q-card-section>
   
         <q-card-section class="q-gutter-md">
-          <q-input v-model="localCategory.name" placeholder="Category Name" outlined dense />
+          <q-input v-model="localCategory.title" placeholder="Category Name" outlined dense />
           <q-input
             placeholder="Category Color"
             outlined
@@ -44,15 +44,22 @@
   })
   
   const emit = defineEmits(['update:modelValue', 'save'])
-  
+
   const localCategory = ref({
-    name: '',
-    color: '#ffffff'
+    title: '',
+    color: ''
   })
   
   const isOpen = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
+  })
+
+  watch(isOpen, (newVal) => {
+    debugger;
+    if (newVal) {
+      localCategory.value = { title: '', color: '' }
+    }
   })
   
   function closeDialog() {
@@ -62,6 +69,11 @@
   function saveCategory() {
     emit('save', localCategory.value)  // Emit saved category data
     closeDialog()
+  }
+
+  function resetForm() {
+    localCategory.value.title = ''
+    localCategory.value.color = ''
   }
   </script>
   

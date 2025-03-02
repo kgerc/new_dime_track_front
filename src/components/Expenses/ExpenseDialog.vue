@@ -1,87 +1,90 @@
 <template>
-    <q-dialog v-model="isOpen">
-      <q-card style="width: 400px">
-        <q-card-section>
-          <div class="text-h6">Edit Expense</div>
-        </q-card-section>
-  
-        <q-card-section class="q-gutter-md">
-          <q-input v-model="localExpense.title" label="Title" outlined dense />
-          <q-input v-model="localExpense.notes" label="Notes" outlined dense />
-          <q-input v-model.number="localExpense.amount" label="Amount" type="number" outlined dense />
-          <q-input v-model="localExpense.recurrence" label="Recurrence" outlined dense />
-          <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
-          
-          <q-toggle v-model="localExpense.isPaid" label="Paid?" />
-  
-          <q-select
-            v-model="categoryTitle"
-            :options="categoryTitles"
-            label="Category"
-            outlined
-            dense
-          />
-        </q-card-section>
-  
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
-          <q-btn flat label="Save" color="primary" @click="saveChanges" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </template>
-  
-  <script setup>
-  import { defineProps, defineEmits, ref, computed } from 'vue'
-  
-  const props = defineProps({
-    modelValue: Boolean,  // Controls dialog visibility
-    expense: Object,
-    categories: Array, // List of expense categories
-  })
-  
-  const emit = defineEmits(['update:modelValue', 'save'])
-  
-  const localExpense = ref({ ...props.expense }) // Copy expense for local editing
-  
-  // Watch for prop changes and update localExpense
-  import { watch } from 'vue'
-  watch(() => props.expense, (newExpense) => {
-    if (newExpense) {
-      newExpense.paymentDate = new Date(newExpense.paymentDate).toISOString().split('T')[0]
-      localExpense.value = { ...newExpense }
-    } 
-  }, { deep: true })
-  
-  const isOpen = computed({
-    get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
-  })
+  <q-dialog v-model="isOpen">
+    <q-card style="width: 400px">
+      <q-card-section>
+        <div class="text-h6">{{ isNewExpense ? 'New Expense' : 'Edit Expense' }}</div>
+      </q-card-section>
 
-  const categoryTitles = computed(() => {
-    return props.categories.map(cat => cat.title)
-  })
-  
-  const categoryTitle = computed({
+      <q-card-section class="q-gutter-md">
+        <q-input v-model="localExpense.title" label="Title" outlined dense />
+        <q-input v-model="localExpense.notes" label="Notes" outlined dense />
+        <q-input v-model.number="localExpense.amount" label="Amount" type="number" outlined dense />
+        <q-input v-model="localExpense.recurrence" label="Recurrence" outlined dense />
+        <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
+
+        <q-toggle v-model="localExpense.isPaid" label="Paid?" />
+
+        <q-select
+          v-model="categoryTitle"
+          :options="categoryTitles"
+          label="Category"
+          outlined
+          dense
+        />
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+        <q-btn flat label="Save" color="primary" @click="saveChanges" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script setup>
+import { defineProps, defineEmits, ref, computed, watch } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
+
+const props = defineProps({
+  modelValue: Boolean,  // Controls dialog visibility
+  expense: Object,
+  categories: Array, // List of expense categories
+  isNewExpense: Boolean, // Flag to distinguish between new and existing expense
+})
+
+const emit = defineEmits(['update:modelValue', 'save'])
+
+const localExpense = ref({ ...props.expense }) // Copy expense for local editing
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
+const categoryTitles = computed(() => {
+  return props.categories.map(cat => cat.title)
+})
+
+const categoryTitle = computed({
   get: () => localExpense.value.expenseCategory?.title || null,
   set: (value) => {
-      debugger;
-      const categoryByName = props.categories
-        .find(category => category.title === value);
-      if (!localExpense.value.expenseCategory) {
-        localExpense.value.expenseCategory = {}; // Create if null
-      }
-      localExpense.value.expenseCategory = categoryByName;
+    const categoryByName = props.categories
+      .find(category => category.title === value)
+    if (!localExpense.value.expenseCategory) {
+      localExpense.value.expenseCategory = {} // Create if null
     }
-  });
+    localExpense.value.expenseCategory = categoryByName
+  }
+})
 
-  function closeDialog() {
-    emit('update:modelValue', false)
+// Watch for prop changes and update localExpense
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    const newExpense = props.isNewExpense
+      ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: '', paymentDate: '', isPaid: false, expenseCategory: null }
+      : { ...props.expense, paymentDate: new Date(props.expense.paymentDate).toISOString().split('T')[0] }
+
+    localExpense.value = newExpense
+    categoryTitle.value = newExpense.expenseCategory?.title || null
   }
-  
-  function saveChanges() {
-    emit('save', localExpense.value) // Send updated expense back
-    closeDialog()
-  }
-  </script>
-  
+})
+
+function closeDialog() {
+  emit('update:modelValue', false)
+}
+
+function saveChanges() {
+  emit('save', localExpense.value) // Send updated expense back
+  closeDialog()
+}
+</script>

@@ -59,7 +59,8 @@
       v-model="isDialogOpen"
       :expense="selectedExpense"
       :categories="categories"
-      @save="handleUpdateExpense"
+      :isNewExpense="isNewExpense"
+      @save="handleExpenseSave"
     />
 
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
@@ -112,6 +113,7 @@ const currentMonthName = computed(() => months[selectedMonth.value])
 // Calendar Picker Logic
 const selectedDate = ref(new Date().toISOString().substring(0, 10))  // For calendar selection
 const isCalendarOpen = ref(false)
+const isNewExpense = ref(false)
 
 function toggleCalendar() {
   isCalendarOpen.value = !isCalendarOpen.value
@@ -182,6 +184,7 @@ const selectedExpense = ref(null)
 
 function openDialog(expense) {
   selectedExpense.value = { ...expense }  // Copy to avoid direct mutation
+  isNewExpense.value = false
   isDialogOpen.value = true
 }
 
@@ -195,12 +198,23 @@ const isCategoryDialogOpen = ref(false)
 // Open new expense dialog
 function openNewExpenseDialog() {
   selectedExpense.value = null  // Clear previous data
+  isNewExpense.value = true
   isDialogOpen.value = true
 }
 
 // Handle saving a new expense
 async function handleNewExpense(newExpense) {
   await expensesStore.addExpense(newExpense)  // Call store action to add a new expense
+  isDialogOpen.value = false  // Close dialog after saving
+}
+
+async function handleExpenseSave(expense) {
+  debugger;
+  if (isNewExpense.value) {
+    await handleNewExpense(expense)
+  } else {
+    await handleUpdateExpense(expense)
+  }
   isDialogOpen.value = false  // Close dialog after saving
 }
 
