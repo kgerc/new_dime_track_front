@@ -1,31 +1,40 @@
 <template>
   <q-page>
-   <!-- Month/Year Filter with Border -->
-   <div class="row justify-center items-center q-my-md">
-  <q-btn icon="arrow_back" flat @click="prevMonth" />
-  <q-btn flat @click="toggleCalendar" class="q-mx-md">
-    <div class="text-h6">{{ currentMonthName }} {{ selectedYear }}</div>
-    <!-- Popup for Date Selection -->
-    <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle"
-      :offset="[0, 10]">
-      <q-date
-        v-model="selectedDate"
-        mask="YYYY-MM-DD"
-        :default-year="selectedYear"
-        :default-month="selectedMonth + 1"
-        @update:model-value="updateMonthYear"
-        bordered
-        minimal
-        class="shadow-2 rounded-borders"
-      >
-        <div class="row items-center justify-end">
-          <q-btn v-close-popup label="Close" color="primary" flat />
-        </div>
-      </q-date>
-    </q-popup-proxy>
-  </q-btn>
-  <q-btn icon="arrow_forward" flat @click="nextMonth" />
-</div>
+    <!-- Month/Year Filter with Border -->
+    <div class="row justify-center items-center q-my-md">
+      <q-btn icon="arrow_back" flat @click="prevMonth" />
+      <q-btn flat @click="toggleCalendar" class="q-mx-md">
+        <div class="text-h6">{{ currentMonthName }} {{ selectedYear }}</div>
+        <!-- Popup for Date Selection -->
+        <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle"
+          :offset="[0, 10]">
+          <q-date
+            v-model="selectedDate"
+            mask="YYYY-MM-DD"
+            :default-year="selectedYear"
+            :default-month="selectedMonth + 1"
+            @update:model-value="updateMonthYear"
+            bordered
+            minimal
+            class="shadow-2 rounded-borders"
+          >
+            <div class="row items-center justify-between">
+              <!-- Highlighted "Whole month" button -->
+              <q-btn
+                v-close-popup
+                label="Whole month"
+                color="primary"
+                flat
+                :class="{'bg-primary text-white': !selectedDay}"
+                @click="resetToWholeMonth"
+              />
+              <q-btn v-close-popup label="Close" color="primary" flat />
+            </div>
+          </q-date>
+        </q-popup-proxy>
+      </q-btn>
+      <q-btn icon="arrow_forward" flat @click="nextMonth" />
+    </div>
 
     <!-- Expenses List -->
     <div class="q-pa-md z-0">
@@ -111,7 +120,8 @@ const selectedYear = ref(new Date().getFullYear())
 const currentMonthName = computed(() => months[selectedMonth.value])
 
 // Calendar Picker Logic
-const selectedDate = ref(new Date().toISOString().substring(0, 10))  // For calendar selection
+const selectedDate = ref(null)  // For calendar selection
+const selectedDay = ref(null) // For day filtering
 const isCalendarOpen = ref(false)
 const isNewExpense = ref(false)
 
@@ -123,7 +133,14 @@ function updateMonthYear(date) {
   const newDate = new Date(date)
   selectedMonth.value = newDate.getMonth()
   selectedYear.value = newDate.getFullYear()
+  selectedDay.value = newDate.getDate() // Set day filter to the selected day
   isCalendarOpen.value = false  // Close the calendar after selecting
+}
+
+function resetToWholeMonth() {
+  selectedDay.value = null // Reset to no day filter (whole month)
+  selectedDate.value = null // Reset to no day filter (whole month)
+  isCalendarOpen.value = false
 }
 
 // Fetch expenses on mount
@@ -132,11 +149,13 @@ onMounted(() => {
   expensesStore.fetchExpenseCategories()
 })
 
-// Filter entries by selected month and year
+// Filter entries by selected month, year, and day
 const filteredEntries = computed(() => {
   return entries.value.filter(entry => {
-    const d = new Date(entry.paymentDate)
-    return d.getMonth() === selectedMonth.value && d.getFullYear() === selectedYear.value
+    const entryDate = new Date(entry.paymentDate)
+    const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
+    const isDayMatch = selectedDay.value ? entryDate.getDate() === selectedDay.value : true
+    return isMonthYearMatch && isDayMatch
   })
 })
 
@@ -209,7 +228,6 @@ async function handleNewExpense(newExpense) {
 }
 
 async function handleExpenseSave(expense) {
-  debugger;
   if (isNewExpense.value) {
     await handleNewExpense(expense)
   } else {
@@ -222,5 +240,4 @@ async function addCategory(newCategory) {
   await expensesStore.addExpenseCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
 }
-
 </script>

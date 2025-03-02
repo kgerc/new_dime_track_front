@@ -38,7 +38,8 @@
   
   <script setup>
   import { defineProps, defineEmits, ref, computed, watch } from 'vue'
-  
+  import { v4 as uuidv4 } from 'uuid'
+
   const props = defineProps({
     modelValue: Boolean  // Controls dialog visibility
   })
@@ -56,9 +57,8 @@
   })
 
   watch(isOpen, (newVal) => {
-    debugger;
     if (newVal) {
-      localCategory.value = { title: '', color: '' }
+      localCategory.value = { id: uuidv4(), title: '', color: '' }
     }
   })
   
