@@ -125,7 +125,9 @@ import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
+import { useQuasar  } from 'quasar' 
 
+const $q = useQuasar()
 const expensesStore = useExpensesStore()
 const { entries, totalBalance, categories } = storeToRefs(expensesStore)
 
@@ -204,6 +206,13 @@ function addEntry() {
     amount: addEntryForm.amount,
     paymentDate: new Date().toISOString().substring(0, 10)
   })
+  // Toast notification for adding an expense
+  $q.notify({
+    message: 'Expense added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
   addEntryForm.name = ''
   addEntryForm.amount = null
 }
@@ -211,6 +220,13 @@ function addEntry() {
 // Remove expense
 function removeEntry(id) {
   expensesStore.removeExpense(id)
+  // Toast notification for removing an expense
+  $q.notify({
+    message: 'Expense deleted successfully!',
+    color: 'negative',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 // Expense Editing
@@ -246,6 +262,12 @@ async function handleNewExpense(newExpense) {
     await expensesStore.fetchExpenses()  // Refetch expenses if adding was successful
   }
   isDialogOpen.value = false  // Close dialog after saving
+  $q.notify({
+    message: 'Expense added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 async function handleExpenseSave(expense) {
