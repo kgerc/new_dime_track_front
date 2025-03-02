@@ -9,7 +9,25 @@
         <q-input v-model="localExpense.title" label="Title" outlined dense />
         <q-input v-model="localExpense.notes" label="Notes" outlined dense />
         <q-input v-model.number="localExpense.amount" label="Amount" type="number" outlined dense />
-        <q-input v-model="localExpense.recurrence" label="Recurrence" outlined dense />
+        <!-- Recurrence Frequency Dropdown -->
+        <q-select
+          v-if="isNewExpense"
+          v-model="localExpense.recurrenceFrequency"
+          :options="recurrenceOptions"
+          label="Recurrence"
+          outlined
+          dense
+        />
+
+        <!-- Repeat Count Input (only visible if a recurrence is selected) -->
+        <q-input
+          v-if="localExpense.recurrenceFrequency !== 'None'"
+          v-model.number="localExpense.recurrence"
+          label="Repeat Count"
+          type="number"
+          outlined
+          dense
+        />
         <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
 
         <q-toggle v-model="localExpense.isPaid" label="Paid?" />
@@ -71,7 +89,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newExpense = props.isNewExpense
-      ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: '', paymentDate: '', isPaid: false, expenseCategory: null }
+      ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
       : { ...props.expense, paymentDate: new Date(props.expense.paymentDate).toISOString().split('T')[0] }
 
     localExpense.value = newExpense
@@ -87,4 +105,9 @@ function saveChanges() {
   emit('save', localExpense.value) // Send updated expense back
   closeDialog()
 }
+
+const recurrenceOptions = [
+ 'None','Monthly', 'Quarterly', 'Yearly'
+];
+
 </script>

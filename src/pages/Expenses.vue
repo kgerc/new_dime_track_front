@@ -49,13 +49,28 @@
             <q-icon name="delete" />
           </template>
           <q-item clickable @click="openDialog(entry)">
-            <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
-              {{ entry.title }}
-              <div class="text-grey-5 text-caption">
-                {{ new Date(entry.paymentDate).toLocaleDateString() }}
+            <q-item-section>
+              <div class="row items-center">
+                <q-icon
+                  :name="getExpenseIcon(entry)"
+                  :color="getExpenseIconColor(entry)"
+                  class="q-mr-sm"
+                  size="sm"
+                />
+                <div>
+                  <div class="text-weight-bold">{{ entry.title }}</div>
+                  <div class="text-grey-5 text-caption">
+                    {{ new Date(entry.paymentDate).toLocaleDateString() }}
+                  </div>
+                </div>
               </div>
             </q-item-section>
-            <q-item-section side class="text-weight-bold" :class="amountColor(entry.amount)">
+            <q-item-section side>
+              <span :class="entry.isPaid ? 'text-green' : 'text-red'">
+                {{ entry.isPaid ? 'Paid' : 'Unpaid' }}
+              </span>
+            </q-item-section>
+            <q-item-section side class="text-weight-bold">
               {{ formatCurrency(entry.amount) }}
             </q-item-section>
           </q-item>
@@ -118,6 +133,9 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
 const currentMonthName = computed(() => months[selectedMonth.value])
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
 
 // Calendar Picker Logic
 const selectedDate = ref(null)  // For calendar selection
@@ -224,6 +242,10 @@ function openNewExpenseDialog() {
 // Handle saving a new expense
 async function handleNewExpense(newExpense) {
   await expensesStore.addExpense(newExpense)  // Call store action to add a new expense
+  debugger;
+  if (newExpense.recurrenceFrequency !== 'None') {
+    await expensesStore.fetchExpenses()  // Refetch expenses if adding was successful
+  }
   isDialogOpen.value = false  // Close dialog after saving
 }
 
@@ -240,4 +262,37 @@ async function addCategory(newCategory) {
   await expensesStore.addExpenseCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
 }
+
+function getExpenseIcon(entry) {
+  if (entry.isPaid) return 'check_circle';  // Paid: Green check
+  const entryDate = new Date(entry.paymentDate);
+  
+  if (
+    entryDate.getFullYear() === currentYear &&
+    entryDate.getMonth() === currentMonth
+  ) {
+    return 'warning';  // Unpaid in current month: Red warning
+  } else if (entryDate > currentDate) {
+    return 'schedule';  // Unpaid in future: Grey schedule
+  }
+  
+  return 'warning';  // Fallback for unpaid past expenses (optional)
+}
+
+function getExpenseIconColor(entry) {
+  if (entry.isPaid) return 'green';  // Paid: Green
+  const entryDate = new Date(entry.paymentDate);
+  
+  if (
+    entryDate.getFullYear() === currentYear &&
+    entryDate.getMonth() === currentMonth
+  ) {
+    return 'red';  // Unpaid in current month: Red
+  } else if (entryDate > currentDate) {
+    return 'grey';  // Unpaid in future: Grey
+  }
+  
+  return 'red';  // Fallback color for unpaid past expenses (optional)
+}
+
 </script>
