@@ -5,7 +5,6 @@
       <q-btn icon="arrow_back" flat @click="prevMonth" />
       <q-btn flat @click="toggleCalendar" class="q-mx-md">
         <div class="text-h6">{{ currentMonthName }} {{ selectedYear }}</div>
-        <!-- Popup for Date Selection -->
         <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle"
           :offset="[0, 10]">
           <q-date
@@ -19,7 +18,6 @@
             class="shadow-2 rounded-borders"
           >
             <div class="row items-center justify-between">
-              <!-- Highlighted "Whole month" button -->
               <q-btn
                 v-close-popup
                 label="Whole month"
@@ -40,41 +38,57 @@
     <div class="q-pa-md z-0">
       <q-scroll-area style="height:80vh">
         <q-list bordered separator>
-        <q-slide-item
-          v-for="entry in filteredEntries"
-          :key="entry.id"
-          @right="removeEntry(entry.id)"
-          right-color="negative"
-        >
-          <template v-slot:right>
-            <q-icon name="delete" />
-          </template>
-          <q-item clickable @click="openDialog(entry)">
-            <q-item-section>
-              <div class="row items-center">
-                <q-icon
-                  :name="getExpenseIcon(entry)"
-                  :color="getExpenseIconColor(entry)"
-                  class="q-mr-sm"
-                  size="sm"
-                />
-                <div>
-                  <div class="text-weight-bold">{{ entry.title }}</div>
-                  <div class="text-grey-5 text-caption">
-                    {{ new Date(entry.paymentDate).toLocaleDateString() }}
+          <q-slide-item
+            v-for="entry in filteredEntries"
+            :key="entry.id"
+            @right="removeEntry(entry.id)"
+            right-color="negative"
+          >
+            <template v-slot:right>
+              <q-icon name="delete" />
+            </template>
+            <q-item clickable @click="openDialog(entry)">
+              <q-item-section>
+                <div class="row items-center">
+                  <q-icon
+                    :name="getExpenseIcon(entry)"
+                    :color="getExpenseIconColor(entry)"
+                    class="q-mr-sm"
+                    size="sm"
+                  />
+                  <div>
+                    <div class="text-weight-bold">{{ entry.title }}</div>
+                    <div class="text-grey-5 text-caption">
+                      {{ new Date(entry.paymentDate).toLocaleDateString() }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </q-item-section>
-            <q-item-section side>
-              <span :class="entry.isPaid ? 'text-green' : 'text-red'">
-                {{ entry.isPaid ? 'Paid' : 'Unpaid' }}
-              </span>
-            </q-item-section>
-            <q-item-section side class="text-weight-bold">
-              {{ formatCurrency(entry.amount) }}
-            </q-item-section>
-          </q-item>
+              </q-item-section>
+              
+              <!-- Notes Icon with Tooltip -->
+              <q-item-section side class="q-mr-xs">
+
+                <q-icon
+                  v-if="entry.notes"
+                  name="description"
+                  size="sm"
+                  class="cursor-pointer"
+                  color="grey-6"
+                >
+                  <q-tooltip v-if="entry.notes" anchor="top middle" self="bottom middle">
+                    <div class="text-caption">{{ entry.notes }}</div>
+                  </q-tooltip>
+                </q-icon>
+              </q-item-section>
+              <q-item-section side>
+                <span :class="entry.isPaid ? 'text-green' : 'text-red'">
+                  {{ entry.isPaid ? 'Paid' : 'Unpaid' }}
+                </span>
+              </q-item-section>
+              <q-item-section side class="text-weight-bold">
+                {{ formatCurrency(entry.amount) }}
+              </q-item-section>
+            </q-item>
           </q-slide-item>
         </q-list>
       </q-scroll-area>
