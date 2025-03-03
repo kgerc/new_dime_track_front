@@ -38,7 +38,8 @@
 
     <!-- Expenses List -->
     <div class="q-pa-md z-0">
-      <q-list bordered separator>
+      <q-scroll-area style="height:80vh">
+        <q-list bordered separator>
         <q-slide-item
           v-for="entry in filteredEntries"
           :key="entry.id"
@@ -74,8 +75,9 @@
               {{ formatCurrency(entry.amount) }}
             </q-item-section>
           </q-item>
-        </q-slide-item>
-      </q-list>
+          </q-slide-item>
+        </q-list>
+      </q-scroll-area>
     </div>
 
     <!-- Expense Dialog -->
@@ -88,9 +90,10 @@
     />
 
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
-    
+    <ExpenseLimitDialog v-model="isLimitDialogOpen" />
+
     <!-- Footer: Balance & Add New Expense -->
-    <q-footer class="bg-transparent">
+    <q-footer class="bg-white">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
@@ -98,19 +101,14 @@
         </div>
       </div>
 
-      <q-form @submit.prevent="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
           <q-btn icon="category" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
+          <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
         </div>
         <div class="col">
-          <q-input v-model="addEntryForm.name" ref="nameForm" outlined dense bg-color="white" placeholder="Name" />
-        </div>
-        <div class="col">
-          <q-input v-model.number="addEntryForm.amount" input-class="text-right" outlined dense type="number" step="0.01" bg-color="white" placeholder="Amount" />
-        </div>
-        <div class="col col-auto">
-          <q-btn round color="primary" type="submit" icon="add" />
+          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
         </div>
       </q-form>
     </q-footer>
@@ -125,6 +123,7 @@ import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
+import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
 import { useQuasar  } from 'quasar' 
 
 const $q = useQuasar()
@@ -170,12 +169,13 @@ onMounted(() => {
 })
 
 // Filter entries by selected month, year, and day
+const searchQuery = ref('')
 const filteredEntries = computed(() => {
   return entries.value.filter(entry => {
+    const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     const entryDate = new Date(entry.paymentDate)
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
-    const isDayMatch = selectedDay.value ? entryDate.getDate() === selectedDay.value : true
-    return isMonthYearMatch && isDayMatch
+    return matchesSearch && isMonthYearMatch
   })
 })
 
@@ -194,27 +194,6 @@ function nextMonth() {
     selectedMonth.value = 0
     selectedYear.value++
   }
-}
-
-// Add expense
-const addEntryForm = reactive({ name: '', amount: null })
-
-function addEntry() {
-  if (!addEntryForm.name || addEntryForm.amount === null) return
-  expensesStore.addExpense({
-    title: addEntryForm.name,
-    amount: addEntryForm.amount,
-    paymentDate: new Date().toISOString().substring(0, 10)
-  })
-  // Toast notification for adding an expense
-  $q.notify({
-    message: 'Expense added successfully!',
-    color: 'positive',
-    position: 'top-right',
-    timeout: 2000
-  })
-  addEntryForm.name = ''
-  addEntryForm.amount = null
 }
 
 // Remove expense
@@ -316,5 +295,5 @@ function getExpenseIconColor(entry) {
   
   return 'red';  // Fallback color for unpaid past expenses (optional)
 }
-
+const isLimitDialogOpen = ref(false);
 </script>
