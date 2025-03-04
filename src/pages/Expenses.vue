@@ -130,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { storeToRefs } from 'pinia'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
@@ -181,6 +181,7 @@ function resetToWholeMonth() {
 onMounted(() => {
   expensesStore.fetchExpenses()
   expensesStore.fetchExpenseCategories()
+  checkAndNotifyExceededLimits(); 
 })
 
 // Filter entries by selected month, year, and day
@@ -262,6 +263,8 @@ async function handleNewExpense(newExpense) {
     position: 'top-right',
     timeout: 2000
   })
+  // Check for exceeded limits after adding an expense
+  checkAndNotifyExceededLimits();
 }
 
 async function handleExpenseSave(expense) {
@@ -313,4 +316,39 @@ function getExpenseIconColor(entry) {
 const isLimitDialogOpen = ref(false);
 const isLimitsListDialogOpen = ref(false);
 const expenseLimitsCount = computed(() => 4); // 4 for now
+
+const mockedLimits = [
+    { id: 1, category: 'Food', amount: 340, spent: 350, type: 'Monthly' },
+    { id: 2, category: 'Transport', amount: 150, spent: 120, type: 'Monthly' },
+    { id: 3, category: 'Entertainment', amount: 250, spent: 250, type: 'Monthly' },
+    { id: 4, category: 'Health', amount: 100, spent: 110, type: 'One-time' },
+  ];
+const previousExceededLimits = ref([]);
+const exceededLimits = computed(() => {
+  // Assuming mockedLimits contains limit, spent, and category information
+  return mockedLimits.filter(limit => limit.spent > limit.amount);
+});
+watch([selectedMonth, selectedYear], () => {
+  checkAndNotifyExceededLimits();  // Check whenever month or year changes
+});
+function checkAndNotifyExceededLimits() {
+  const newlyExceeded = exceededLimits.value.filter(limit =>
+    !previousExceededLimits.value.some(prev => prev.id === limit.id)
+  );
+
+  if (newlyExceeded.length > 0) {
+    newlyExceeded.forEach(limit => {
+      $q.notify({
+        message: `You have exceeded your limit for ${limit.category}!`,
+        color: 'negative',
+        icon: 'warning',
+        position: 'top-right',
+        timeout: 3000
+      });
+    });
+  }
+
+  // Update the list of previously exceeded limits
+  previousExceededLimits.value = exceededLimits.value.map(limit => ({ ...limit }));
+}
 </script>
