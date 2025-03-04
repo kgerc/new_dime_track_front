@@ -63,7 +63,13 @@
                   <div>
                     <div class="text-weight-bold">{{ entry.title }}</div>
                     <div class="text-grey-5 text-caption">
-                      {{ new Date(entry.paymentDate).toLocaleDateString() }}
+                      {{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}
+                      <q-chip 
+                      :label="entry.expenseCategory.title" 
+                      :style="{ backgroundColor: entry.expenseCategory.color, color: 'white' }" 
+                      size='sm'
+                    >
+                    </q-chip>
                     </div>
                   </div>
                 </div>
@@ -140,6 +146,7 @@ import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
 import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue';
 import { useQuasar  } from 'quasar' 
+import { format } from 'date-fns';
 
 const $q = useQuasar()
 const expensesStore = useExpensesStore()
