@@ -55,7 +55,11 @@
                     :color="getExpenseIconColor(entry)"
                     class="q-mr-sm"
                     size="sm"
-                  />
+                  >
+                  <q-tooltip anchor="top middle" self="bottom middle">
+                    <div class="text-caption">{{ entry.isPaid ? 'Paid' : 'Unpaid' }}</div>
+                  </q-tooltip>
+                  </q-icon>
                   <div>
                     <div class="text-weight-bold">{{ entry.title }}</div>
                     <div class="text-grey-5 text-caption">
@@ -65,9 +69,9 @@
                 </div>
               </q-item-section>
               
+              
               <!-- Notes Icon with Tooltip -->
               <q-item-section side class="q-mr-xs">
-
                 <q-icon
                   v-if="entry.notes"
                   name="description"
@@ -80,12 +84,7 @@
                   </q-tooltip>
                 </q-icon>
               </q-item-section>
-              <q-item-section side>
-                <span :class="entry.isPaid ? 'text-green' : 'text-red'">
-                  {{ entry.isPaid ? 'Paid' : 'Unpaid' }}
-                </span>
-              </q-item-section>
-              <q-item-section side class="text-weight-bold">
+              <q-item-section side class="text-weight-bold text-negative">
                 {{ formatCurrency(entry.amount) }}
               </q-item-section>
             </q-item>
