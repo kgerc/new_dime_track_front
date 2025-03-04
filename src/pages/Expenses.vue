@@ -104,7 +104,7 @@
 
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
     <ExpenseLimitDialog v-model="isLimitDialogOpen" />
-    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" />
+    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
