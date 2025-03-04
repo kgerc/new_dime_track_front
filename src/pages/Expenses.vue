@@ -104,7 +104,7 @@
 
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
     <ExpenseLimitDialog v-model="isLimitDialogOpen" />
-
+    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" />
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
@@ -119,6 +119,7 @@
           <q-btn icon="category" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
           <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
         <div class="col">
           <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
@@ -129,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { storeToRefs } from 'pinia'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
@@ -137,6 +138,7 @@ import { amountColor } from 'src/helpers/amountColor.js'
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
+import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue';
 import { useQuasar  } from 'quasar' 
 
 const $q = useQuasar()
@@ -309,4 +311,6 @@ function getExpenseIconColor(entry) {
   return 'red';  // Fallback color for unpaid past expenses (optional)
 }
 const isLimitDialogOpen = ref(false);
+const isLimitsListDialogOpen = ref(false);
+const expenseLimitsCount = computed(() => 4); // 4 for now
 </script>
