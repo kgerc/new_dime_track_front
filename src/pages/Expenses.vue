@@ -66,7 +66,8 @@
                       {{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}
                       <q-chip 
                       :label="entry.expenseCategory.title" 
-                      :style="{ backgroundColor: entry.expenseCategory.color, color: 'white' }" 
+                      text-color="white"
+                      :style="{ backgroundColor: entry.expenseCategory.color }" 
                       size='sm'
                     >
                     </q-chip>
