@@ -189,6 +189,7 @@ function resetToWholeMonth() {
 onMounted(() => {
   expensesStore.fetchExpenses()
   expensesStore.fetchExpenseCategories()
+  expensesStore.fetchExpenseLimits()
   checkAndNotifyExceededLimits(); 
 })
 

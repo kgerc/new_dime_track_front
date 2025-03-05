@@ -5,6 +5,7 @@ import api from 'src/api/axiosInstance' // Import the configured Axios instance
 export const useExpensesStore = defineStore('expenses', () => {
   const entries = ref([])
   const categories = ref([])
+  const limits = ref([])
 
   async function fetchExpenses() {
     try {
@@ -81,9 +82,20 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  async function fetchExpenseLimits() {
+    try {
+      const response = await api.get('/expenses/limits') 
+      limits.value = response.data
+    } catch (error) {
+      console.error('Error fetching expenses:', error)
+    }
+  }
+
   const totalBalance = computed(() => {
     return entries.value.reduce((acc, { amount }) => acc + amount, 0)
   })
 
-  return { entries, fetchExpenses, addExpense, removeExpense, updateExpense, totalBalance, addExpenseCategory, fetchExpenseCategories, categories }
+  return { entries, fetchExpenses, addExpense, removeExpense, updateExpense,
+     totalBalance, addExpenseCategory, fetchExpenseCategories, categories,
+     limits, fetchExpenseLimits }
 })
