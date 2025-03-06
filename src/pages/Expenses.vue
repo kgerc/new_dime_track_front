@@ -110,7 +110,7 @@
     />
 
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
-    <ExpenseLimitDialog v-model="isLimitDialogOpen" />
+    <ExpenseLimitDialog v-model="isLimitDialogOpen" :categories="categories" :isNewLimit="true" @save="handleExpenseLimitSave"/>
     <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
@@ -325,6 +325,31 @@ function getExpenseIconColor(entry) {
 const isLimitDialogOpen = ref(false);
 const isLimitsListDialogOpen = ref(false);
 const expenseLimitsCount = computed(() => 4); // 4 for now
+
+async function handleExpenseLimitSave(expenseLimit) {
+  // if (isNewExpense.value) {
+  //   await handleNewExpense(expense)
+  // } else {
+  //   await handleUpdateExpense(expense)
+  // }
+  await handleNewExpenseLimit(expenseLimit)
+  isLimitDialogOpen.value = false  // Close dialog after saving
+}
+
+// Handle saving a new expense
+async function handleNewExpenseLimit(newExpenseLimit) {
+  await expensesStore.addExpenseLimit(newExpenseLimit)  // Call store action to add a new expense
+  if (newExpenseLimit.recurrenceFrequency !== 'None') {
+    await expensesStore.fetchExpenseLimits()  // Refetch expenses if adding was successful
+  }
+  isLimitDialogOpen.value = false  // Close dialog after saving
+  $q.notify({
+    message: 'Expense limit added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
+}
 
 const mockedLimits = [
     { id: 1, category: 'Food', amount: 340, spent: 350, type: 'Monthly' },
