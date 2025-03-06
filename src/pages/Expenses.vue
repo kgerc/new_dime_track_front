@@ -112,10 +112,10 @@
       :isNewExpense="isNewExpense"
       @save="handleExpenseSave"
     />
-
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
     <ExpenseLimitDialog v-model="isLimitDialogOpen" :categories="categories" :isNewLimit="true" @save="handleExpenseLimitSave"/>
-    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
+    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`" :limits="limits"/>
+
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
@@ -144,33 +144,40 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { storeToRefs } from 'pinia'
+import { useQuasar } from 'quasar'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 import { getExpenseIcon, getExpenseIconColor } from 'src/helpers/expenseUtils.js'
+import { format } from 'date-fns'
+
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
-import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
-import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue';
-import { useQuasar  } from 'quasar' 
-import { format } from 'date-fns';
+import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue'
+import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue'
 
+/* 🗄️ State Management */
 const $q = useQuasar()
 const expensesStore = useExpensesStore()
-const { entries, totalBalance, categories } = storeToRefs(expensesStore)
+const { entries, totalBalance, categories, limits } = storeToRefs(expensesStore)
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const selectedMonth = ref(new Date().getMonth())
-const selectedYear = ref(new Date().getFullYear())
+/* 🗓️ Date and Calendar Handling */
+const months = [
+  'January', 'February', 'March', 'April', 'May', 'June', 
+  'July', 'August', 'September', 'October', 'November', 'December'
+]
+const currentDate = new Date()
+const currentMonth = currentDate.getMonth()
+const currentYear = currentDate.getFullYear()
+
+const selectedMonth = ref(currentMonth)
+const selectedYear = ref(currentYear)
 const currentMonthName = computed(() => months[selectedMonth.value])
-const currentDate = new Date();
-const currentMonth = currentDate.getMonth();
-const currentYear = currentDate.getFullYear();
 
-// Calendar Picker Logic
-const selectedDate = ref(null)  // For calendar selection
-const selectedDay = ref(null) // For day filtering
+const selectedDate = ref(null)   // For calendar selection
+const selectedDay = ref(null)    // For day filtering
 const isCalendarOpen = ref(false)
 const isNewExpense = ref(false)
+
 
 function toggleCalendar() {
   isCalendarOpen.value = !isCalendarOpen.value
@@ -301,7 +308,7 @@ async function addCategory(newCategory) {
 
 const isLimitDialogOpen = ref(false);
 const isLimitsListDialogOpen = ref(false);
-const expenseLimitsCount = computed(() => 4); // 4 for now
+const expenseLimitsCount = computed(() => limits.value.length);
 
 async function handleExpenseLimitSave(expenseLimit) {
   // if (isNewExpense.value) {
@@ -328,16 +335,10 @@ async function handleNewExpenseLimit(newExpenseLimit) {
   })
 }
 
-const mockedLimits = [
-    { id: 1, category: 'Food', amount: 340, spent: 350, type: 'Monthly' },
-    { id: 2, category: 'Transport', amount: 150, spent: 120, type: 'Monthly' },
-    { id: 3, category: 'Entertainment', amount: 250, spent: 250, type: 'Monthly' },
-    { id: 4, category: 'Health', amount: 100, spent: 110, type: 'One-time' },
-  ];
 const previousExceededLimits = ref([]);
 const exceededLimits = computed(() => {
   // Assuming mockedLimits contains limit, spent, and category information
-  return mockedLimits.filter(limit => limit.spent > limit.amount);
+  return limits.value.filter(limit => limit.spent > limit.amount);
 });
 watch([selectedMonth, selectedYear], () => {
   checkAndNotifyExceededLimits();  // Check whenever month or year changes
