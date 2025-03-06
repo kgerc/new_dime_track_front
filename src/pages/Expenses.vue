@@ -176,7 +176,7 @@ function updateMonthYear(date) {
   const newDate = new Date(date)
   selectedMonth.value = newDate.getMonth()
   selectedYear.value = newDate.getFullYear()
-  selectedDay.value = newDate.getDate() // Set day filter to the selected day
+  selectedDay.value = newDate.getDate() // Optional: keep if you want to filter by day
   isCalendarOpen.value = false  // Close the calendar after selecting
 }
 
@@ -187,10 +187,10 @@ function resetToWholeMonth() {
 }
 
 // Fetch expenses on mount
-onMounted(() => {
-  expensesStore.fetchExpenses()
-  expensesStore.fetchExpenseCategories()
-  expensesStore.fetchExpenseLimits()
+onMounted(async () => {
+  await expensesStore.fetchExpenses()
+  await expensesStore.fetchExpenseCategories()
+  await expensesStore.fetchExpenseLimits()
   checkAndNotifyExceededLimits(); 
 })
 
@@ -201,7 +201,11 @@ const filteredEntries = computed(() => {
     const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     const entryDate = new Date(entry.paymentDate)
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
-    return matchesSearch && isMonthYearMatch
+    const isDayMatch = selectedDay.value == null || 
+    (entryDate.getMonth() === selectedMonth.value && 
+    entryDate.getFullYear() === selectedYear.value &&
+    entryDate.getDate() === selectedDay.value)
+    return matchesSearch && isMonthYearMatch && isDayMatch;
   })
 })
 
