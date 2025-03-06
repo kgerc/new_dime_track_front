@@ -51,8 +51,8 @@
               <q-item-section>
                 <div class="row items-center">
                   <q-icon
-                    :name="getExpenseIcon(entry)"
-                    :color="getExpenseIconColor(entry)"
+                    :name="getExpenseIcon(entry, currentDate, currentMonth, currentYear)"
+                    :color="getExpenseIconColor(entry, currentDate, currentMonth, currentYear)"
                     class="q-mr-sm"
                     size="sm"
                   >
@@ -142,6 +142,7 @@ import { useExpensesStore } from 'src/stores/expensesStore'
 import { storeToRefs } from 'pinia'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
+import { getExpenseIcon, getExpenseIconColor } from 'src/helpers/expenseUtils.js'
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
@@ -290,38 +291,6 @@ async function addCategory(newCategory) {
   isCategoryDialogOpen.value = false  // Close dialog after saving
 }
 
-function getExpenseIcon(entry) {
-  if (entry.isPaid) return 'check_circle';  // Paid: Green check
-  const entryDate = new Date(entry.paymentDate);
-
-  if (
-    entryDate.getFullYear() === currentYear &&
-    entryDate.getMonth() === currentMonth &&
-    currentDate >= entryDate.setDate(entryDate.getDate() - 3)
-  ) {
-    return 'warning';  // Unpaid in current month and 3 days before: Red warning
-  } else if (entryDate > currentDate) {
-    return 'schedule';  // Unpaid in future: Grey schedule
-  }
-  
-  return 'warning';  // Fallback for unpaid past expenses (optional)
-}
-
-function getExpenseIconColor(entry) {
-  if (entry.isPaid) return 'green';  // Paid: Green
-  const entryDate = new Date(entry.paymentDate);
-  if (
-    entryDate.getFullYear() === currentYear &&
-    entryDate.getMonth() === currentMonth &&
-    currentDate >= entryDate.setDate(entryDate.getDate() - 3)
-  ) {
-    return 'red';  // Unpaid in current month and 3 days before: Red
-  } else if (entryDate > currentDate) {
-    return 'grey';  // Unpaid in future: Grey
-  }
-  
-  return 'red';  // Fallback color for unpaid past expenses (optional)
-}
 const isLimitDialogOpen = ref(false);
 const isLimitsListDialogOpen = ref(false);
 const expenseLimitsCount = computed(() => 4); // 4 for now
