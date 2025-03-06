@@ -203,7 +203,26 @@ onMounted(async () => {
   await expensesStore.fetchExpenseCategories()
   await expensesStore.fetchExpenseLimits()
   checkAndNotifyExceededLimits(); 
+  sumExpensesByCategory();
 })
+
+function sumExpensesByCategory() {
+  categories.value.forEach(cat => {
+    debugger;
+    const categoryExpenses = entries.value
+    .filter(e => {
+      const entryDate = new Date(e.paymentDate)
+      const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value &&
+       entryDate.getFullYear() === selectedYear.value
+      return e.expenseCategory && e.expenseCategory.id === cat.id && isMonthYearMatch;
+    });
+    const expenseLimit = limits.value
+    .find(limit => limit.expenseCategory && limit.expenseCategory.id === cat.id)
+    if (expenseLimit) {
+      expenseLimit.spent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    }
+  })
+}
 
 // Filter entries by selected month, year, and day
 const searchQuery = ref('')
