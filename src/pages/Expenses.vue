@@ -1,38 +1,42 @@
 <template>
   <q-page>
     <!-- Month/Year Filter with Border -->
-    <div class="row justify-center items-center q-my-md">
-      <q-btn icon="arrow_back" flat @click="prevMonth" />
-      <q-btn flat @click="toggleCalendar" class="q-mx-md">
-        <div class="text-h6">{{ currentMonthName }} {{ selectedYear }}</div>
-        <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle"
-          :offset="[0, 10]">
-          <q-date
-            v-model="selectedDate"
-            mask="YYYY-MM-DD"
-            :default-year="selectedYear"
-            :default-month="selectedMonth + 1"
-            @update:model-value="updateMonthYear"
-            bordered
-            minimal
-            class="shadow-2 rounded-borders"
-          >
-            <div class="row items-center justify-between">
-              <q-btn
-                v-close-popup
-                label="Whole month"
-                color="primary"
-                flat
-                :class="{'bg-primary text-white': !selectedDay}"
-                @click="resetToWholeMonth"
-              />
-              <q-btn v-close-popup label="Close" color="primary" flat />
-            </div>
-          </q-date>
+    <div class="row justify-center items-center q-my-md q-gutter-sm">
+  <q-btn icon="arrow_back" flat @click="prevMonth" />
+
+  <q-btn flat @click="toggleCalendar" class="q-mx-md">
+    <div class="text-h6" style="min-width: 170px; text-align: center;">
+      {{ currentMonthName }} {{ selectedYear }}
+    </div>
+    <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle" :offset="[0, 10]">
+      <q-date
+        v-model="selectedDate"
+        mask="YYYY-MM-DD"
+        :default-year="selectedYear"
+        :default-month="selectedMonth + 1"
+        @update:model-value="updateMonthYear"
+        bordered
+        minimal
+        class="shadow-2 rounded-borders"
+      >
+        <div class="row items-center justify-between">
+          <q-btn
+            v-close-popup
+            label="Whole month"
+            color="primary"
+            flat
+            :class="{'bg-primary text-white': !selectedDay}"
+            @click="resetToWholeMonth"
+          />
+          <q-btn v-close-popup label="Close" color="primary" flat />
+        </div>
+        </q-date>
         </q-popup-proxy>
       </q-btn>
-      <q-btn icon="arrow_forward" flat @click="nextMonth" />
-    </div>
+
+        <q-btn icon="arrow_forward" flat @click="nextMonth" />
+      </div>
+
 
     <!-- Expenses List -->
     <div class="q-pa-md z-0">
