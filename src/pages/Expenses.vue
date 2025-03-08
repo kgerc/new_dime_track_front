@@ -127,8 +127,9 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
-          <q-btn icon="category" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
+          <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="category" label="Categories" color="white" flat class="q-mr-sm" />
           <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
@@ -208,7 +209,6 @@ onMounted(async () => {
 
 function sumExpensesByCategory() {
   categories.value.forEach(cat => {
-    debugger;
     const categoryExpenses = entries.value
     .filter(e => {
       const entryDate = new Date(e.paymentDate)
@@ -219,7 +219,7 @@ function sumExpensesByCategory() {
     const expenseLimit = limits.value
     .find(limit => limit.expenseCategory && limit.expenseCategory.id === cat.id)
     if (expenseLimit) {
-      expenseLimit.spent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+      expenseLimit.spent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0) * -1;
     }
   })
 }

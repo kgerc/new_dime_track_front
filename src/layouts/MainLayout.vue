@@ -93,7 +93,7 @@ export default {
         { title: 'Overview', to: '/' },
         { title: 'Savings', to: '/savings' },
         { title: 'Expenses', to: '/expenses' },
-        { title: 'Transactions', to: '/transactions' },
+        { title: 'Incomes', to: '/transactions' },
       ],
     };
   },
