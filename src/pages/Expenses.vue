@@ -203,8 +203,8 @@ onMounted(async () => {
   await expensesStore.fetchExpenses()
   await expensesStore.fetchExpenseCategories()
   await expensesStore.fetchExpenseLimits()
-  checkAndNotifyExceededLimits(); 
   sumExpensesByCategory();
+  checkAndNotifyExceededLimits(); 
 })
 
 function sumExpensesByCategory() {
@@ -357,7 +357,7 @@ async function handleNewExpenseLimit(newExpenseLimit) {
 const previousExceededLimits = ref([]);
 const exceededLimits = computed(() => {
   // Assuming mockedLimits contains limit, spent, and category information
-  return limits.value.filter(limit => limit.spent > limit.amount);
+  return limits.value.filter(limit => limit.spent > limit.limit);
 });
 watch([selectedMonth, selectedYear], () => {
   checkAndNotifyExceededLimits();  // Check whenever month or year changes
@@ -370,7 +370,7 @@ function checkAndNotifyExceededLimits() {
   if (newlyExceeded.length > 0) {
     newlyExceeded.forEach(limit => {
       $q.notify({
-        message: `You have exceeded your limit for ${limit.category}!`,
+        message: `You have exceeded your limit for ${limit.expenseCategory.title}!`,
         color: 'negative',
         icon: 'warning',
         position: 'top-right',
