@@ -86,7 +86,6 @@ const categoryTitle = computed({
 
 // Watch for prop changes and update localLimit
 watch(isOpen, (newVal) => {
-  debugger;
   if (newVal) {
     props.limit.title = localLimit.value.title ?? localLimit.value.expenseCategory?.title;
     const newLimit = props.isNewLimit

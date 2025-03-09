@@ -63,7 +63,8 @@
             v-model="isLimitDialogOpen" 
             :categories="categories"
             :limit="limit"
-            :isNewLimit="false"/>
+            :isNewLimit="false"
+            @save="handleExpenseLimitSave"/>
         </q-expansion-item>
       </q-list>
 
@@ -77,16 +78,18 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue'
+import { useQuasar } from 'quasar';
+import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
+import { useExpensesStore } from 'src/stores/expensesStore';
+import { storeToRefs } from 'pinia';
+
+const $q = useQuasar();
+const expensesStore = useExpensesStore();
+const { limits, categories } = storeToRefs(expensesStore);  // Use storeToRefs to access reactive properties
 
 const props = defineProps({
   modelValue: Boolean,
   monthName: String,
-  categories: Array, // List of expense categories
-  limits: {  // Receiving limits as a prop
-    type: Array,
-    required: true
-  }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -101,13 +104,13 @@ const isOpen = computed({
 });
 const isLimitDialogOpen = ref(false);
 
-// Computed properties for totals based on the prop data
+// Computed properties for totals based on the store data
 const totalSpent = computed(() => {
-  return props.limits.reduce((sum, limit) => sum + limit.spent, 0).toFixed(2);
+  return limits.value.reduce((sum, limit) => sum + limit.spent, 0).toFixed(2);
 });
 
 const totalLimit = computed(() => {
-  return props.limits.reduce((sum, limit) => sum + limit.limit, 0).toFixed(2);
+  return limits.value.reduce((sum, limit) => sum + limit.limit, 0).toFixed(2);
 });
 
 // Helper methods
@@ -118,6 +121,19 @@ const isLimitExceeded = (limit) => limit.spent > limit.limit;
 const getExceededAmount = (limit) => {
   return isLimitExceeded(limit) ? (limit.spent - limit.limit).toFixed(2) : 0;
 };
+
+// Save function to update the store directly
+async function handleExpenseLimitSave(expenseLimit) {
+  await expensesStore.updateExpenseLimit(expenseLimit);  // Updates the store directly
+
+  isLimitDialogOpen.value = false;  // Close dialog
+  $q.notify({
+    message: 'Expense limit edited successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  });
+}
 </script>
 
 <style scoped>
