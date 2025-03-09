@@ -123,7 +123,6 @@ const getExceededAmount = (limit) => {
 
 // Save function to update the store directly
 async function handleExpenseLimitSave(expenseLimit) {
-  debugger;
   if (!expenseLimit) {
     isLimitDialogOpen.value = false;  
     $q.notify({

@@ -99,7 +99,7 @@
           </q-slide-item>
         </q-list>
     </div>
-    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="filteredEntries.length === 0">
+    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses">
       <q-spinner
         color="primary"
         size="3em"
@@ -211,9 +211,12 @@ function resetToWholeMonth() {
   isCalendarOpen.value = false
 }
 
+let loadingExpenses = ref(false)
 // Fetch expenses on mount
 onMounted(async () => {
+  loadingExpenses.value = true
   await expensesStore.fetchExpenses()
+  loadingExpenses.value = false
   await expensesStore.fetchExpenseCategories()
   await expensesStore.fetchExpenseLimits()
   sumExpensesByCategory();
@@ -222,7 +225,6 @@ onMounted(async () => {
 
 function sumExpensesByCategory() {
   categories.value.forEach(cat => {
-    debugger;
     const categoryExpenses = entries.value
     .filter(e => {
       const entryDate = new Date(e.paymentDate)
