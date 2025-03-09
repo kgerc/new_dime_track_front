@@ -51,11 +51,15 @@
 <script setup>
 import { defineProps, defineEmits, ref, computed, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { useExpensesStore } from 'src/stores/expensesStore';
+import { storeToRefs } from 'pinia';
+
+const expensesStore = useExpensesStore();
+const { categories } = storeToRefs(expensesStore);  // Using Pinia store for categories
 
 const props = defineProps({
   modelValue: Boolean,  // Controls dialog visibility
   limit: Object,
-  categories: Array, // List of expense categories
   isNewLimit: Boolean, // Flag to distinguish between new and existing limit
 })
 
@@ -69,25 +73,27 @@ const isOpen = computed({
 })
 
 const categoryTitles = computed(() => {
-  return props.categories.map(cat => cat.title)
+  return categories.value.map(cat => cat.title)
 })
 
 const categoryTitle = computed({
   get: () => localLimit.value.expenseCategory?.title || null,
   set: (value) => {
-    const categoryByName = props.categories
+    const categoryByName = categories.value
       .find(category => category.title === value)
     if (!localLimit.value.expenseCategory) {
       localLimit.value.expenseCategory = {} // Create if null
     }
     localLimit.value.expenseCategory = categoryByName
+    if (!localLimit.value.title) {
+      localLimit.value.title = value;
+    }
   }
 })
 
 // Watch for prop changes and update localLimit
 watch(isOpen, (newVal) => {
   if (newVal) {
-    props.limit.title = localLimit.value.title ?? localLimit.value.expenseCategory?.title;
     const newLimit = props.isNewLimit
       ? { id: uuidv4(), title: '', limit: 0, month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
       : { ...props.limit }

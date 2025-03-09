@@ -106,13 +106,13 @@
     <ExpenseDialog
       v-model="isDialogOpen"
       :expense="selectedExpense"
-      :categories="categories"
       :isNewExpense="isNewExpense"
       @save="handleExpenseSave"
     />
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
-    <ExpenseLimitDialog v-model="isLimitDialogOpen" :categories="categories" :isNewLimit="true" @save="handleExpenseLimitSave"/>
+    <ExpenseLimitDialog v-model="isLimitDialogOpen" :isNewLimit="true" @save="handleExpenseLimitSave"/>
     <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
+    <ExpenseCategoriesDialog v-model="isCategoriesListDialogOpen"/>
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
@@ -134,7 +134,7 @@
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
           <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
-          <q-btn icon="category" label="Categories" color="white" flat class="q-mr-sm" />
+          <q-btn icon="category" label="Categories" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
@@ -158,6 +158,7 @@ import { format } from 'date-fns'
 
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
+import ExpenseCategoriesDialog from 'src/components/Expenses/ExpenseCategoriesDialog.vue'
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue'
 import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue'
 
@@ -183,6 +184,7 @@ const selectedDate = ref(null)   // For calendar selection
 const selectedDay = ref(null)    // For day filtering
 const isCalendarOpen = ref(false)
 const isNewExpense = ref(false)
+const isCategoriesListDialogOpen = ref(false)
 
 
 function toggleCalendar() {
