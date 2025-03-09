@@ -22,8 +22,10 @@
           v-for="limit in limits"
           :key="limit.id"
           :label="getLimitCategory(limit)"
-          icon="category"
+          icon="circle"
           expand-separator
+          class="custom-expansion-item"
+          :style="{ '--icon-color': limit.expenseCategory.color }"
         >
           <q-item>
             <q-item-section>
@@ -156,5 +158,10 @@ async function handleExpenseLimitSave(expenseLimit) {
 .q-badge {
   font-size: 12px;
   padding: 2px 6px;
+}
+
+::v-deep .custom-expansion-item .q-item__section--avatar {
+  color: var(--icon-color);       /* Only the icon color */
+  font-size: 24px;   /* Only the icon size */
 }
 </style>
