@@ -39,8 +39,7 @@
 
 
     <!-- Expenses List -->
-    <div class="q-pa-md z-0">
-      <q-scroll-area style="height:80vh">
+    <div class="q-pa-md z-0" style="margin-top: -14px;">
         <q-list bordered separator>
           <q-slide-item
             v-for="entry in filteredEntries"
@@ -101,7 +100,6 @@
             </q-item>
           </q-slide-item>
         </q-list>
-      </q-scroll-area>
     </div>
 
     <!-- Expense Dialog -->
@@ -118,7 +116,7 @@
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
-      <div class="q-pa-lg flex flex-center">
+      <div class="q-pa-xs flex flex-center">
         <q-pagination
           v-model="currentPage"
           :max="maxPage"
