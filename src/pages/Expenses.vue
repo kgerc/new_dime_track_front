@@ -109,7 +109,7 @@
       :isNewExpense="isNewExpense"
       @save="handleExpenseSave"
     />
-    <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" />
+    <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" :isNewCategory="true"/>
     <ExpenseLimitDialog v-model="isLimitDialogOpen" :isNewLimit="true" @save="handleExpenseLimitSave"/>
     <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
     <ExpenseCategoriesDialog v-model="isCategoriesListDialogOpen"/>

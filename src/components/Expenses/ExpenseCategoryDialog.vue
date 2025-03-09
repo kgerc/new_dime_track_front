@@ -2,7 +2,7 @@
     <q-dialog v-model="isOpen">
       <q-card style="width: 400px">
         <q-card-section>
-          <div class="text-h6">New Expense Category</div>
+          <div class="text-h6">{{ isNewCategory ? 'New Expense Category' : 'Edit Expense Category' }}</div>
         </q-card-section>
   
         <q-card-section class="q-gutter-md">
@@ -41,15 +41,14 @@
   import { v4 as uuidv4 } from 'uuid'
 
   const props = defineProps({
-    modelValue: Boolean  // Controls dialog visibility
+    modelValue: Boolean,  // Controls dialog visibility,
+    category: Object,
+    isNewCategory: Boolean
   })
   
   const emit = defineEmits(['update:modelValue', 'save'])
 
-  const localCategory = ref({
-    title: '',
-    color: ''
-  })
+  const localCategory = ref({ ...props.category })
   
   const isOpen = computed({
     get: () => props.modelValue,
@@ -57,8 +56,11 @@
   })
 
   watch(isOpen, (newVal) => {
+    debugger;
     if (newVal) {
-      localCategory.value = { id: uuidv4(), title: '', color: '' }
+      localCategory.value = props.isNewCategory 
+      ? { id: uuidv4(), title: '', color: '' }
+      : { ...props.category }
     }
   })
   
@@ -69,11 +71,6 @@
   function saveCategory() {
     emit('save', localCategory.value)  // Emit saved category data
     closeDialog()
-  }
-
-  function resetForm() {
-    localCategory.value.title = ''
-    localCategory.value.color = ''
   }
   </script>
   

@@ -6,7 +6,7 @@
         </q-card-section>
   
         <q-list bordered padding class="q-pa-none">
-          <q-item v-for="category in categories" :key="category.id" clickable @click="isEditDialogOpen = true;">
+          <q-item v-for="category in categories" :key="category.id" clickable @click="openEditCategoryDialog(category)">
             <q-item-section avatar>
               <q-icon name="circle" :style="{ color: category.color }" />
             </q-item-section>
@@ -21,7 +21,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <ExpenseCategoryDialog v-model="isEditDialogOpen" @save="saveEditedCategory" />
+    <ExpenseCategoryDialog v-model="isEditDialogOpen" @save="saveEditedCategory" :isNewCategory="false" :category="categoryToEdit"/>
   </template>
   
   <script setup>
@@ -47,13 +47,19 @@
   })
   
   const isEditDialogOpen = ref(false)
+  let categoryToEdit = ref(null)
   
+  function openEditCategoryDialog(category) {
+    categoryToEdit = { ...category }
+    isEditDialogOpen.value = true;
+  }
+
   function closeDialog() {
     emit('update:modelValue', false)
   }
   
-  async function saveEditedCategory() {
-    await expensesStore.updateExpenseCategory(expenseLimit);  // Updates the store directly
+  async function saveEditedCategory(expenseCategory) {
+    await expensesStore.updateExpenseCategory(expenseCategory);  // Updates the store directly
     isEditDialogOpen.value = false;  // Close dialog
     $q.notify({
       message: 'Expense category edited successfully!',
