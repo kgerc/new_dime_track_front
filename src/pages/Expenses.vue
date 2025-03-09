@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <!-- Month/Year Filter with Border -->
-    <div class="row justify-center items-center q-my-md q-gutter-sm">
+  <div class="row justify-center items-center q-my-md q-gutter-sm">
   <q-btn icon="arrow_back" flat @click="prevMonth" />
 
   <q-btn flat @click="toggleCalendar" class="q-mx-md">
@@ -36,7 +36,6 @@
 
         <q-btn icon="arrow_forward" flat @click="nextMonth" />
       </div>
-
 
     <!-- Expenses List -->
     <div class="q-pa-md z-0" style="margin-top: -14px;">
@@ -79,7 +78,6 @@
                 </div>
               </q-item-section>
               
-              
               <!-- Notes Icon with Tooltip -->
               <q-item-section side class="q-mr-xs">
                 <q-icon
@@ -101,7 +99,14 @@
           </q-slide-item>
         </q-list>
     </div>
-
+    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="filteredEntries.length === 0">
+      <q-spinner
+        color="primary"
+        size="3em"
+        :thickness="2"
+      />
+      <span class="q-mt-xs">Loading expenses...</span>
+    </div>
     <!-- Expense Dialog -->
     <ExpenseDialog
       v-model="isDialogOpen"
@@ -118,6 +123,7 @@
     <q-footer class="bg-white">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
+          v-if="filteredEntries.length > 0"
           v-model="currentPage"
           :max="maxPage"
           input
