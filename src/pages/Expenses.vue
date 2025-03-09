@@ -232,7 +232,7 @@ function sumExpensesByCategory() {
 // Filter entries by selected month, year, and day
 const searchQuery = ref('')
 const filteredEntries = computed(() => {
-  currentMonthEntries.value.sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate))
+  currentMonthEntries.value.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
   const startIndex = (currentPage.value - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   return currentMonthEntries.value.slice(startIndex, endIndex)
