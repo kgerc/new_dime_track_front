@@ -118,6 +118,13 @@
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
+      <div class="q-pa-lg flex flex-center">
+        <q-pagination
+          v-model="currentPage"
+          :max="maxPage"
+          input
+        />
+      </div>
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
@@ -227,6 +234,13 @@ function sumExpensesByCategory() {
 // Filter entries by selected month, year, and day
 const searchQuery = ref('')
 const filteredEntries = computed(() => {
+  currentMonthEntries.value.sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate))
+  const startIndex = (currentPage.value - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  return currentMonthEntries.value.slice(startIndex, endIndex)
+})
+
+const currentMonthEntries = computed(() => {
   return entries.value.filter(entry => {
     const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     const entryDate = new Date(entry.paymentDate)
@@ -377,4 +391,14 @@ function checkAndNotifyExceededLimits() {
   // Update the list of previously exceeded limits
   previousExceededLimits.value = exceededLimits.value.map(limit => ({ ...limit }));
 }
+
+// Pagination and page control
+const currentPage = ref(1)
+const itemsPerPage = 10  // Number of entries per page
+
+// Max page calculation
+const maxPage = computed(() => {
+  return Math.ceil(currentMonthEntries.value.length / itemsPerPage)
+})
+
 </script>
