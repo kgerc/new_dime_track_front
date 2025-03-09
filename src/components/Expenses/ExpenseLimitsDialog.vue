@@ -32,24 +32,38 @@
               </q-chip>
               <div
                 :class="isLimitExceeded(limit) ? 'text-red' : 'text-green'"
-                class="text-caption"
+                class="text-caption flex items-center justify-between"
               >
-                <q-icon
-                  style="margin-left:10px;"
-                  :name="isLimitExceeded(limit) ? 'error' : 'check_circle'"
-                  :color="isLimitExceeded(limit) ? 'red' : 'green'"
+                <div class="flex items-center">
+                  <q-icon
+                    style="margin-left:10px;"
+                    :name="isLimitExceeded(limit) ? 'error' : 'check_circle'"
+                    :color="isLimitExceeded(limit) ? 'red' : 'green'"
+                    size="sm"
+                    class="q-mr-xs"
+                  />
+                  <span v-if="isLimitExceeded(limit)">
+                    Exceeded by €{{ getExceededAmount(limit) }}
+                  </span>
+                  <span v-else>
+                    Within limit
+                  </span>
+                </div>
+                <q-btn
                   size="sm"
-                  class="q-mr-xs"
+                  flat
+                  icon="edit"
+                  color="primary"
+                  @click="isLimitDialogOpen = true"
                 />
-                <span v-if="isLimitExceeded(limit)">
-                  Exceeded by €{{ getExceededAmount(limit) }}
-                </span>
-                <span v-else>
-                  Within limit
-                </span>
               </div>
             </q-item-section>
           </q-item>
+          <ExpenseLimitDialog 
+            v-model="isLimitDialogOpen" 
+            :categories="categories"
+            :limit="limit"
+            :isNewLimit="false"/>
         </q-expansion-item>
       </q-list>
 
@@ -63,10 +77,12 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue'
 
 const props = defineProps({
   modelValue: Boolean,
   monthName: String,
+  categories: Array, // List of expense categories
   limits: {  // Receiving limits as a prop
     type: Array,
     required: true
@@ -83,6 +99,7 @@ const isOpen = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 });
+const isLimitDialogOpen = ref(false);
 
 // Computed properties for totals based on the prop data
 const totalSpent = computed(() => {
