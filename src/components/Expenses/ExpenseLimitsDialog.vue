@@ -80,13 +80,12 @@ import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
 import { useExpensesStore } from 'src/stores/expensesStore';
-import { storeToRefs } from 'pinia';
 
 const $q = useQuasar();
 const expensesStore = useExpensesStore();
-const { limits, categories } = storeToRefs(expensesStore);  // Use storeToRefs to access reactive properties
 
 const props = defineProps({
+  limits: Array,
   modelValue: Boolean,
   monthName: String,
 });
@@ -105,11 +104,11 @@ const isLimitDialogOpen = ref(false);
 
 // Computed properties for totals based on the store data
 const totalSpent = computed(() => {
-  return limits.value.reduce((sum, limit) => sum + limit.spent, 0).toFixed(2);
+  return props.limits.reduce((sum, limit) => sum + limit.spent, 0).toFixed(2);
 });
 
 const totalLimit = computed(() => {
-  return limits.value.reduce((sum, limit) => sum + limit.limit, 0).toFixed(2);
+  return props.limits.reduce((sum, limit) => sum + limit.limit, 0).toFixed(2);
 });
 
 // Helper methods

@@ -116,7 +116,7 @@
     />
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" :isNewCategory="true"/>
     <ExpenseLimitDialog v-model="isLimitDialogOpen" :isNewLimit="true" @save="handleExpenseLimitSave"/>
-    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
+    <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :limits="currentMonthLimits" :month-name="`${currentMonthName} ${selectedYear}`"/>
     <ExpenseCategoriesDialog v-model="isCategoriesListDialogOpen" @isCategoryEdited="refetchExpenses" />
 
     <!-- Footer: Balance & Add New Expense -->
@@ -232,13 +232,17 @@ function sumExpensesByCategory() {
        entryDate.getFullYear() === selectedYear.value
       return e.expenseCategory && e.expenseCategory.id === cat.id && isMonthYearMatch;
     });
-    const expenseLimit = limits.value
+    const expenseLimit = currentMonthLimits.value
     .find(limit => limit.expenseCategory && limit.expenseCategory.id === cat.id)
     if (expenseLimit) {
       expenseLimit.spent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0) * -1;
     }
   })
 }
+
+watch([selectedMonth, selectedYear], () => {
+  sumExpensesByCategory();  // Check whenever month or year changes
+});
 
 // Filter entries by selected month, year, and day
 const searchQuery = ref('')
@@ -247,6 +251,13 @@ const filteredEntries = computed(() => {
   const startIndex = (currentPage.value - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   return currentMonthEntries.value.slice(startIndex, endIndex)
+})
+
+const currentMonthLimits = computed(() => {
+  return limits.value.filter(limit => {
+    const isMonthYearMatch = limit.month - 1 === selectedMonth.value && limit.year === selectedYear.value
+    return isMonthYearMatch
+  })
 })
 
 const currentMonthEntries = computed(() => {
@@ -350,7 +361,7 @@ async function addCategory(newCategory) {
 
 const isLimitDialogOpen = ref(false);
 const isLimitsListDialogOpen = ref(false);
-const expenseLimitsCount = computed(() => limits.value.length);
+const expenseLimitsCount = computed(() => currentMonthLimits.value.length);
 const expenseCategoriesCount = computed(() => categories.value.length);
 
 
@@ -378,11 +389,12 @@ async function handleNewExpenseLimit(newExpenseLimit) {
 const previousExceededLimits = ref([]);
 const exceededLimits = computed(() => {
   // Assuming mockedLimits contains limit, spent, and category information
-  return limits.value.filter(limit => limit.spent > limit.limit);
+  return currentMonthLimits.value.filter(limit => limit.spent > limit.limit);
 });
 watch([selectedMonth, selectedYear], () => {
   checkAndNotifyExceededLimits();  // Check whenever month or year changes
 });
+
 function checkAndNotifyExceededLimits() {
   const newlyExceeded = exceededLimits.value.filter(limit =>
     !previousExceededLimits.value.some(prev => prev.id === limit.id)
