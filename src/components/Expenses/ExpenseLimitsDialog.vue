@@ -61,7 +61,6 @@
           </q-item>
           <ExpenseLimitDialog 
             v-model="isLimitDialogOpen" 
-            :categories="categories"
             :limit="limit"
             :isNewLimit="false"
             @save="handleExpenseLimitSave"/>

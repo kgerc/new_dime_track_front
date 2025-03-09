@@ -40,12 +40,15 @@
         />
       </q-card-section>
 
-      <q-card-actions align="right">
+      <q-card-actions>
         <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+        <q-space />  <!-- This pushes the next buttons to the right -->
+        <q-btn v-if="!isNewLimit" flat label="Delete" color="negative" @click="isWarningDialogOpened = true;" @confirm="deleteLimit"/>
         <q-btn flat label="Save" color="primary" @click="saveChanges" />
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <WarningDialog v-model="isWarningDialogOpened" @confirm="deleteLimit" />
 </template>
 
 <script setup>
@@ -53,6 +56,7 @@ import { defineProps, defineEmits, ref, computed, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useExpensesStore } from 'src/stores/expensesStore';
 import { storeToRefs } from 'pinia';
+import WarningDialog from 'src/components/Base/WarningDialog.vue'
 
 const expensesStore = useExpensesStore();
 const { categories } = storeToRefs(expensesStore);  // Using Pinia store for categories
@@ -117,5 +121,10 @@ function saveChanges() {
 const recurrenceOptions = [
   'None', 'Monthly', 'Quarterly', 'Yearly'
 ];
+
+const isWarningDialogOpened = ref(false)
+function deleteLimit() {
+    debugger;
+};
 
 </script>

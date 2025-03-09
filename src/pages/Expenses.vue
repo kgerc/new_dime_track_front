@@ -140,7 +140,7 @@
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
           <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
-          <q-btn icon="category" label="Categories" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="category" :label="`Categories (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
@@ -348,6 +348,8 @@ async function addCategory(newCategory) {
 const isLimitDialogOpen = ref(false);
 const isLimitsListDialogOpen = ref(false);
 const expenseLimitsCount = computed(() => limits.value.length);
+const expenseCategoriesCount = computed(() => categories.value.length);
+
 
 async function handleExpenseLimitSave(expenseLimit) {
   await handleNewExpenseLimit(expenseLimit)
