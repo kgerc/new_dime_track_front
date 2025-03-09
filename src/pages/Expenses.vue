@@ -222,6 +222,7 @@ onMounted(async () => {
 
 function sumExpensesByCategory() {
   categories.value.forEach(cat => {
+    debugger;
     const categoryExpenses = entries.value
     .filter(e => {
       const entryDate = new Date(e.paymentDate)
@@ -354,6 +355,7 @@ const expenseCategoriesCount = computed(() => categories.value.length);
 async function handleExpenseLimitSave(expenseLimit) {
   await handleNewExpenseLimit(expenseLimit)
   isLimitDialogOpen.value = false  // Close dialog after saving
+  sumExpensesByCategory();
 }
 
 // Handle saving a new expense
