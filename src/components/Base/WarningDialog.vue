@@ -6,8 +6,9 @@
                 <span>Are you sure you want to delete this item?</span>
             </q-card-section>
 
-            <q-card-actions class="justify-end">
+            <q-card-actions>
                 <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+                <q-space /> 
                 <q-btn flat label="Delete" color="negative" @click="confirmDelete" />
             </q-card-actions>
         </q-card>

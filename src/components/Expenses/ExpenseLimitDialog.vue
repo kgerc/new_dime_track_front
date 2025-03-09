@@ -123,8 +123,8 @@ const recurrenceOptions = [
 ];
 
 const isWarningDialogOpened = ref(false)
-function deleteLimit() {
-    debugger;
+async function deleteLimit() {
+    emit('save', null) 
+    await expensesStore.removeExpenseLimit(localLimit.value.id)
 };
-
 </script>

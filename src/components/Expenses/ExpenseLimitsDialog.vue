@@ -123,15 +123,26 @@ const getExceededAmount = (limit) => {
 
 // Save function to update the store directly
 async function handleExpenseLimitSave(expenseLimit) {
-  await expensesStore.updateExpenseLimit(expenseLimit);  // Updates the store directly
+  debugger;
+  if (!expenseLimit) {
+    isLimitDialogOpen.value = false;  
+    $q.notify({
+      message: 'Expense limit deleted successfully!',
+      color: 'positive',
+      position: 'top-right',
+      timeout: 2000
+    });
+  } else {
+    await expensesStore.updateExpenseLimit(expenseLimit);  // Updates the store directly
 
-  isLimitDialogOpen.value = false;  // Close dialog
-  $q.notify({
-    message: 'Expense limit edited successfully!',
-    color: 'positive',
-    position: 'top-right',
-    timeout: 2000
-  });
+    isLimitDialogOpen.value = false;  // Close dialog
+    $q.notify({
+      message: 'Expense limit edited successfully!',
+      color: 'positive',
+      position: 'top-right',
+      timeout: 2000
+    });
+  }
 }
 </script>
 

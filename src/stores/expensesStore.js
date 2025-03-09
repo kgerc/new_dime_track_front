@@ -36,7 +36,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       if (response.status === 201 || response.status === 200) { 
         entries.value = entries.value.filter(entry => entry.id !== id)
       } else {
-        console.error('Failed to add expense: Unexpected response status', response.status)
+        console.error('Failed to remove expense: Unexpected response status', response.status)
       }
     } catch (error) {
       console.error('Error deleting expense:', error)
@@ -110,7 +110,6 @@ export const useExpensesStore = defineStore('expenses', () => {
       const response = await api.put(`/expenses/limit/${updatedExpenseLimit.id}`, updatedExpenseLimit)
       if (response.status === 200) {
         const index = limits.value.findIndex(exp => exp.id === updatedExpenseLimit.id)
-        debugger;
         if (index !== -1) {
           limits.value[index] = { ...updatedExpenseLimit }
         }
@@ -119,6 +118,19 @@ export const useExpensesStore = defineStore('expenses', () => {
       }
     } catch (error) {
       console.error('Error updating expense limit:', error)
+    }
+  }
+
+  async function removeExpenseLimit(id) {
+    try {
+      const response = await api.delete(`/expenses/limit/${id}`)
+      if (response.status === 201 || response.status === 200) { 
+        limits.value = limits.value.filter(entry => entry.id !== id)
+      } else {
+        console.error('Failed to remove expense limit: Unexpected response status', response.status)
+      }
+    } catch (error) {
+      console.error('Error deleting expense:', error)
     }
   }
 
@@ -144,5 +156,6 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   return { entries, fetchExpenses, addExpense, removeExpense, updateExpense,
      totalBalance, addExpenseCategory, fetchExpenseCategories, categories,
-     limits, fetchExpenseLimits, addExpenseLimit, updateExpenseLimit, updateExpenseCategory }
+     limits, fetchExpenseLimits, addExpenseLimit, updateExpenseLimit, updateExpenseCategory,
+     removeExpenseLimit }
 })
