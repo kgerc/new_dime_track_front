@@ -117,7 +117,7 @@
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" :isNewCategory="true"/>
     <ExpenseLimitDialog v-model="isLimitDialogOpen" :isNewLimit="true" @save="handleExpenseLimitSave"/>
     <ExpenseLimitsDialog v-model="isLimitsListDialogOpen" :month-name="`${currentMonthName} ${selectedYear}`"/>
-    <ExpenseCategoriesDialog v-model="isCategoriesListDialogOpen"/>
+    <ExpenseCategoriesDialog v-model="isCategoriesListDialogOpen" @isCategoryEdited="refetchExpenses" />
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
@@ -406,5 +406,9 @@ const itemsPerPage = 10  // Number of entries per page
 const maxPage = computed(() => {
   return Math.ceil(currentMonthEntries.value.length / itemsPerPage)
 })
+
+async function refetchExpenses(isCategoryEdited) {
+  if (isCategoryEdited) await expensesStore.fetchExpenses() 
+}
 
 </script>

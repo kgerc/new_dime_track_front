@@ -39,7 +39,7 @@
     modelValue: Boolean
   })
   
-  const emit = defineEmits(['update:modelValue', 'save'])
+  const emit = defineEmits(['update:modelValue', 'save', 'isCategoryEdited'])
   
   const isOpen = computed({
     get: () => props.modelValue,
@@ -47,6 +47,7 @@
   })
   
   const isEditDialogOpen = ref(false)
+  const isCategoryEdited = ref(false)
   let categoryToEdit = ref(null)
   
   function openEditCategoryDialog(category) {
@@ -56,11 +57,13 @@
 
   function closeDialog() {
     emit('update:modelValue', false)
+    emit('isCategoryEdited', isCategoryEdited.value)
   }
   
   async function saveEditedCategory(expenseCategory) {
     await expensesStore.updateExpenseCategory(expenseCategory);  // Updates the store directly
     isEditDialogOpen.value = false;  // Close dialog
+    isCategoryEdited.value = true;
     $q.notify({
       message: 'Expense category edited successfully!',
       color: 'positive',

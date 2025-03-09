@@ -56,7 +56,6 @@
   })
 
   watch(isOpen, (newVal) => {
-    debugger;
     if (newVal) {
       localCategory.value = props.isNewCategory 
       ? { id: uuidv4(), title: '', color: '' }
