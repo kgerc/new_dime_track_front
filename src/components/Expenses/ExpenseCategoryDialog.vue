@@ -28,24 +28,29 @@
 
         </q-card-section>
   
-        <q-card-actions align="right">
+        <q-card-actions>
           <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+          <q-space />  <!-- This pushes the next buttons to the right -->
+          <q-btn v-if="!isNewCategory" flat label="Delete" color="negative" @click="isWarningDialogOpened = true;"/>
           <q-btn flat label="Save" color="primary" @click="saveCategory" />
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <WarningDialog v-model="isWarningDialogOpened" @confirm="deleteCategory" />
   </template>
   
   <script setup>
   import { defineProps, defineEmits, ref, computed, watch } from 'vue'
   import { v4 as uuidv4 } from 'uuid'
+  import WarningDialog from 'src/components/Base/WarningDialog.vue'
+  import { useExpensesStore } from 'src/stores/expensesStore';
 
   const props = defineProps({
     modelValue: Boolean,  // Controls dialog visibility,
     category: Object,
     isNewCategory: Boolean
   })
-  
+  const expensesStore = useExpensesStore();
   const emit = defineEmits(['update:modelValue', 'save'])
 
   const localCategory = ref({ ...props.category })
@@ -66,7 +71,13 @@
   function closeDialog() {
     emit('update:modelValue', false)
   }
-  
+
+  const isWarningDialogOpened = ref(false)
+  async function deleteCategory() {
+    emit('save', null) 
+    await expensesStore.removeExpenseCategory(localCategory.value.id)
+  };
+
   function saveCategory() {
     emit('save', localCategory.value)  // Emit saved category data
     closeDialog()

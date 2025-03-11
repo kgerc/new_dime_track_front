@@ -150,6 +150,19 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  async function removeExpenseCategory(id) {
+    try {
+      const response = await api.delete(`/expenses/category/${id}`)
+      if (response.status === 201 || response.status === 200) { 
+        categories.value = categories.value.filter(entry => entry.id !== id)
+      } else {
+        console.error('Failed to remove expense category: Unexpected response status', response.status)
+      }
+    } catch (error) {
+      console.error('Error deleting expense category:', error)
+    }
+  }
+
   const totalBalance = computed(() => {
     return entries.value.reduce((acc, { amount }) => acc + amount, 0)
   })
@@ -157,5 +170,5 @@ export const useExpensesStore = defineStore('expenses', () => {
   return { entries, fetchExpenses, addExpense, removeExpense, updateExpense,
      totalBalance, addExpenseCategory, fetchExpenseCategories, categories,
      limits, fetchExpenseLimits, addExpenseLimit, updateExpenseLimit, updateExpenseCategory,
-     removeExpenseLimit }
+     removeExpenseLimit, removeExpenseCategory }
 })

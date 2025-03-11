@@ -134,7 +134,6 @@ async function handleExpenseLimitSave(expenseLimit) {
     });
   } else {
     await expensesStore.updateExpenseLimit(expenseLimit);  // Updates the store directly
-
     isLimitDialogOpen.value = false;  // Close dialog
     $q.notify({
       message: 'Expense limit edited successfully!',

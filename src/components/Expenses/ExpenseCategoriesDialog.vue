@@ -61,15 +61,28 @@
   }
   
   async function saveEditedCategory(expenseCategory) {
-    await expensesStore.updateExpenseCategory(expenseCategory);  // Updates the store directly
-    isEditDialogOpen.value = false;  // Close dialog
-    isCategoryEdited.value = true;
-    $q.notify({
-      message: 'Expense category edited successfully!',
-      color: 'positive',
-      position: 'top-right',
-      timeout: 2000
-    });
+    if (!expenseCategory) {
+      isEditDialogOpen.value = false; 
+      isCategoryEdited.value = true; 
+      $q.notify({
+        message: 'Expense category deleted successfully!',
+        color: 'positive',
+        position: 'top-right',
+        timeout: 2000
+      });
+    } 
+    else 
+    {
+      await expensesStore.updateExpenseCategory(expenseCategory);  // Updates the store directly
+      isEditDialogOpen.value = false;  // Close dialog
+      isCategoryEdited.value = true;
+      $q.notify({
+        message: 'Expense category edited successfully!',
+        color: 'positive',
+        position: 'top-right',
+        timeout: 2000
+      });
+    }
   }
   </script>
   

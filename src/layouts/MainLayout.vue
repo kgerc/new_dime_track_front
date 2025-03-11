@@ -14,13 +14,10 @@
           @click="toggleLeftDrawer"
         />
 
-        <!-- Title in the center -->
-        <q-toolbar-title>
-          <div class="absolute-center">
-            <q-icon name="money" />
-            Dime Track
-          </div>
-        </q-toolbar-title>
+        <q-avatar>
+          <q-icon name="savings" size="md"/>
+        </q-avatar>
+        <q-toolbar-title>Dime Track</q-toolbar-title>
 
         <!-- Right side: single language avatar + user initials avatar -->
         <div class="row items-center q-gutter-md">
