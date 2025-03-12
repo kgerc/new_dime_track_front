@@ -159,7 +159,7 @@ import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
-import { getExpenseIcon, getExpenseIconColor } from 'src/helpers/expenseUtils.js'
+import { getExpenseIcon, getExpenseIconColor, getIncomingUnpaidExpenses } from 'src/helpers/expenseUtils.js'
 import { format } from 'date-fns'
 
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
@@ -221,6 +221,7 @@ onMounted(async () => {
   await expensesStore.fetchExpenseLimits()
   sumExpensesByCategory();
   checkAndNotifyExceededLimits(); 
+  checkAndNotifyUpcomingUnpaidExpenses();
 })
 
 function sumExpensesByCategory() {
@@ -387,33 +388,59 @@ async function handleNewExpenseLimit(newExpenseLimit) {
 }
 
 const previousExceededLimits = ref([]);
+const previousIncomingExpenses = ref([]);
 const exceededLimits = computed(() => {
   // Assuming mockedLimits contains limit, spent, and category information
   return currentMonthLimits.value.filter(limit => limit.spent > limit.limit);
 });
 watch([selectedMonth, selectedYear], () => {
   checkAndNotifyExceededLimits();  // Check whenever month or year changes
+  checkAndNotifyUpcomingUnpaidExpenses();
 });
 
 function checkAndNotifyExceededLimits() {
   const newlyExceeded = exceededLimits.value.filter(limit =>
-    !previousExceededLimits.value.some(prev => prev.id === limit.id)
+    !previousExceededLimits.value.some(limitId => limitId === limit.id)
   );
 
   if (newlyExceeded.length > 0) {
     newlyExceeded.forEach(limit => {
       $q.notify({
-        message: `You have exceeded your limit for ${limit.expenseCategory.title}!`,
+        message: `You have exceeded your limit for ${limit.expenseCategory.title} in ${currentMonthName.value} ${selectedYear.value} !`,
         color: 'negative',
         icon: 'warning',
         position: 'top-right',
         timeout: 3000
       });
+      // Update the list of previously exceeded limits
+      previousExceededLimits.value.push(limit.id);
     });
-  }
 
-  // Update the list of previously exceeded limits
-  previousExceededLimits.value = exceededLimits.value.map(limit => ({ ...limit }));
+  }
+}
+
+function checkAndNotifyUpcomingUnpaidExpenses() {
+  const notificationExpenses = getIncomingUnpaidExpenses(currentMonthEntries.value, currentDate)
+  const newlyExceeded = notificationExpenses.filter(expense =>
+    !previousIncomingExpenses.value.some(expenseId => expenseId === expense.id)
+  );
+
+  if (newlyExceeded.length > 0) {
+    let expenseList = ""
+    newlyExceeded.forEach(expense => {
+      expenseList += expense.title + ", "
+      // Update the list of previously exceeded limits
+      previousIncomingExpenses.value.push(expense.id);
+    });
+    $q.notify({
+        message: `Following expenses are due in 3 days: <br/> ${expenseList}`,
+        html: true,
+        color: 'negative',
+        icon: 'warning',
+        position: 'top-right',
+        timeout: 3000
+      });
+  }
 }
 
 // Pagination and page control

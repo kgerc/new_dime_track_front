@@ -30,3 +30,14 @@
     
     return 'red';  // Fallback color for unpaid past expenses (optional)
   }
+
+  export function getIncomingUnpaidExpenses(expenses, todayDate) {
+    const targetDate = new Date(todayDate);
+    targetDate.setDate(todayDate.getDate() + 3);
+    return expenses
+      .filter(expense => {
+        const dueDate = new Date(expense.paymentDate);
+        return dueDate.toDateString() <= targetDate.toDateString() && !expense.isPaid;
+      })
+      .map(expense => ({ id: expense.id, title: expense.title }));
+  }
