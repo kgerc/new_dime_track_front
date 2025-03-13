@@ -10,7 +10,7 @@
       <q-btn icon="arrow_forward" flat @click="nextMonth" />
     </div>
 
-    <!-- Three panels side by side for Savings, Expenses, Transactions -->
+    <!-- Three panels side by side for Savings, Expenses, Incomes -->
     <div class="row q-col-gutter-md q-px-md q-pb-md">
 
       <!-- Savings Panel -->
@@ -69,11 +69,11 @@
         </q-card>
       </div>
 
-      <!-- Transactions Panel -->
+      <!-- Incomes Panel -->
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-            <div class="text-h6">Transactions</div>
+            <div class="text-h6">Incomes</div>
           </q-card-section>
 
           <q-separator />
@@ -81,7 +81,7 @@
           <q-card-section style="max-height: 300px; overflow-y: auto;">
             <q-list bordered separator>
               <q-item
-                v-for="(entry, idx) in filteredTransactions"
+                v-for="(entry, idx) in filteredIncomes"
                 :key="idx"
               >
                 <q-item-section class="text-weight-bold" :class="amountColor(entry.amount)">
@@ -123,7 +123,7 @@ const expenses = ref([
   { name: 'Groceries', amount: -120, date: '2025-02-01' }
 ])
 
-const transactions = ref([
+const incomes = ref([
   { name: 'Transfer from Savings', amount: 1000, date: '2025-01-03' },
   { name: 'Groceries Payment', amount: -120, date: '2025-01-07' },
   { name: 'Sold Old Phone', amount: 80, date: '2025-02-10' }
@@ -140,8 +140,8 @@ const filteredSavings = computed(() => {
 const filteredExpenses = computed(() => {
   return expenses.value.filter(entry => isInSelectedMonth(entry.date))
 })
-const filteredTransactions = computed(() => {
-  return transactions.value.filter(entry => isInSelectedMonth(entry.date))
+const filteredIncomes = computed(() => {
+  return incomes.value.filter(entry => isInSelectedMonth(entry.date))
 })
 
 // Helper to check if entry date is in the selected month/year
