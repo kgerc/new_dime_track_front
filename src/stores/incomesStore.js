@@ -58,5 +58,14 @@ export const useExpensesStore = defineStore('incomes', () => {
     }
   }
 
-  return { entries, fetchIncomes, addIncome, removeIncome, updateIncome }
+  async function fetchIncomeCategories() {
+    try {
+      const response = await api.get('/incomes/categories') 
+      categories.value = response.data
+    } catch (error) {
+      console.error('Error fetching income categories:', error)
+    }
+  }
+
+  return { entries, categories, fetchIncomes, addIncome, removeIncome, updateIncome, fetchIncomeCategories }
 })
