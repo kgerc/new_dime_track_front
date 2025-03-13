@@ -73,6 +73,14 @@
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
+      <div class="q-pa-xs flex flex-center">
+        <q-pagination
+          v-if="recurrentIncomes.length > 0"
+          v-model="currentPage"
+          :max="4"
+          input
+        />
+      </div>
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
@@ -102,6 +110,7 @@ import { storeToRefs } from 'pinia'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 
+const currentPage = 1
 const expensesStore = useExpensesStore()
 const { totalBalance } = storeToRefs(expensesStore)
 // Mocked incomes data
