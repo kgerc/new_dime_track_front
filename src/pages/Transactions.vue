@@ -35,10 +35,18 @@
           <q-item clickable @click="openDialog(income)">
             <q-item-section>
               <div class="row items-center">
-                <q-icon name="autorenew" class="q-mr-sm" size="sm" color="positive" />
+                <q-icon name="autorenew" class="q-mr-sm" size="sm" color="positive" style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption>{{ format(new Date(income.date), 'dd.MM.yyyy') }}</q-item-label>
+                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.date), 'dd.MM.yyyy') }}
+                    <q-chip 
+                      label="No Category" 
+                      text-color="white"
+                      style="{ backgroundColor: '#fffff'}" 
+                      size='sm'
+                    >
+                    </q-chip>
+                  </q-item-label>
                 </div>
               </div>
             </q-item-section>
@@ -56,10 +64,18 @@
           <q-item clickable @click="openDialog(income)">
             <q-item-section>
               <div class="row items-center">
-                <q-icon name="attach_money" class="q-mr-sm" size="sm" color="positive" />
+                <q-icon name="attach_money" class="q-mr-sm" size="sm" color="positive" style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption>{{ format(new Date(income.date), 'dd.MM.yyyy') }}</q-item-label>
+                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.date), 'dd.MM.yyyy') }}
+                    <q-chip 
+                      label="No Category" 
+                      text-color="white"
+                      style="{ backgroundColor: '#fffff'}" 
+                      size='sm'
+                    >
+                    </q-chip>
+                  </q-item-label>
                 </div>
               </div>
             </q-item-section>
