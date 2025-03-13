@@ -47,7 +47,7 @@
     </div>
 
     <!-- Expenses List -->
-    <div class="q-pa-md z-0" style="margin-top: -14px;">
+    <div class="q-pa-md z-0" style="margin-top: -20px;">
         <q-list bordered separator>
           <q-slide-item
             v-for="entry in filteredEntries"
