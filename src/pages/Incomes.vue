@@ -127,12 +127,14 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 
+const $q = useQuasar()
 const currentPage = 1
 const incomesStore = useIncomesStore()
 const { categories } = storeToRefs(incomesStore)
@@ -215,7 +217,7 @@ function openNewIncomeDialog() {
 
 async function handleIncomeSave(income) {
   await incomesStore.addIncome(income)  
-  if (newExpenseLimit.recurrenceFrequency !== 'None') {
+  if (income.recurrenceFrequency !== 'None') {
     await incomesStore.fetchIncomes() 
   }
   $q.notify({
