@@ -6,14 +6,14 @@
         </q-card-section>
   
         <q-card-section class="q-gutter-md">
-          <q-input v-model="localExpense.title" label="Title" outlined dense />
-          <q-input v-model="localExpense.notes" label="Notes" outlined dense />
-          <q-input v-model.number="localExpense.amount" label="Amount" type="number" outlined dense />
+          <q-input v-model="localIncome.title" label="Title" outlined dense />
+          <q-input v-model="localIncome.notes" label="Notes" outlined dense />
+          <q-input v-model.number="localIncome.amount" label="Amount" type="number" outlined dense />
   
           <!-- Recurrence Frequency Dropdown -->
           <q-select
             v-if="isNewIncome"
-            v-model="localExpense.recurrenceFrequency"
+            v-model="localIncome.recurrenceFrequency"
             :options="recurrenceOptions"
             label="Recurrence"
             outlined
@@ -22,16 +22,16 @@
   
           <!-- Repeat Count Input (only visible if a recurrence is selected) -->
           <q-input
-            v-if="localExpense.recurrenceFrequency !== 'None'"
-            v-model.number="localExpense.recurrence"
+            v-if="localIncome.recurrenceFrequency !== 'None'"
+            v-model.number="localIncome.recurrence"
             label="Repeat Count"
             type="number"
             outlined
             dense
           />
-          <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
+          <q-input v-model="localIncome.paymentDate" label="Payment Date" type="date" outlined dense />
   
-          <q-toggle v-model="localExpense.isPaid" label="Paid?" />
+          <q-toggle v-model="localIncome.isPaid" label="Paid?" />
   
           <q-select
             v-model="categoryTitle"
@@ -62,13 +62,13 @@
   
   const props = defineProps({
     modelValue: Boolean,  // Controls dialog visibility
-    expense: Object,
+    income: Object,
     isNewIncome: Boolean, // Flag to distinguish between new and existing expense
   });
   
   const emit = defineEmits(['update:modelValue', 'save']);
   
-  const localExpense = ref({ ...props.expense });  // Local copy for editing
+  const localIncome = ref({ ...props.income });  // Local copy for editing
   
   const isOpen = computed({
     get: () => props.modelValue,
@@ -80,27 +80,27 @@
     return categories.value.map(cat => cat.title);
   });
   
-  // Bind category title to localExpense
+  // Bind category title to localIncome
   const categoryTitle = computed({
-    get: () => localExpense.value.expenseCategory?.title || null,
+    get: () => localIncome.value.expenseCategory?.title || null,
     set: (value) => {
       const categoryByName = categories.value.find(category => category.title === value);
-      if (!localExpense.value.expenseCategory) {
-        localExpense.value.expenseCategory = {};  // Create if null
+      if (!localIncome.value.expenseCategory) {
+        localIncome.value.expenseCategory = {};  // Create if null
       }
-      localExpense.value.expenseCategory = categoryByName;
-    },
+      localIncome.value.expenseCategory = categoryByName;
+    }
   });
   
-  // Watch for dialog open and reset localExpense accordingly
+  // Watch for dialog open and reset localIncome accordingly
   watch(isOpen, (newVal) => {
     if (newVal) {
-      const newExpense = props.isNewIncome
+      const newIncome = props.isNewIncome
         ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
         : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') };
   
-      localExpense.value = newExpense;
-      categoryTitle.value = newExpense.expenseCategory?.title || null;
+      localIncome.value = newIncome;
+      categoryTitle.value = newIncome.expenseCategory?.title || null;
     }
   });
   
@@ -109,7 +109,7 @@
   }
   
   function saveChanges() {
-    emit('save', localExpense.value);  // Send updated expense back
+    emit('save', localIncome.value);  // Send updated expense back
     closeDialog();
   }
   

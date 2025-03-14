@@ -123,12 +123,13 @@
 import { ref, computed } from 'vue';
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
-import { useExpensesStore } from 'src/stores/expensesStore'
+import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 
 const currentPage = 1
-const expensesStore = useExpensesStore()
-const { totalBalance } = storeToRefs(expensesStore)
+const incomesStore = useIncomesStore()
+const { categories } = storeToRefs(incomesStore)
+const  totalBalance = 12000
 // Mocked incomes data
 const recurrentIncomes = ref([
   { id: 1, title: "Salary", amount: 5000, date: "2025-03-01" },
@@ -147,6 +148,8 @@ const nonRecurrentIncomes = ref([
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 const selectedYear = ref(new Date().getFullYear());
 const selectedMonth = ref(new Date().getMonth());
+const searchQuery = ref('')
+const isCalendarOpen = ref(false)
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
@@ -189,5 +192,9 @@ function removeIncome(id) {
 
 function openDialog(income) {
   console.log("Opening dialog for:", income);
+}
+
+function toggleCalendar() {
+  isCalendarOpen.value = !isCalendarOpen.value
 }
 </script>
