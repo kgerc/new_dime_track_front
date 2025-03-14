@@ -2,7 +2,7 @@
     <q-dialog v-model="isOpen">
       <q-card style="width: 400px">
         <q-card-section>
-          <div class="text-h6">{{ isNewIncome ? 'New Expense' : 'Edit Expense' }}</div>
+          <div class="text-h6">{{ isNewIncome ? 'New Income' : 'Edit Expense' }}</div>
         </q-card-section>
   
         <q-card-section class="q-gutter-md">
@@ -29,9 +29,9 @@
             outlined
             dense
           />
-          <q-input v-model="localIncome.paymentDate" label="Payment Date" type="date" outlined dense />
+          <q-input v-model="localIncome.incomeDate" label="Payment Date" type="date" outlined dense />
   
-          <q-toggle v-model="localIncome.isPaid" label="Paid?" />
+          <q-toggle v-model="localIncome.isReceived" label="Received?" />
   
           <q-select
             v-model="categoryTitle"
@@ -54,10 +54,10 @@
   import { defineProps, defineEmits, ref, computed, watch } from 'vue';
   import { v4 as uuidv4 } from 'uuid';
   import { format } from 'date-fns';
-  import { useExpensesStore } from 'src/stores/incomesStore';
+  import { useIncomesStore } from 'src/stores/incomesStore';
   import { storeToRefs } from 'pinia';
   
-  const incomesStore = useExpensesStore();
+  const incomesStore = useIncomesStore();
   const { categories } = storeToRefs(incomesStore);  // Using Pinia store for categories
   
   const props = defineProps({
@@ -96,8 +96,8 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newIncome = props.isNewIncome
-        ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
-        : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') };
+        ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', incomeDate: '', isReceived: false, expenseCategory: null }
+        : { ...props.expense, incomeDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') };
   
       localIncome.value = newIncome;
       categoryTitle.value = newIncome.expenseCategory?.title || null;

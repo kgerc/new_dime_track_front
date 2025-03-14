@@ -106,7 +106,7 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" />
+          <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
           <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" />
           <q-btn icon="category" :label="`Categories (3)`" color="white" flat class="q-mr-sm" />
         </div>
@@ -115,6 +115,12 @@
         </div>
       </q-form>
     </q-footer>
+    <IncomeDialog
+      v-model="isDialogOpen"
+      :income="selectedIncome"
+      :isNewIncome="true"
+      @save="handleIncomeSave"
+    />
   </q-page>
 </template>
 
@@ -125,6 +131,7 @@ import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
+import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 
 const currentPage = 1
 const incomesStore = useIncomesStore()
@@ -150,6 +157,9 @@ const selectedYear = ref(new Date().getFullYear());
 const selectedMonth = ref(new Date().getMonth());
 const searchQuery = ref('')
 const isCalendarOpen = ref(false)
+// Expense Editing
+const isDialogOpen = ref(false)
+const selectedIncome = ref(null)
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
@@ -196,5 +206,24 @@ function openDialog(income) {
 
 function toggleCalendar() {
   isCalendarOpen.value = !isCalendarOpen.value
+}
+
+function openNewIncomeDialog() {
+  selectedIncome.value = null  // Clear previous data
+  isDialogOpen.value = true
+}
+
+async function handleIncomeSave(income) {
+  await incomesStore.addIncome(income)  
+  if (newExpenseLimit.recurrenceFrequency !== 'None') {
+    await incomesStore.fetchIncomes() 
+  }
+  $q.notify({
+    message: 'Income added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
+  isDialogOpen.value = false  // Close dialog after saving
 }
 </script>
