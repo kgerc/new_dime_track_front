@@ -28,7 +28,7 @@
     <div class="q-pa-md">
       <q-list bordered separator>
         <q-item-label header>Recurrent Incomes</q-item-label>
-        <q-slide-item v-for="income in recurrentIncomes" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
+        <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
           </template>
@@ -38,7 +38,7 @@
                 <q-icon name="autorenew" class="q-mr-sm" size="sm" color="positive" style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.date), 'dd.MM.yyyy') }}
+                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
                     <q-chip 
                       label="No Category" 
                       text-color="white"
@@ -57,7 +57,7 @@
         </q-slide-item>
 
         <q-item-label header>Non-Recurrent Incomes</q-item-label>
-        <q-slide-item v-for="income in nonRecurrentIncomes" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
+        <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
           </template>
@@ -67,7 +67,7 @@
                 <q-icon name="attach_money" class="q-mr-sm" size="sm" color="positive" style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.date), 'dd.MM.yyyy') }}
+                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
                     <q-chip 
                       label="No Category" 
                       text-color="white"
@@ -126,7 +126,7 @@
 
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
@@ -137,7 +137,7 @@ import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 const $q = useQuasar()
 const currentPage = 1
 const incomesStore = useIncomesStore()
-const { categories } = storeToRefs(incomesStore)
+const { entries } = storeToRefs(incomesStore)
 const  totalBalance = 12000
 // Mocked incomes data
 const recurrentIncomes = ref([
@@ -162,10 +162,43 @@ const isCalendarOpen = ref(false)
 // Expense Editing
 const isDialogOpen = ref(false)
 const selectedIncome = ref(null)
+let loadingIncomes = ref(false)
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
 );
+
+const currentMonthEntries = computed(() => {
+  return entries.value.filter(entry => {
+    const entryDate = new Date(entry.incomeDate)
+    const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
+    return isMonthYearMatch;
+  })
+})
+
+const filteredRecurrentEntries = computed(() => {
+  debugger;
+  const recurringEntries = currentMonthEntries.value
+  .filter(el => el.isReccuring)
+  .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
+  return recurringEntries
+})
+
+const filteredNonRecurrentEntries = computed(() => {
+  const nonRecurringEntries = currentMonthEntries.value
+  .filter(el => !el.isReccuring)
+  .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
+  return nonRecurringEntries
+})
+
+// Fetch incomes on mount
+onMounted(async () => {
+  loadingIncomes.value = true
+  await incomesStore.fetchIncomes()
+  loadingIncomes.value = false
+})
+
+
 
 function prevMonth() {
   if (selectedMonth.value === 0) {

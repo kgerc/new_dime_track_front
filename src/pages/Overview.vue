@@ -113,20 +113,20 @@ const months = [
 
 // Example data for each category
 const savings = ref([
-  { name: 'Salary', amount: 4000, date: '2025-01-10' },
-  { name: 'Bonus', amount: 500, date: '2025-01-15' }
+  { name: 'Salary', amount: 4000, date: '2025-03-10' },
+  { name: 'Bonus', amount: 500, date: '2025-03-15' }
 ])
 
 const expenses = ref([
-  { name: 'Rent', amount: -999, date: '2025-01-05' },
-  { name: 'Phone', amount: -14.99, date: '2025-01-12' },
-  { name: 'Groceries', amount: -120, date: '2025-02-01' }
+  { name: 'Rent', amount: -999, date: '2025-03-05' },
+  { name: 'Phone', amount: -14.99, date: '2025-03-12' },
+  { name: 'Groceries', amount: -120, date: '2025-03-01' }
 ])
 
 const incomes = ref([
-  { name: 'Transfer from Savings', amount: 1000, date: '2025-01-03' },
-  { name: 'Groceries Payment', amount: -120, date: '2025-01-07' },
-  { name: 'Sold Old Phone', amount: 80, date: '2025-02-10' }
+  { name: 'Transfer from Savings', amount: 1000, date: '2025-03-03' },
+  { name: 'Bonds', amount: 120, date: '2025-03-07' },
+  { name: 'Sold Old Phone', amount: 80, date: '2025-03-10' }
 ])
 
 // Selected month/year
