@@ -67,5 +67,51 @@ export const useIncomesStore = defineStore('incomes', () => {
     }
   }
 
-  return { entries, categories, fetchIncomes, addIncome, removeIncome, updateIncome, fetchIncomeCategories }
+  async function addIncomeCategory(incomeCategory) {
+    try {
+      const response = await api.post('/incomes/category', incomeCategory)
+      if (response.status === 201 || response.status === 200) { 
+        // Only push if response is successful
+        categories.value.push(expenseCategory)
+      } else {
+        console.error('Failed to add income category: Unexpected response status', response.status)
+      }
+    } catch (error) {
+      console.error('Error adding income category:', error)
+    }
+  }
+
+  async function updateIncomeCategory(updatedIncomeCategory) {
+    try {
+      const response = await api.put(`/incomes/category/${updatedIncomeCategory.id}`, updatedIncomeCategory)
+      if (response.status === 200) {
+        const index = categories.value.findIndex(exp => exp.id === updatedIncomeCategory.id)
+        if (index !== -1) {
+          categories.value[index] = { ...updatedIncomeCategory }
+        }
+      } else {
+        console.error('Failed to update income category:', response.status)
+      }
+    } catch (error) {
+      console.error('Error updating expense category:', error)
+    }
+  }
+
+  async function removeIncomeCategory(id) {
+    try {
+      const response = await api.delete(`/incomes/category/${id}`)
+      if (response.status === 201 || response.status === 200) { 
+        categories.value = categories.value.filter(entry => entry.id !== id)
+      } else {
+        console.error('Failed to remove income category: Unexpected response status', response.status)
+      }
+    } catch (error) {
+      console.error('Error deleting income category:', error)
+    }
+  }
+
+  return { 
+    entries, categories, 
+    fetchIncomes, addIncome, removeIncome, updateIncome,
+    fetchIncomeCategories, addIncomeCategory, removeIncomeCategory, updateIncomeCategory }
 })

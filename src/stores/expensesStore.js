@@ -66,10 +66,10 @@ export const useExpensesStore = defineStore('expenses', () => {
         // Only push if response is successful
         categories.value.push(expenseCategory)
       } else {
-        console.error('Failed to add expense: Unexpected response status', response.status)
+        console.error('Failed to add expense category: Unexpected response status', response.status)
       }
     } catch (error) {
-      console.error('Error adding expense:', error)
+      console.error('Error adding expense category:', error)
     }
   }
 
@@ -78,7 +78,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       const response = await api.get('/expenses/categories') 
       categories.value = response.data
     } catch (error) {
-      console.error('Error fetching expenses:', error)
+      console.error('Error fetching expense categories:', error)
     }
   }
 
