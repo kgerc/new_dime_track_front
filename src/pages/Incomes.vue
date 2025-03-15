@@ -185,11 +185,6 @@ const itemsPerPage = 10  // Number of entries per page
 const isNewIncome = ref(false)
 const isCategoryDialogOpen = ref(false)
 const isCategoriesListDialogOpen = ref(false)
-/* 🗓️ Date and Calendar Handling */
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June', 
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
 
 const incomeCategoriesCount = computed(() => categories.value.length);
 
@@ -199,14 +194,19 @@ const currentMonthName = computed(() =>
 
 const currentMonthEntries = computed(() => {
   return entries.value.filter(entry => {
+    const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+
     const entryDate = new Date(entry.incomeDate)
+
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value &&
      entryDate.getFullYear() === selectedYear.value
+
     const isDayMatch = selectedDay.value == null || 
       (entryDate.getMonth() === selectedMonth.value && 
       entryDate.getFullYear() === selectedYear.value &&
       entryDate.getDate() === selectedDay.value)
-    return isMonthYearMatch && isDayMatch;
+
+    return matchesSearch && isMonthYearMatch && isDayMatch;
   })
 })
 

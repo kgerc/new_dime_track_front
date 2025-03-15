@@ -273,12 +273,16 @@ const currentMonthLimits = computed(() => {
 const currentMonthEntries = computed(() => {
   return entries.value.filter(entry => {
     const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+
     const entryDate = new Date(entry.paymentDate)
+
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
+    
     const isDayMatch = selectedDay.value == null || 
     (entryDate.getMonth() === selectedMonth.value && 
     entryDate.getFullYear() === selectedYear.value &&
     entryDate.getDate() === selectedDay.value)
+    
     return matchesSearch && isMonthYearMatch && isDayMatch;
   })
 })
