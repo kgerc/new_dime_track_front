@@ -371,6 +371,12 @@ async function handleExpenseSave(expense) {
 async function addCategory(newCategory) {
   await expensesStore.addExpenseCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
+  $q.notify({
+    message: 'Expense category added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 const isLimitDialogOpen = ref(false);

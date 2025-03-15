@@ -351,6 +351,12 @@ async function handleUpdateIncome(updatedIncome) {
 async function addCategory(newCategory) {
   await incomesStore.addIncomeCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
+  $q.notify({
+    message: 'Income category added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 async function refetchIncomes(isCategoryEdited) {

@@ -75,7 +75,7 @@
   const isWarningDialogOpened = ref(false)
   async function deleteCategory() {
     emit('save', null) 
-    //await incomesStore.removeExpenseCategory(localCategory.value.id)
+    await incomesStore.removeIncomeCategory(localCategory.value.id)
   };
 
   function saveCategory() {
