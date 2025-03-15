@@ -202,13 +202,25 @@ const currentMonthEntries = computed(() => {
   })
 })
 
+const recurringEntriesFromPrecedingPageCount = computed(() => {
+  const recurringEntries = currentMonthEntries.value
+  .filter(el => el.isReccuring)
+  .sort((a, b) => new Date(b.incomeDate) - new Date(a.incomeDate))
+  if (currentPage.value === 1) return 0;
+
+  const startIndex = (currentPage.value - 2) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  return recurringEntries.slice(startIndex, endIndex).length
+})
+
 const filteredRecurrentEntries = computed(() => {
   const recurringEntries = currentMonthEntries.value
   .filter(el => el.isReccuring)
   .sort((a, b) => new Date(b.incomeDate) - new Date(a.incomeDate))
+
   const startIndex = (currentPage.value - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  currentPageRecurringIncomesAmount.value = filteredRecurrentEntries.value?.length
+
   return recurringEntries.slice(startIndex, endIndex)
 })
 
@@ -216,10 +228,10 @@ const filteredNonRecurrentEntries = computed(() => {
   const nonRecurringEntries = currentMonthEntries.value
   .filter(el => !el.isReccuring)
   .sort((a, b) => new Date(b.incomeDate) - new Date(a.incomeDate))
-  const startIndex = (currentPage.value - 1) * itemsPerPage - 
-    (currentPage.value > 1 ? currentPageRecurringIncomesAmount.value : 0)
-  const endIndex = startIndex + itemsPerPage - 
-    (currentPage.value > 1 ? currentPageRecurringIncomesAmount.value : 0)
+
+  const startIndex = (currentPage.value - 1) * itemsPerPage - recurringEntriesFromPrecedingPageCount.value
+  const endIndex = startIndex + itemsPerPage - recurringEntriesFromPrecedingPageCount.value
+
   return nonRecurringEntries.slice(startIndex, endIndex)
 })
 
