@@ -33,7 +33,7 @@
       <q-icon name="filter_alt" size="md" style="margin-right:25px;" color="primary"/>
     </div>
 
-    <div class="q-pa-md">
+    <div class="q-pa-md" style="margin-top: -20px;">
       <q-list bordered separator>
         <q-item-label header>Recurrent Incomes</q-item-label>
         <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
@@ -101,7 +101,7 @@
         <q-pagination
           v-if="recurrentIncomes.length > 0"
           v-model="currentPage"
-          :max="4"
+          :max="maxPage"
           input
         />
       </div>
@@ -151,7 +151,7 @@ import { amountColor } from 'src/helpers/amountColor.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 
 const $q = useQuasar()
-const currentPage = 1
+const currentPage = ref(1)
 const incomesStore = useIncomesStore()
 const { entries } = storeToRefs(incomesStore)
 const  totalBalance = 12000
@@ -183,6 +183,8 @@ const isCalendarOpen = ref(false)
 const isDialogOpen = ref(false)
 const selectedIncome = ref(null)
 let loadingIncomes = ref(false)
+const itemsPerPage = 10  // Number of entries per page
+const currentPageRecurringIncomesAmount = ref(0)
 /* 🗓️ Date and Calendar Handling */
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June', 
@@ -209,15 +211,25 @@ const currentMonthEntries = computed(() => {
 const filteredRecurrentEntries = computed(() => {
   const recurringEntries = currentMonthEntries.value
   .filter(el => el.isReccuring)
-  .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
-  return recurringEntries
+  .sort((a, b) => new Date(b.incomeDate) - new Date(a.incomeDate))
+  const startIndex = (currentPage.value - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  currentPageRecurringIncomesAmount.value = filteredRecurrentEntries.value?.length
+  return recurringEntries.slice(startIndex, endIndex)
 })
 
 const filteredNonRecurrentEntries = computed(() => {
   const nonRecurringEntries = currentMonthEntries.value
   .filter(el => !el.isReccuring)
-  .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
-  return nonRecurringEntries
+  .sort((a, b) => new Date(b.incomeDate) - new Date(a.incomeDate))
+  const startIndex = (currentPage.value - 1) * itemsPerPage - currentPageRecurringIncomesAmount.value
+  const endIndex = startIndex + itemsPerPage - currentPageRecurringIncomesAmount.value
+  return nonRecurringEntries.slice(startIndex, endIndex)
+})
+
+// Max page calculation
+const maxPage = computed(() => {
+  return Math.ceil(currentMonthEntries.value.length / itemsPerPage)
 })
 
 // Fetch incomes on mount
