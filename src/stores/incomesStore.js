@@ -72,7 +72,7 @@ export const useIncomesStore = defineStore('incomes', () => {
       const response = await api.post('/incomes/category', incomeCategory)
       if (response.status === 201 || response.status === 200) { 
         // Only push if response is successful
-        categories.value.push(expenseCategory)
+        categories.value.push(incomeCategory)
       } else {
         console.error('Failed to add income category: Unexpected response status', response.status)
       }
@@ -93,7 +93,7 @@ export const useIncomesStore = defineStore('incomes', () => {
         console.error('Failed to update income category:', response.status)
       }
     } catch (error) {
-      console.error('Error updating expense category:', error)
+      console.error('Error updating income category:', error)
     }
   }
 

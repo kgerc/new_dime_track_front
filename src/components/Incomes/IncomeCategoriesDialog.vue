@@ -1,0 +1,92 @@
+<template>
+    <q-dialog v-model="isOpen">
+      <q-card style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Income Categories</div>
+        </q-card-section>
+  
+        <q-list bordered padding class="q-pa-none">
+          <q-item v-for="category in categories" :key="category.id" clickable @click="openEditCategoryDialog(category)">
+            <q-item-section avatar>
+              <q-icon name="circle" :style="{ color: category.color }" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ category.title }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+  
+        <q-card-actions align="right">
+          <q-btn flat label="Close" color="grey" @click="closeDialog" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <IncomeCategoryDialog 
+        v-model="isEditDialogOpen" 
+        @save="saveEditedCategory" 
+        :isNewCategory="false" 
+        :category="categoryToEdit"/>
+  </template>
+  
+  <script setup>
+  import { defineProps, defineEmits, ref, computed } from 'vue'
+  import { useQuasar } from 'quasar'
+  import { useIncomesStore } from 'src/stores/incomesStore';
+  import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue';
+  import { storeToRefs } from 'pinia';
+
+  const $q = useQuasar();
+  const incomesStore = useIncomesStore();
+  const { categories } = storeToRefs(incomesStore); 
+
+  const props = defineProps({
+    modelValue: Boolean
+  })
+  
+  const emit = defineEmits(['update:modelValue', 'save', 'isCategoryEdited'])
+  
+  const isOpen = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value)
+  })
+  
+  const isEditDialogOpen = ref(false)
+  const isCategoryEdited = ref(false)
+  let categoryToEdit = ref(null)
+  
+  function openEditCategoryDialog(category) {
+    categoryToEdit = { ...category }
+    isEditDialogOpen.value = true;
+  }
+
+  function closeDialog() {
+    emit('update:modelValue', false)
+    emit('isCategoryEdited', isCategoryEdited.value)
+  }
+  
+  async function saveEditedCategory(incomeCategory) {
+    if (!incomeCategory) {
+      isEditDialogOpen.value = false; 
+      isCategoryEdited.value = true; 
+      $q.notify({
+        message: 'Income category deleted successfully!',
+        color: 'positive',
+        position: 'top-right',
+        timeout: 2000
+      });
+    } 
+    else 
+    {
+      await incomesStore.updateIncomeCategory(incomeCategory);  // Updates the store directly
+      isEditDialogOpen.value = false;  // Close dialog
+      isCategoryEdited.value = true;
+      $q.notify({
+        message: 'Income category edited successfully!',
+        color: 'positive',
+        position: 'top-right',
+        timeout: 2000
+      });
+    }
+  }
+  </script>
+  

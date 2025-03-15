@@ -116,7 +116,7 @@
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
           <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
-          <q-btn icon="category" :label="`Categories (3)`" color="white" flat class="q-mr-sm" />
+          <q-btn icon="category" :label="`Categories (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
         <div class="col">
           <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
@@ -140,7 +140,12 @@
     <IncomeCategoryDialog 
       v-model="isCategoryDialogOpen" 
       @save="addCategory" 
-      :isNewCategory="true"/>
+      :isNewCategory="true"
+    />
+    <IncomeCategoriesDialog 
+      v-model="isCategoriesListDialogOpen" 
+      @isCategoryEdited="refetchIncomes" 
+    />
   </q-page>
 </template>
 
@@ -154,11 +159,12 @@ import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue'
+import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialog.vue'
 
 const $q = useQuasar()
 const currentPage = ref(1)
 const incomesStore = useIncomesStore()
-const { entries } = storeToRefs(incomesStore)
+const { entries, categories } = storeToRefs(incomesStore)
 const  totalBalance = 12000
 
 // Date management
@@ -176,14 +182,16 @@ const isDialogOpen = ref(false)
 const selectedIncome = ref(null)
 let loadingIncomes = ref(false)
 const itemsPerPage = 10  // Number of entries per page
-const currentPageRecurringIncomesAmount = ref(0)
 const isNewIncome = ref(false)
 const isCategoryDialogOpen = ref(false)
+const isCategoriesListDialogOpen = ref(false)
 /* 🗓️ Date and Calendar Handling */
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June', 
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
+
+const incomeCategoriesCount = computed(() => categories.value.length);
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
@@ -245,6 +253,7 @@ onMounted(async () => {
   loadingIncomes.value = true
   await incomesStore.fetchIncomes()
   loadingIncomes.value = false
+  await incomesStore.fetchIncomeCategories()
 })
 
 function prevMonth() {
@@ -340,7 +349,11 @@ async function handleUpdateIncome(updatedIncome) {
 }
 
 async function addCategory(newCategory) {
-  //await incomesStore.addExpenseCategory(newCategory)
+  await incomesStore.addIncomeCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
+}
+
+async function refetchIncomes(isCategoryEdited) {
+  if (isCategoryEdited) await incomesStore.fetchIncomes() 
 }
 </script>
