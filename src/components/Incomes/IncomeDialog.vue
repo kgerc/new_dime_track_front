@@ -2,7 +2,7 @@
     <q-dialog v-model="isOpen">
       <q-card style="width: 400px">
         <q-card-section>
-          <div class="text-h6">{{ isNewIncome ? 'New Income' : 'Edit Expense' }}</div>
+          <div class="text-h6">{{ isNewIncome ? 'New Income' : 'Edit Income' }}</div>
         </q-card-section>
   
         <q-card-section class="q-gutter-md">
@@ -97,10 +97,10 @@
     if (newVal) {
       const newIncome = props.isNewIncome
         ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', incomeDate: '', isReceived: false, expenseCategory: null }
-        : { ...props.expense, incomeDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') };
+        : { ...props.income, incomeDate: format(new Date(props.income.incomeDate), 'yyyy-MM-dd') };
   
       localIncome.value = newIncome;
-      categoryTitle.value = newIncome.expenseCategory?.title || null;
+      categoryTitle.value = newIncome.incomeCategory?.title || null;
     }
   });
   

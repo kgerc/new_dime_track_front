@@ -134,7 +134,7 @@
     <IncomeDialog
       v-model="isDialogOpen"
       :income="selectedIncome"
-      :isNewIncome="true"
+      :isNewIncome="isNewIncome"
       @save="handleIncomeSave"
     />
   </q-page>
@@ -185,6 +185,7 @@ const selectedIncome = ref(null)
 let loadingIncomes = ref(false)
 const itemsPerPage = 10  // Number of entries per page
 const currentPageRecurringIncomesAmount = ref(0)
+const isNewIncome = ref(false)
 /* 🗓️ Date and Calendar Handling */
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June', 
@@ -277,7 +278,9 @@ function removeIncome(id) {
 }
 
 function openDialog(income) {
-  console.log("Opening dialog for:", income);
+  selectedIncome.value = { ...income }  // Copy to avoid direct mutation
+  isNewIncome.value = false
+  isDialogOpen.value = true
 }
 
 function toggleCalendar() {
@@ -286,6 +289,7 @@ function toggleCalendar() {
 
 function openNewIncomeDialog() {
   selectedIncome.value = null  // Clear previous data
+  isNewIncome.value = true
   isDialogOpen.value = true
 }
 
