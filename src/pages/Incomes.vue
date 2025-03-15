@@ -99,7 +99,7 @@
     <q-footer class="bg-white">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
-          v-if="recurrentIncomes.length > 0"
+          v-if="currentMonthEntries.length > 0"
           v-model="currentPage"
           :max="maxPage"
           input
@@ -115,7 +115,7 @@
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
-          <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" />
+          <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
           <q-btn icon="category" :label="`Categories (3)`" color="white" flat class="q-mr-sm" />
         </div>
         <div class="col">
@@ -137,6 +137,10 @@
       :isNewIncome="isNewIncome"
       @save="handleIncomeSave"
     />
+    <IncomeCategoryDialog 
+      v-model="isCategoryDialogOpen" 
+      @save="addCategory" 
+      :isNewCategory="true"/>
   </q-page>
 </template>
 
@@ -149,25 +153,13 @@ import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
+import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue'
 
 const $q = useQuasar()
 const currentPage = ref(1)
 const incomesStore = useIncomesStore()
 const { entries } = storeToRefs(incomesStore)
 const  totalBalance = 12000
-// Mocked incomes data
-const recurrentIncomes = ref([
-  { id: 1, title: "Salary", amount: 5000, date: "2025-03-01" },
-  { id: 2, title: "Freelance Contract", amount: 1200, date: "2025-03-05" }
-]);
-
-const nonRecurrentIncomes = ref([
-  { id: 3, title: "Bonus", amount: 600, date: "2025-03-10" },
-  { id: 4, title: "Gift", amount: 200, date: "2025-03-15" },
-  { id: 5, title: "Gift", amount: 200, date: "2025-03-15" },
-  { id: 6, title: "Gift", amount: 200, date: "2025-03-15" },
-  { id: 7, title: "Gift", amount: 200, date: "2025-03-15" }
-]);
 
 // Date management
 const currentDate = new Date()
@@ -186,6 +178,7 @@ let loadingIncomes = ref(false)
 const itemsPerPage = 10  // Number of entries per page
 const currentPageRecurringIncomesAmount = ref(0)
 const isNewIncome = ref(false)
+const isCategoryDialogOpen = ref(false)
 /* 🗓️ Date and Calendar Handling */
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June', 
@@ -276,7 +269,7 @@ function formatCurrency(value) {
 }
 
 function removeIncome(id) {
-  nonRecurrentIncomes.value = nonRecurrentIncomes.value.filter(income => income.id !== id);
+  // todo
 }
 
 function openDialog(income) {
@@ -325,5 +318,10 @@ async function handleNewIncome() {
 
 async function handleUpdateIncome(updatedIncome) {
   await incomesStore.updateIncome(updatedIncome)  // Call store action to update API and local store
+}
+
+async function addCategory(newCategory) {
+  //await incomesStore.addExpenseCategory(newCategory)
+  isCategoryDialogOpen.value = false  // Close dialog after saving
 }
 </script>
