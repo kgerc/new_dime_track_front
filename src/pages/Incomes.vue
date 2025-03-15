@@ -43,7 +43,12 @@
           <q-item clickable @click="openDialog(income)">
             <q-item-section>
               <div class="row items-center">
-                <q-icon name="autorenew" class="q-mr-sm" size="sm" color="positive" style="margin-top: -5px;"/>
+                <q-icon 
+                  :name="getIncomeIcon(income)"
+                  class="q-mr-sm" 
+                  size="sm" 
+                  :color="getIncomeColor(income)" 
+                  style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
                   <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
@@ -72,7 +77,12 @@
           <q-item clickable @click="openDialog(income)">
             <q-item-section>
               <div class="row items-center">
-                <q-icon name="attach_money" class="q-mr-sm" size="sm" color="positive" style="margin-top: -5px;"/>
+                <q-icon 
+                  :name="getIncomeIcon(income)"
+                  class="q-mr-sm" 
+                  size="sm" 
+                  :color="getIncomeColor(income)" 
+                  style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
                   <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
@@ -172,6 +182,7 @@ import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
+import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue'
 import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialog.vue'
