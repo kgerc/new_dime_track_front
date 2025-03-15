@@ -109,9 +109,13 @@ export const useIncomesStore = defineStore('incomes', () => {
       console.error('Error deleting income category:', error)
     }
   }
+  
+  const totalBalance = computed(() => {
+    return entries.value.reduce((acc, { amount }) => acc + amount, 0)
+  })
 
   return { 
-    entries, categories, 
+    entries, categories, totalBalance,
     fetchIncomes, addIncome, removeIncome, updateIncome,
     fetchIncomeCategories, addIncomeCategory, removeIncomeCategory, updateIncomeCategory }
 })

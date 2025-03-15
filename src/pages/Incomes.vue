@@ -190,8 +190,7 @@ import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialo
 const $q = useQuasar()
 const currentPage = ref(1)
 const incomesStore = useIncomesStore()
-const { entries, categories } = storeToRefs(incomesStore)
-const  totalBalance = 12000
+const { entries, categories, totalBalance } = storeToRefs(incomesStore)
 
 // Date management
 const currentDate = new Date()
