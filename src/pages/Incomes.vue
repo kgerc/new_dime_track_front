@@ -269,7 +269,14 @@ function formatCurrency(value) {
 }
 
 function removeIncome(id) {
-  // todo
+  incomesStore.removeIncome(id)
+  // Toast notification for removing an expense
+  $q.notify({
+    message: 'Income deleted successfully!',
+    color: 'negative',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 function openDialog(income) {
@@ -303,7 +310,7 @@ async function handleIncomeSave(income) {
   isDialogOpen.value = false  // Close dialog after saving
 }
 
-async function handleNewIncome() {
+async function handleNewIncome(income) {
   await incomesStore.addIncome(income)  
   if (income.recurrenceFrequency !== 'None') {
     await incomesStore.fetchIncomes() 
