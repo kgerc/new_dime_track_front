@@ -87,7 +87,21 @@
                 </div>
               </div>
             </q-item-section>
-            <q-item-section side class="text-weight-bold text-positive">
+            <!-- Notes Icon with Tooltip -->
+            <q-item-section side class="q-mr-xs">
+              <q-icon
+                v-if="income.notes"
+                name="description"
+                size="sm"
+                class="cursor-pointer"
+                color="grey-6"
+              >
+                <q-tooltip v-if="income.notes" anchor="top middle" self="bottom middle">
+                  <div class="text-caption">{{ income.notes }}</div>
+                </q-tooltip>
+              </q-icon>
+            </q-item-section>
+            <q-item-section side class="text-weight-bold text-positive fixed-width">
               {{ formatCurrency(income.amount) }}
             </q-item-section>
           </q-item>
@@ -157,6 +171,7 @@ import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
+import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue'
 import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialog.vue'
@@ -280,13 +295,6 @@ function updateMonthYear(date) {
   selectedMonth.value = newDate.getMonth();
   selectedDay.value = newDate.getDate();
   isCalendarOpen.value = false;
-}
-
-function formatCurrency(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(value);
 }
 
 function removeIncome(id) {

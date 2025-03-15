@@ -101,7 +101,7 @@
                   </q-tooltip>
                 </q-icon>
               </q-item-section>
-              <q-item-section side class="text-weight-bold text-negative">
+              <q-item-section side class="text-weight-bold text-negative fixed-width">
                 {{ formatCurrency(entry.amount) }}
               </q-item-section>
             </q-item>
