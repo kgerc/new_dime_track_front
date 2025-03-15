@@ -34,8 +34,8 @@
     </div>
 
     <div class="q-pa-md" style="margin-top: -20px;">
-      <q-list bordered separator>
-        <q-item-label header>Recurrent Incomes</q-item-label>
+      <q-list bordered separator v-if="!loadingIncomes">
+        <q-item-label header>Recurring Incomes</q-item-label>
         <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
@@ -64,7 +64,7 @@
           </q-item>
         </q-slide-item>
 
-        <q-item-label header>Non-Recurrent Incomes</q-item-label>
+        <q-item-label header>Non-Recurring Incomes</q-item-label>
         <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
@@ -223,8 +223,10 @@ const filteredNonRecurrentEntries = computed(() => {
   const nonRecurringEntries = currentMonthEntries.value
   .filter(el => !el.isReccuring)
   .sort((a, b) => new Date(b.incomeDate) - new Date(a.incomeDate))
-  const startIndex = (currentPage.value - 1) * itemsPerPage - currentPageRecurringIncomesAmount.value
-  const endIndex = startIndex + itemsPerPage - currentPageRecurringIncomesAmount.value
+  const startIndex = (currentPage.value - 1) * itemsPerPage - 
+    (currentPage.value > 1 ? currentPageRecurringIncomesAmount.value : 0)
+  const endIndex = startIndex + itemsPerPage - 
+    (currentPage.value > 1 ? currentPageRecurringIncomesAmount.value : 0)
   return nonRecurringEntries.slice(startIndex, endIndex)
 })
 
@@ -300,6 +302,15 @@ function resetToWholeMonth() {
 }
 
 async function handleIncomeSave(income) {
+  if (isNewIncome.value) {
+    await handleNewIncome(income)
+  } else {
+    await handleUpdateIncome(income)
+  }
+  isDialogOpen.value = false  // Close dialog after saving
+}
+
+async function handleNewIncome() {
   await incomesStore.addIncome(income)  
   if (income.recurrenceFrequency !== 'None') {
     await incomesStore.fetchIncomes() 
@@ -310,6 +321,9 @@ async function handleIncomeSave(income) {
     position: 'top-right',
     timeout: 2000
   })
-  isDialogOpen.value = false  // Close dialog after saving
+}
+
+async function handleUpdateIncome(updatedIncome) {
+  await incomesStore.updateIncome(updatedIncome)  // Call store action to update API and local store
 }
 </script>
