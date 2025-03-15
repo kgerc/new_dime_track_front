@@ -1,147 +1,238 @@
 <template>
   <q-page>
-    <!-- Month/Year Filter -->
-    <div class="row justify-center items-center q-my-md">
-      <q-btn icon="arrow_back" flat @click="prevMonth" />
-      <div class="q-mx-md text-h6">
-        {{ currentMonthName }} {{ selectedYear }}
+    <div class="row justify-between items-center q-my-md q-gutter-sm">
+      <div style="width: 24px;"></div>
+
+      <div class="row justify-center items-center col" style="margin-left: 60px;">
+        <q-btn icon="arrow_back" flat @click="prevMonth" />
+        <q-btn flat @click="toggleCalendar" class="q-mx-md">
+          <div class="text-h6" style="min-width: 170px; text-align: center;">
+            {{ currentMonthName }} {{ selectedYear }}
+          </div>
+          <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle" :offset="[0, 10]">
+            <q-date 
+              v-model="selectedDate" 
+              mask="YYYY-MM-DD" 
+              :default-year="selectedYear" 
+              :default-month="selectedMonth + 1"
+              @update:model-value="updateMonthYear" 
+              bordered 
+              minimal 
+              class="shadow-2 rounded-borders">
+                <div class="row items-center justify-between">
+                  <q-btn v-close-popup label="Whole month" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
+                  <q-btn v-close-popup label="Close" color="primary" flat />
+                </div>
+            </q-date>
+          </q-popup-proxy>
+        </q-btn>
+        <q-btn icon="arrow_forward" flat @click="nextMonth" />
       </div>
-      <q-btn icon="arrow_forward" flat @click="nextMonth" />
+
+      <q-icon name="sort" size="md" style="margin-right:10px;" color="primary"/>
+      <q-icon name="filter_alt" size="md" style="margin-right:25px;" color="primary"/>
     </div>
 
-    <div class="q-pa-md">
-      <q-list bordered separator>
-        <q-slide-item
-          v-for="entry in filteredEntries"
-          :key="entry.id"
-          @right="removeEntry(entry.id)"
-          right-color="negative"
-        >
-          <template v-slot:right>
-            <q-icon name="delete" />
-          </template>
-          <q-item>
-            <q-item-section
-              class="text-weight-bold"
-              :class="amountColor(entry.amount)"
-            >
-              <q-item-label>{{ entry.name }}</q-item-label>
-              <q-item-label caption>{{ new Date(entry.date).toLocaleDateString() }}</q-item-label>
-            </q-item-section>
-            <q-item-section
-              side
-              top
-              class="text-weight-bold"
-              :class="amountColor(entry.amount)"
-            >
-              <q-item-label>{{ formatCurrency(entry.amount) }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-slide-item>
+    <div class="q-pa-md" style="margin-top: -20px;">
+      <q-list bordered separator >
+        <q-item-label header>Savings</q-item-label>
+        <q-item v-for="saving in savingsList" :key="saving.id" clickable @click="openSavingDialog(saving)">
+          <q-item-section>
+            <div class="row items-center">
+              <q-icon name="savings" class="q-mr-sm" size="sm" color="blue-6"/>
+              <div>
+                <q-item-label class="text-weight-bold">{{ saving.title }}</q-item-label>
+                <q-item-label caption style="margin-top: -5px;">Goal: {{ formatCurrency(saving.goalAmount) }}</q-item-label>
+                <q-linear-progress :value="saving.currentAmount / saving.goalAmount" color="blue" rounded size="10px"/>
+              </div>
+            </div>
+          </q-item-section>
+          <q-item-section side class="text-weight-bold text-positive">
+            {{ formatCurrency(saving.currentAmount) }}
+          </q-item-section>
+        </q-item>
       </q-list>
     </div>
 
-    <q-footer class="bg-transparent">
+    <!-- Footer: Balance & Add New Expense -->
+    <q-footer class="bg-white">
+      <div class="q-pa-xs flex flex-center">
+        <q-pagination
+          v-model="currentPage"
+          :max="3"
+          input
+        />
+      </div>
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
-        <div class="col text-h6 text-right" :class="amountColor(balance)">
-          {{ formatCurrency(balance) }}
+        <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
+          {{ formatCurrency(totalBalance) }}
         </div>
       </div>
-      <q-form @submit="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
-        <div class="col">
-          <q-input
-            v-model="addEntryForm.name"
-            ref="nameForm"
-            outlined
-            dense
-            bg-color="white"
-            placeholder="Name"
-          />
+
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+        <div class="row items-center q-pr-md">
+          <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
+          <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
+          <q-btn icon="category" :label="`Categories (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
         <div class="col">
-          <q-input
-            v-model.number="addEntryForm.amount"
-            input-class="text-right"
-            outlined
-            dense
-            type="number"
-            step="0.01"
-            bg-color="white"
-            placeholder="Amount"
-          />
-        </div>
-        <div class="col col-auto">
-          <q-btn round color="primary" type="submit" icon="add" />
+          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
         </div>
       </q-form>
     </q-footer>
+    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingIncomes">
+      <q-spinner
+        color="primary"
+        size="3em"
+        :thickness="2"
+      />
+      <span class="q-mt-xs">Loading savings...</span>
+    </div>
   </q-page>
 </template>
 
+
 <script setup>
-import { ref, computed, reactive } from 'vue'
-import { uid } from 'quasar'
-import { formatCurrency } from 'src/helpers/formatCurrency.js'
+import { ref, computed, onMounted } from 'vue';
+import { useQuasar } from 'quasar'
+import { format } from 'date-fns';
+import { storeToRefs } from 'pinia'
+import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
+import { formatCurrency } from 'src/helpers/formatCurrency.js'
+import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
 
-// Month/Year Filter Logic
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
-const selectedMonth = ref(new Date().getMonth())
-const selectedYear = ref(new Date().getFullYear())
-const currentMonthName = computed(() => months[selectedMonth.value])
-function prevMonth() {
-  selectedMonth.value--
-  if (selectedMonth.value < 0) {
-    selectedMonth.value = 11
-    selectedYear.value--
-  }
-}
-function nextMonth() {
-  selectedMonth.value++
-  if (selectedMonth.value > 11) {
-    selectedMonth.value = 0
-    selectedYear.value++
-  }
-}
+const $q = useQuasar()
+const currentPage = ref(1)
+const incomesStore = useIncomesStore()
+const { entries, categories, totalBalance } = storeToRefs(incomesStore)
 
-// Savings entries sample
-const entries = ref([
-  { id: 'id1', name: 'Salary', amount: 4000, date: '2025-01-10' },
-  { id: 'id2', name: 'Bonus', amount: 500, date: '2025-01-15' }
-])
-const filteredEntries = computed(() => {
-  return entries.value.filter(entry => {
-    const d = new Date(entry.date)
-    return d.getMonth() === selectedMonth.value && d.getFullYear() === selectedYear.value
-  })
+// Date management
+const currentDate = new Date()
+const currentMonth = currentDate.getMonth()
+const currentYear = currentDate.getFullYear()
+const selectedDay = ref(null)    // For day filtering
+const selectedDate = ref(null);
+const selectedYear = ref(currentYear);
+const selectedMonth = ref(currentMonth);
+const searchQuery = ref('')
+const isCalendarOpen = ref(false)
+// Expense Editing
+const isDialogOpen = ref(false)
+const selectedIncome = ref(null)
+let loadingIncomes = ref(false)
+const itemsPerPage = 10  // Number of entries per page
+const isNewIncome = ref(false)
+const isCategoryDialogOpen = ref(false)
+const isCategoriesListDialogOpen = ref(false)
+
+const incomeCategoriesCount = computed(() => categories.value.length);
+
+const currentMonthName = computed(() =>
+  format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
+);
+
+// Fetch incomes on mount
+onMounted(async () => {
+
 })
-const balance = computed(() => entries.value.reduce((acc, { amount }) => acc + amount, 0))
 
-// Form handling
-const nameForm = ref(null)
-const addEntryFormDefault = { name: '', amount: null }
-const addEntryForm = reactive({ ...addEntryFormDefault })
-function addEntryFormReset() {
-  Object.assign(addEntryForm, addEntryFormDefault)
-  nameForm.value.focus()
-}
-function addEntry() {
-  const newEntry = {
-    ...addEntryForm,
-    id: uid(),
-    date: new Date().toISOString().substring(0, 10)
-  }
-  entries.value.push(newEntry)
-  addEntryFormReset()
-}
-function removeEntry(slideItemId) {
-  const index = entries.value.findIndex(e => e.id === slideItemId)
-  if (index !== -1) {
-    entries.value.splice(index, 1)
+function prevMonth() {
+  if (selectedMonth.value === 0) {
+    selectedMonth.value = 11;
+    selectedYear.value--;
+  } else {
+    selectedMonth.value--;
   }
 }
+
+function nextMonth() {
+  if (selectedMonth.value === 11) {
+    selectedMonth.value = 0;
+    selectedYear.value++;
+  } else {
+    selectedMonth.value++;
+  }
+}
+
+function updateMonthYear(date) {
+  const newDate = new Date(date);
+  selectedYear.value = newDate.getFullYear();
+  selectedMonth.value = newDate.getMonth();
+  selectedDay.value = newDate.getDate();
+  isCalendarOpen.value = false;
+}
+
+function removeIncome(id) {
+  incomesStore.removeIncome(id)
+  // Toast notification for removing an expense
+  $q.notify({
+    message: 'Income deleted successfully!',
+    color: 'negative',
+    position: 'top-right',
+    timeout: 2000
+  })
+}
+
+function openDialog(income) {
+  selectedIncome.value = { ...income }  // Copy to avoid direct mutation
+  isNewIncome.value = false
+  isDialogOpen.value = true
+}
+
+function toggleCalendar() {
+  isCalendarOpen.value = !isCalendarOpen.value
+}
+
+function openNewIncomeDialog() {
+  selectedIncome.value = null  // Clear previous data
+  isNewIncome.value = true
+  isDialogOpen.value = true
+}
+
+function resetToWholeMonth() {
+  selectedDay.value = null // Reset to no day filter (whole month)
+  selectedDate.value = null // Reset to no day filter (whole month)
+  isCalendarOpen.value = false
+}
+
+const savingsList = [
+      {
+        id: 1,
+        title: "Vacation Fund",
+        goalAmount: 5000,
+        currentAmount: 3200,
+        status: "in-progress", // "in-progress", "completed", "behind"
+        recentContributions: [
+          { date: "2025-03-01", amount: 500 },
+          { date: "2025-02-15", amount: 300 },
+          { date: "2025-02-01", amount: 200 }
+        ]
+      },
+      {
+        id: 2,
+        title: "Emergency Fund",
+        goalAmount: 10000,
+        currentAmount: 10000,
+        status: "completed",
+        recentContributions: [
+          { date: "2025-03-05", amount: 1000 },
+          { date: "2025-02-20", amount: 500 },
+          { date: "2025-02-05", amount: 500 }
+        ]
+      },
+      {
+        id: 3,
+        title: "New Laptop",
+        goalAmount: 1500,
+        currentAmount: 700,
+        status: "behind",
+        recentContributions: [
+          { date: "2025-03-10", amount: 100 },
+          { date: "2025-02-28", amount: 200 },
+          { date: "2025-02-10", amount: 50 }
+        ]
+      }
+    ]
 </script>
