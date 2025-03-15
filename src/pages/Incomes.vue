@@ -10,11 +10,19 @@
             {{ currentMonthName }} {{ selectedYear }}
           </div>
           <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle" :offset="[0, 10]">
-            <q-date v-model="selectedDate" mask="YYYY-MM-DD" :default-year="selectedYear" :default-month="selectedMonth + 1" @update:model-value="updateMonthYear" bordered minimal class="shadow-2 rounded-borders">
-              <div class="row items-center justify-between">
-                <q-btn v-close-popup label="Whole month" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
-                <q-btn v-close-popup label="Close" color="primary" flat />
-              </div>
+            <q-date 
+              v-model="selectedDate" 
+              mask="YYYY-MM-DD" 
+              :default-year="selectedYear" 
+              :default-month="selectedMonth + 1"
+              @update:model-value="updateMonthYear" 
+              bordered 
+              minimal 
+              class="shadow-2 rounded-borders">
+                <div class="row items-center justify-between">
+                  <q-btn v-close-popup label="Whole month" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
+                  <q-btn v-close-popup label="Close" color="primary" flat />
+                </div>
             </q-date>
           </q-popup-proxy>
         </q-btn>
@@ -115,6 +123,14 @@
         </div>
       </q-form>
     </q-footer>
+    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingIncomes">
+      <q-spinner
+        color="primary"
+        size="3em"
+        :thickness="2"
+      />
+      <span class="q-mt-xs">Loading incomes...</span>
+    </div>
     <IncomeDialog
       v-model="isDialogOpen"
       :income="selectedIncome"
@@ -154,15 +170,24 @@ const nonRecurrentIncomes = ref([
 ]);
 
 // Date management
-const selectedDate = ref(new Date().toISOString().split('T')[0]);
-const selectedYear = ref(new Date().getFullYear());
-const selectedMonth = ref(new Date().getMonth());
+const currentDate = new Date()
+const currentMonth = currentDate.getMonth()
+const currentYear = currentDate.getFullYear()
+const selectedDay = ref(null)    // For day filtering
+const selectedDate = ref(null);
+const selectedYear = ref(currentYear);
+const selectedMonth = ref(currentMonth);
 const searchQuery = ref('')
 const isCalendarOpen = ref(false)
 // Expense Editing
 const isDialogOpen = ref(false)
 const selectedIncome = ref(null)
 let loadingIncomes = ref(false)
+/* 🗓️ Date and Calendar Handling */
+const months = [
+  'January', 'February', 'March', 'April', 'May', 'June', 
+  'July', 'August', 'September', 'October', 'November', 'December'
+]
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
@@ -171,13 +196,17 @@ const currentMonthName = computed(() =>
 const currentMonthEntries = computed(() => {
   return entries.value.filter(entry => {
     const entryDate = new Date(entry.incomeDate)
-    const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
-    return isMonthYearMatch;
+    const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value &&
+     entryDate.getFullYear() === selectedYear.value
+    const isDayMatch = selectedDay.value == null || 
+      (entryDate.getMonth() === selectedMonth.value && 
+      entryDate.getFullYear() === selectedYear.value &&
+      entryDate.getDate() === selectedDay.value)
+    return isMonthYearMatch && isDayMatch;
   })
 })
 
 const filteredRecurrentEntries = computed(() => {
-  debugger;
   const recurringEntries = currentMonthEntries.value
   .filter(el => el.isReccuring)
   .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
@@ -197,8 +226,6 @@ onMounted(async () => {
   await incomesStore.fetchIncomes()
   loadingIncomes.value = false
 })
-
-
 
 function prevMonth() {
   if (selectedMonth.value === 0) {
@@ -222,6 +249,8 @@ function updateMonthYear(date) {
   const newDate = new Date(date);
   selectedYear.value = newDate.getFullYear();
   selectedMonth.value = newDate.getMonth();
+  selectedDay.value = newDate.getDate();
+  isCalendarOpen.value = false;
 }
 
 function formatCurrency(value) {
@@ -246,6 +275,12 @@ function toggleCalendar() {
 function openNewIncomeDialog() {
   selectedIncome.value = null  // Clear previous data
   isDialogOpen.value = true
+}
+
+function resetToWholeMonth() {
+  selectedDay.value = null // Reset to no day filter (whole month)
+  selectedDate.value = null // Reset to no day filter (whole month)
+  isCalendarOpen.value = false
 }
 
 async function handleIncomeSave(income) {
