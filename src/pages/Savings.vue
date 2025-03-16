@@ -124,7 +124,7 @@
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="isContributionDialogOpen = true"/>
-          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="isDialogOpen = true"/>
+          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog"/>
         </div>
         <div class="col">
           <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search savings" class="q-mb-sm"></q-input>
@@ -142,7 +142,7 @@
     <SavingGoalDialog
       v-model="isDialogOpen"
       :savingGoal="selectedSavingGoal"
-      :isNewSavingGoal="true"
+      :isNewSavingGoal="isNewSavingGoal"
       @save="handleSavingGoalSave"
     />
     <SavingContributionDialog 
@@ -159,17 +159,16 @@ import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
-import { useIncomesStore } from 'src/stores/incomesStore'
+import { useSavingsStore } from 'src/stores/savingsStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
-import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
 import SavingGoalDialog from 'src/components/Savings/SavingGoalDialog.vue'
 import SavingContributionDialog from 'src/components/Savings/SavingContributionDialog.vue'
 
 const $q = useQuasar()
 const currentPage = ref(1)
-const incomesStore = useIncomesStore()
-const { entries, categories, totalBalance } = storeToRefs(incomesStore)
+const savingsStore = useSavingsStore()
+const { totalBalance } = storeToRefs(savingsStore)
 
 // Date management
 const currentDate = new Date()
@@ -186,10 +185,8 @@ const isDialogOpen = ref(false)
 const selectedSavingGoal = ref(null)
 let loadingIncomes = ref(false)
 const itemsPerPage = 10  // Number of entries per page
-const isNewIncome = ref(false)
+const isNewSavingGoal = ref(false)
 const isContributionDialogOpen = ref(false)
-
-const incomeCategoriesCount = computed(() => categories.value.length);
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
@@ -226,12 +223,19 @@ function updateMonthYear(date) {
   isCalendarOpen.value = false;
 }
 
-function addContribution() {
-
+async function addContribution(contribution) {
+  await savingsStore.addSavingContribution(contribution)
+  isContributionDialogOpen.value = false  // Close dialog after saving
+  $q.notify({
+    message: 'Saving contribution added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 function removeIncome(id) {
-  incomesStore.removeIncome(id)
+  savingsStore.removeSavingGoal(id)
   // Toast notification for removing an expense
   $q.notify({
     message: 'Saving Goal deleted successfully!',
@@ -243,7 +247,7 @@ function removeIncome(id) {
 
 function openDialog(income) {
   selectedSavingGoal.value = { ...income }  // Copy to avoid direct mutation
-  isNewIncome.value = false
+  isNewSavingGoal.value = false
   isDialogOpen.value = true
 }
 
@@ -251,9 +255,9 @@ function toggleCalendar() {
   isCalendarOpen.value = !isCalendarOpen.value
 }
 
-function openNewIncomeDialog() {
+function openNewSavingGoalDialog() {
   selectedSavingGoal.value = null  // Clear previous data
-  isNewIncome.value = true
+  isNewSavingGoal.value = true
   isDialogOpen.value = true
 }
 
