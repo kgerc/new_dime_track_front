@@ -77,13 +77,17 @@
           <!-- Smooth Sliding Contributions List -->
           <q-slide-transition>
             <div v-if="expandedSavingId === saving.id">
-              <q-item>
-                <q-item-section>
+              <q-item style="margin-left: 5px;max-width: 80px;" >
+                <q-item-section style="margin-bottom: 8px;">
+                  <q-icon name="subdirectory_arrow_right" size="sm"/>
+                </q-item-section>
+                <q-item-section style="margin-left: -25px;">
                   <q-item-label header>Contributions</q-item-label>
                 </q-item-section>
               </q-item>
               <q-list dense>
-                <q-item v-for="contribution in getContributions(saving.id)" :key="contribution.id">
+                <q-item v-for="contribution in getContributions(saving.id)" :key="contribution.id" 
+                  style="margin-left: 33px;" clickable> 
                   <q-item-section>
                     <q-item-label>
                       {{ formatCurrency(contribution.amount) }} 
