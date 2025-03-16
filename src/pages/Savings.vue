@@ -34,23 +34,70 @@
     </div>
 
     <div class="q-pa-md" style="margin-top: -20px;">
-      <q-list bordered separator >
+      <!-- Savings List -->
+      <q-list bordered separator>
         <q-item-label header>Savings</q-item-label>
-        <q-item v-for="saving in savingsList" :key="saving.id" clickable @click="openSavingDialog(saving)">
-          <q-item-section>
-            <div class="row items-center">
-              <q-icon name="savings" class="q-mr-sm" size="sm" color="blue-6"/>
-              <div>
-                <q-item-label class="text-weight-bold">{{ saving.title }}</q-item-label>
-                <q-item-label caption style="margin-top: -5px;">Goal: {{ formatCurrency(saving.goalAmount) }}</q-item-label>
-                <q-linear-progress :value="saving.currentAmount / saving.goalAmount" color="blue" rounded size="10px"/>
+
+        <template v-for="saving in savingsList" :key="saving.id">
+          <!-- Main Saving Item -->
+          <q-item clickable @click="toggleExpand(saving.id)">
+            <q-item-section>
+              <div class="row items-center">
+                <q-icon 
+                  :name="getSavingStatusIcon(saving)" 
+                  :color="getSavingStatusColor(saving)" 
+                  class="q-mr-sm" size="sm"
+                />
+                <div>
+                  <!-- Saving Title -->
+                  <q-item-label class="text-weight-bold">{{ saving.title }}</q-item-label>
+                  <!-- Amounts -->
+                  <q-item-label caption v-if="saving.goalAmount">
+                    {{ formatCurrency(saving.currentAmount) }} / {{ formatCurrency(saving.goalAmount) }}
+                  </q-item-label>
+                  <q-item-label caption v-else>
+                    {{ formatCurrency(saving.currentAmount) }} (No Goal)
+                  </q-item-label>
+                  <!-- Progress Bar -->
+                  <q-linear-progress
+                    v-if="saving.goalAmount"
+                    :value="getProgress(saving)"
+                    :color="getProgressColor(saving)"
+                    class="q-mt-xs"
+                    rounded
+                  />
+                </div>
               </div>
+            </q-item-section>
+            <q-item-section side class="text-weight-bold text-positive">
+              {{ formatCurrency(saving.currentAmount) }}
+            </q-item-section>
+          </q-item>
+
+          <!-- Smooth Sliding Contributions List -->
+          <q-slide-transition>
+            <div v-if="expandedSavingId === saving.id">
+              <q-item>
+                <q-item-section>
+                  <q-item-label header>Contributions</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-list dense>
+                <q-item v-for="contribution in getContributions(saving.id)" :key="contribution.id">
+                  <q-item-section>
+                    <q-item-label>
+                      {{ formatCurrency(contribution.amount) }} 
+                      <span class="text-grey-7">({{ formatDate(contribution.date) }})</span>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item v-if="getContributions(saving.id).length === 0">
+                  <q-item-section>No contributions yet.</q-item-section>
+                </q-item>
+              </q-list>
             </div>
-          </q-item-section>
-          <q-item-section side class="text-weight-bold text-positive">
-            {{ formatCurrency(saving.currentAmount) }}
-          </q-item-section>
-        </q-item>
+          </q-slide-transition>
+        </template>
       </q-list>
     </div>
 
@@ -196,43 +243,64 @@ function resetToWholeMonth() {
   selectedDate.value = null // Reset to no day filter (whole month)
   isCalendarOpen.value = false
 }
-
+function getSavingStatusIcon(saving) {
+      return saving.status === "completed" ? "check_circle" 
+           : saving.status === "behind" ? "error"
+           : "hourglass_top";
+    }
+    function   getSavingStatusColor(saving) {
+      return saving.status === "completed" ? "green-6" 
+           : saving.status === "behind" ? "red-6"
+           : "orange-6";
+    }
+    function getProgress(saving) {
+      return saving.currentAmount / saving.goalAmount;
+    }
+    function getProgressColor(saving) {
+      return saving.status === "completed" ? "green"
+           : saving.status === "behind" ? "red"
+           : "orange";
+    }
+    function toggleExpand(savingId) {
+      expandedSavingId.value = expandedSavingId.value === savingId ? null : savingId;
+    }
+    function getContributions(savingId) {
+      return contributionsList.filter(c => c.savingId === savingId);
+    }
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    }
+const expandedSavingId = ref(null)
 const savingsList = [
-      {
-        id: 1,
-        title: "Vacation Fund",
-        goalAmount: 5000,
-        currentAmount: 3200,
-        status: "in-progress", // "in-progress", "completed", "behind"
-        recentContributions: [
-          { date: "2025-03-01", amount: 500 },
-          { date: "2025-02-15", amount: 300 },
-          { date: "2025-02-01", amount: 200 }
-        ]
-      },
-      {
-        id: 2,
-        title: "Emergency Fund",
-        goalAmount: 10000,
-        currentAmount: 10000,
-        status: "completed",
-        recentContributions: [
-          { date: "2025-03-05", amount: 1000 },
-          { date: "2025-02-20", amount: 500 },
-          { date: "2025-02-05", amount: 500 }
-        ]
-      },
-      {
-        id: 3,
-        title: "New Laptop",
-        goalAmount: 1500,
-        currentAmount: 700,
-        status: "behind",
-        recentContributions: [
-          { date: "2025-03-10", amount: 100 },
-          { date: "2025-02-28", amount: 200 },
-          { date: "2025-02-10", amount: 50 }
-        ]
-      }
+        {
+          id: 1,
+          title: "Vacation Fund",
+          goalAmount: 5000,
+          currentAmount: 3200,
+          status: "in-progress" // "in-progress", "completed", "behind"
+        },
+        {
+          id: 2,
+          title: "Emergency Fund",
+          goalAmount: 10000,
+          currentAmount: 10000,
+          status: "completed"
+        },
+        {
+          id: 3,
+          title: "New Laptop",
+          goalAmount: 1500,
+          currentAmount: 700,
+          status: "behind"
+        }
     ]
+    const contributionsList = [
+        { id: 1, savingId: 1, amount: 500, date: "2025-03-10" },
+        { id: 2, savingId: 1, amount: 300, date: "2025-02-20" },
+        { id: 3, savingId: 2, amount: 5000, date: "2024-12-01" },
+        { id: 4, savingId: 3, amount: 200, date: "2025-03-01" },
+        { id: 5, savingId: 3, amount: 500, date: "2025-02-15" },
+        { id: 6, savingId: 4, amount: 1000, date: "2025-01-10" },
+        { id: 7, savingId: 4, amount: 2500, date: "2025-02-05" }
+      ]
 </script>
