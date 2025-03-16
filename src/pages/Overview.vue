@@ -21,7 +21,7 @@
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-            <div class="text-h6">Savings</div>
+            <div class="text-h6 text-center">Savings</div>
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 800px; overflow-y: auto;">
@@ -47,7 +47,7 @@
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-            <div class="text-h6">Expenses</div>
+            <div class="text-h6 text-center">Expenses</div>
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 800px; overflow-y: auto;">
@@ -73,7 +73,7 @@
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-            <div class="text-h6">Incomes</div>
+            <div class="text-h6 text-center">Incomes</div>
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 800px; overflow-y: auto;">
