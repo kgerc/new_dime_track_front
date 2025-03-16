@@ -33,12 +33,12 @@
   import { storeToRefs } from 'pinia';
   
   const savingsStore = useSavingsStore();
-  const { entries } = storeToRefs(savingsStore);  // Using Pinia store for entries
+  const { entries } = storeToRefs(savingsStore); 
   
   const props = defineProps({
-    modelValue: Boolean,  // Controls dialog visibility
+    modelValue: Boolean,  
     savingContribution: Object,
-    isNewSavingContribution: Boolean // Flag to distinguish between new and existing expense
+    isNewSavingContribution: Boolean
   });
   
   const emit = defineEmits(['update:modelValue', 'save']);
@@ -52,7 +52,7 @@
   
   // Get category titles from Pinia store
   const savingGoalTitles = computed(() => {
-    return entries.value.map(cat => cat.title);
+    return entries.value.map(entry => entry.title);
   });
   
   // Bind category title to localSavingContribution

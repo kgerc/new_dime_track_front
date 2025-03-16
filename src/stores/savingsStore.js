@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from 'src/api/axiosInstance' // Import the configured Axios instance
 
-export const useIncomesStore = defineStore('savings', () => {
+export const useSavingsStore = defineStore('savings', () => {
   const entries = ref([])
 
   async function fetchSavingGoals() {

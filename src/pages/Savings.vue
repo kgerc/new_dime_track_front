@@ -123,8 +123,8 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
-          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
+          <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="isContributionDialogOpen = true"/>
+          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="isDialogOpen = true"/>
         </div>
         <div class="col">
           <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search savings" class="q-mb-sm"></q-input>
@@ -139,6 +139,17 @@
       />
       <span class="q-mt-xs">Loading savings...</span>
     </div>
+    <SavingGoalDialog
+      v-model="isDialogOpen"
+      :savingGoal="selectedSavingGoal"
+      :isNewSavingGoal="true"
+      @save="handleSavingGoalSave"
+    />
+    <SavingContributionDialog 
+      v-model="isContributionDialogOpen" 
+      @save="addContribution" 
+      :isNewSavingContribution="true"
+    />
   </q-page>
 </template>
 
@@ -152,6 +163,8 @@ import { useIncomesStore } from 'src/stores/incomesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
+import SavingGoalDialog from 'src/components/Savings/SavingGoalDialog.vue'
+import SavingContributionDialog from 'src/components/Savings/SavingContributionDialog.vue'
 
 const $q = useQuasar()
 const currentPage = ref(1)
@@ -170,12 +183,11 @@ const searchQuery = ref('')
 const isCalendarOpen = ref(false)
 // Expense Editing
 const isDialogOpen = ref(false)
-const selectedIncome = ref(null)
+const selectedSavingGoal = ref(null)
 let loadingIncomes = ref(false)
 const itemsPerPage = 10  // Number of entries per page
 const isNewIncome = ref(false)
-const isCategoryDialogOpen = ref(false)
-const isCategoriesListDialogOpen = ref(false)
+const isContributionDialogOpen = ref(false)
 
 const incomeCategoriesCount = computed(() => categories.value.length);
 
@@ -214,11 +226,15 @@ function updateMonthYear(date) {
   isCalendarOpen.value = false;
 }
 
+function addContribution() {
+
+}
+
 function removeIncome(id) {
   incomesStore.removeIncome(id)
   // Toast notification for removing an expense
   $q.notify({
-    message: 'Income deleted successfully!',
+    message: 'Saving Goal deleted successfully!',
     color: 'negative',
     position: 'top-right',
     timeout: 2000
@@ -226,7 +242,7 @@ function removeIncome(id) {
 }
 
 function openDialog(income) {
-  selectedIncome.value = { ...income }  // Copy to avoid direct mutation
+  selectedSavingGoal.value = { ...income }  // Copy to avoid direct mutation
   isNewIncome.value = false
   isDialogOpen.value = true
 }
@@ -236,7 +252,7 @@ function toggleCalendar() {
 }
 
 function openNewIncomeDialog() {
-  selectedIncome.value = null  // Clear previous data
+  selectedSavingGoal.value = null  // Clear previous data
   isNewIncome.value = true
   isDialogOpen.value = true
 }
@@ -247,70 +263,73 @@ function resetToWholeMonth() {
   isCalendarOpen.value = false
 }
 function getSavingStatusIcon(saving) {
-      return saving.status === "completed" ? "check_circle" 
-           : saving.status === "behind" ? "error"
-           : "hourglass_top";
-    }
-    function   getSavingStatusColor(saving) {
-      return saving.status === "completed" ? "green-6" 
-           : saving.status === "behind" ? "red-6"
-           : "orange-6";
-    }
-    function getProgress(saving) {
-      return saving.currentAmount / saving.goalAmount;
-    }
-    function getProgressColor(saving) {
-      return saving.status === "completed" ? "green"
-           : saving.status === "behind" ? "red"
-           : "orange";
-    }
-    function toggleExpand(savingId) {
-      expandedSavingId.value = expandedSavingId.value === savingId ? null : savingId;
-    }
-    function getContributions(savingId) {
-      return contributionsList.filter(c => c.savingId === savingId);
-    }
-    function formatDate(date) {
-      return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-    }
+  return saving.status === "completed" ? "check_circle" 
+        : saving.status === "behind" ? "error"
+        : "hourglass_top";
+}
+function   getSavingStatusColor(saving) {
+  return saving.status === "completed" ? "green-6" 
+        : saving.status === "behind" ? "red-6"
+        : "orange-6";
+}
+function getProgress(saving) {
+  return saving.currentAmount / saving.goalAmount;
+}
+function getProgressColor(saving) {
+  return saving.status === "completed" ? "green"
+        : saving.status === "behind" ? "red"
+        : "orange";
+}
+function toggleExpand(savingId) {
+  expandedSavingId.value = expandedSavingId.value === savingId ? null : savingId;
+}
+function getContributions(savingId) {
+  return contributionsList.filter(c => c.savingId === savingId);
+}
+function formatDate(date) {
+  return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+async function handleSavingGoalSave(income) {
+  console.log('SAVED!')
+}
 const expandedSavingId = ref(null)
 const savingsList = [
-        {
-          id: 1,
-          title: "Vacation Fund",
-          goalAmount: 5000,
-          currentAmount: 3200,
-          status: "in-progress" // "in-progress", "completed", "behind"
-        },
-        {
-          id: 2,
-          title: "Emergency Fund",
-          goalAmount: 10000,
-          currentAmount: 10000,
-          status: "completed"
-        },
-        {
-          id: 3,
-          title: "New Laptop",
-          goalAmount: 1500,
-          currentAmount: 700,
-          status: "behind"
-        },
-        {
-          id: 5,
-          title: "Other",
-          goalAmount: 10000,
-          currentAmount: 3000,
-          status: "behind"
-        }
-    ]
-    const contributionsList = [
-        { id: 1, savingId: 1, amount: 500, date: "2025-03-10" },
-        { id: 2, savingId: 1, amount: 300, date: "2025-02-20" },
-        { id: 3, savingId: 2, amount: 5000, date: "2024-12-01" },
-        { id: 4, savingId: 3, amount: 200, date: "2025-03-01" },
-        { id: 5, savingId: 3, amount: 500, date: "2025-02-15" },
-        { id: 6, savingId: 4, amount: 1000, date: "2025-01-10" },
-        { id: 7, savingId: 4, amount: 2500, date: "2025-02-05" }
-      ]
+      {
+        id: 1,
+        title: "Vacation Fund",
+        goalAmount: 5000,
+        currentAmount: 3200,
+        status: "in-progress" // "in-progress", "completed", "behind"
+      },
+      {
+        id: 2,
+        title: "Emergency Fund",
+        goalAmount: 10000,
+        currentAmount: 10000,
+        status: "completed"
+      },
+      {
+        id: 3,
+        title: "New Laptop",
+        goalAmount: 1500,
+        currentAmount: 700,
+        status: "behind"
+      },
+      {
+        id: 5,
+        title: "Other",
+        goalAmount: 10000,
+        currentAmount: 3000,
+        status: "behind"
+      }
+  ]
+const contributionsList = [
+    { id: 1, savingId: 1, amount: 500, date: "2025-03-10" },
+    { id: 2, savingId: 1, amount: 300, date: "2025-02-20" },
+    { id: 3, savingId: 2, amount: 5000, date: "2024-12-01" },
+    { id: 4, savingId: 3, amount: 200, date: "2025-03-01" },
+    { id: 5, savingId: 3, amount: 500, date: "2025-02-15" },
+    { id: 6, savingId: 4, amount: 1000, date: "2025-01-10" },
+    { id: 7, savingId: 4, amount: 2500, date: "2025-02-05" }
+  ]
 </script>
