@@ -65,7 +65,8 @@
       :breakpoint="767"
     >
       <q-list>
-        <q-item-label class="text-white" header>Navigation</q-item-label>
+        <q-item-label class="text-white" header >Navigation</q-item-label>
+        <q-separator color="grey" inset />
         <NavLink v-for="link in navLinks" :key="link.title" v-bind="link" />
       </q-list>
     </q-drawer>

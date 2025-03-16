@@ -87,7 +87,7 @@
               </q-item>
               <q-list dense>
                 <q-item v-for="contribution in getContributions(saving.id)" :key="contribution.id" 
-                  style="margin-left: 33px;" clickable> 
+                  style="margin-left: 35px;" clickable> 
                   <q-item-section>
                     <q-item-label>
                       {{ formatCurrency(contribution.amount) }} 
