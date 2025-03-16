@@ -95,7 +95,7 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item v-if="getContributions(saving.id).length === 0">
+                <q-item v-if="getContributions(saving.id).length === 0" style="margin-left: 33px;">
                   <q-item-section>No contributions yet.</q-item-section>
                 </q-item>
               </q-list>
@@ -123,12 +123,11 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
-          <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
-          <q-btn icon="category" :label="`Categories (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
+          <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
+          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
         </div>
         <div class="col">
-          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
+          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search savings" class="q-mb-sm"></q-input>
         </div>
       </q-form>
     </q-footer>
@@ -295,6 +294,13 @@ const savingsList = [
           title: "New Laptop",
           goalAmount: 1500,
           currentAmount: 700,
+          status: "behind"
+        },
+        {
+          id: 5,
+          title: "Other",
+          goalAmount: 10000,
+          currentAmount: 3000,
           status: "behind"
         }
     ]
