@@ -67,6 +67,14 @@
                     rounded
                   />
                 </div>
+                <q-icon 
+                  v-if="expandedSavingId"
+                  name="edit" 
+                  size="sm" 
+                  color="primary" 
+                  style="margin-left: 12px;" 
+                  @click.stop="openDialog(entry)"
+                  clickable></q-icon>
               </div>
             </q-item-section>
             <q-item-section side class="text-weight-bold text-positive">
@@ -264,8 +272,8 @@ function removeIncome(id) {
   })
 }
 
-function openDialog(income) {
-  selectedSavingGoal.value = { ...income }  // Copy to avoid direct mutation
+function openDialog(savingGoal) {
+  selectedSavingGoal.value = { ...savingGoal }  // Copy to avoid direct mutation
   isNewSavingGoal.value = false
   isDialogOpen.value = true
 }
