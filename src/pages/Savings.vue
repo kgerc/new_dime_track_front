@@ -72,7 +72,7 @@
                     />
                   </div>
                   <q-icon 
-                    v-if="expandedSavingId"
+                    v-if="expandedSavingId === entry.id"
                     name="edit" 
                     size="sm" 
                     color="primary" 
@@ -111,7 +111,7 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item v-if="entry.savingContributions.length === 0" style="margin-left: 33px;">
+                <q-item v-if="!entry.savingContributions || entry.savingContributions.length === 0" style="margin-left: 33px;">
                   <q-item-section>No contributions yet.</q-item-section>
                 </q-item>
               </q-list>
@@ -224,7 +224,7 @@ function extendSavingGoalModel() {
 
 function extendSavingGoalModelForNewSavingGoal(newSavingGoal) {
   newSavingGoal.currentAmount = 0
-  newSavingGoal.status = setCurrentProgressStatus(goal.currentAmount, goal.amount)
+  newSavingGoal.status = setCurrentProgressStatus(newSavingGoal.currentAmount, newSavingGoal.amount)
 }
 
 function setCurrentProgressStatus(currentAmount, goalAmount) {
@@ -332,9 +332,9 @@ function formatDate(date) {
   return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 async function handleSavingGoalSave(savingGoal) {
+  extendSavingGoalModelForNewSavingGoal(savingGoal)
   if (isNewSavingGoal.value) {
     await handleNewSavingGoal(savingGoal)
-    extendSavingGoalModelForNewSavingGoal(savingGoal)
   } else {
     await handleUpdateSavingGoal(savingGoal)
   }
