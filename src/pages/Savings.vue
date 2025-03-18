@@ -38,31 +38,31 @@
       <q-list bordered separator>
         <q-item-label header>Savings</q-item-label>
 
-        <template v-for="saving in savingsList" :key="saving.id">
+        <template v-for="entry in entries" :key="entry.id">
           <!-- Main Saving Item -->
-          <q-item clickable @click="toggleExpand(saving.id)">
+          <q-item clickable @click="toggleExpand(entry.id)">
             <q-item-section>
               <div class="row items-center">
                 <q-icon 
-                  :name="getSavingStatusIcon(saving)" 
-                  :color="getSavingStatusColor(saving)" 
+                  :name="getSavingStatusIcon(entry)" 
+                  :color="getSavingStatusColor(entry)" 
                   class="q-mr-sm" size="sm"
                 />
                 <div>
                   <!-- Saving Title -->
-                  <q-item-label class="text-weight-bold">{{ saving.title }}</q-item-label>
+                  <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
                   <!-- Amounts -->
-                  <q-item-label caption v-if="saving.goalAmount">
-                    {{ formatCurrency(saving.currentAmount) }} / {{ formatCurrency(saving.goalAmount) }}
+                  <q-item-label caption v-if="entry.amount">
+                    {{ formatCurrency(entry.amount) }} / {{ formatCurrency(entry.amount) }}
                   </q-item-label>
                   <q-item-label caption v-else>
-                    {{ formatCurrency(saving.currentAmount) }} (No Goal)
+                    {{ formatCurrency(entry.amount) }} (No Goal)
                   </q-item-label>
                   <!-- Progress Bar -->
                   <q-linear-progress
-                    v-if="saving.goalAmount"
-                    :value="getProgress(saving)"
-                    :color="getProgressColor(saving)"
+                    v-if="entry.amount"
+                    :value="getProgress(entry)"
+                    :color="getProgressColor(entry)"
                     class="q-mt-xs"
                     rounded
                   />
@@ -70,13 +70,13 @@
               </div>
             </q-item-section>
             <q-item-section side class="text-weight-bold text-positive">
-              {{ formatCurrency(saving.currentAmount) }}
+              {{ formatCurrency(entry.amount) }}
             </q-item-section>
           </q-item>
 
           <!-- Smooth Sliding Contributions List -->
           <q-slide-transition>
-            <div v-if="expandedSavingId === saving.id">
+            <div v-if="expandedSavingId === entry.id">
               <q-item style="margin-left: 5px;max-width: 80px;" >
                 <q-item-section style="margin-bottom: 8px;">
                   <q-icon name="subdirectory_arrow_right" size="sm"/>
@@ -86,16 +86,16 @@
                 </q-item-section>
               </q-item>
               <q-list dense>
-                <q-item v-for="contribution in getContributions(saving.id)" :key="contribution.id" 
+                <q-item v-for="contribution in entry.savingContributions" :key="contribution.id" 
                   style="margin-left: 35px;" clickable> 
                   <q-item-section>
                     <q-item-label>
                       {{ formatCurrency(contribution.amount) }} 
-                      <span class="text-grey-7">({{ formatDate(contribution.date) }})</span>
+                      <span class="text-grey-7">({{ formatDate(contribution.contributionDate) }})</span>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item v-if="getContributions(saving.id).length === 0" style="margin-left: 33px;">
+                <q-item v-if="entry.savingContributions.length === 0" style="margin-left: 33px;">
                   <q-item-section>No contributions yet.</q-item-section>
                 </q-item>
               </q-list>
@@ -168,7 +168,7 @@ import SavingContributionDialog from 'src/components/Savings/SavingContributionD
 const $q = useQuasar()
 const currentPage = ref(1)
 const savingsStore = useSavingsStore()
-const { totalBalance } = storeToRefs(savingsStore)
+const { totalBalance, entries } = storeToRefs(savingsStore)
 
 // Date management
 const currentDate = new Date()
@@ -194,7 +194,7 @@ const currentMonthName = computed(() =>
 
 // Fetch incomes on mount
 onMounted(async () => {
-
+  await savingsStore.fetchSavingGoals()
 })
 
 function prevMonth() {
@@ -293,8 +293,15 @@ function getContributions(savingId) {
 function formatDate(date) {
   return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
-async function handleSavingGoalSave(income) {
-  console.log('SAVED!')
+async function handleSavingGoalSave(savingGoal) {
+  await savingsStore.addSavingGoal(savingGoal)
+  isDialogOpen.value = false  // Close dialog after saving
+  $q.notify({
+    message: 'Saving goal added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 const expandedSavingId = ref(null)
 const savingsList = [
