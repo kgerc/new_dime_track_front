@@ -195,6 +195,7 @@ let loadingIncomes = ref(false)
 const itemsPerPage = 10  // Number of entries per page
 const isNewSavingGoal = ref(false)
 const isContributionDialogOpen = ref(false)
+const expandedSavingId = ref(null)
 
 const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
@@ -318,6 +319,24 @@ function formatDate(date) {
   return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 async function handleSavingGoalSave(savingGoal) {
+  if (isNewSavingGoal.value) {
+    await handleNewSavingGoal(savingGoal)
+  } else {
+    await handleUpdateSavingGoal(savingGoal)
+  }
+}
+
+async function handleUpdateSavingGoal(updatedSavingGoal) {
+  await savingsStore.updateSavingGoal(updatedSavingGoal)  // Call store action to update API and local store
+  $q.notify({
+    message: 'Saving goal edited successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
+}
+
+async function handleNewSavingGoal(savingGoal) {
   await savingsStore.addSavingGoal(savingGoal)
   isDialogOpen.value = false  // Close dialog after saving
   $q.notify({
@@ -327,5 +346,4 @@ async function handleSavingGoalSave(savingGoal) {
     timeout: 2000
   })
 }
-const expandedSavingId = ref(null)
 </script>
