@@ -1,4 +1,4 @@
-export function formatCurrency(amount) {
+export function formatCurrency(amount, skipSign = false) {
     // Determine the sign and absolute value of the amount
     const sign = amount >= 0 ? "+" : "-";
     const absAmount = Math.abs(amount);
@@ -12,5 +12,7 @@ export function formatCurrency(amount) {
     });
   
     // Remove the default currency symbol and add custom formatting
-    return `${sign} $ ${formattedAmount.replace("$", "").trim()}`;
+    return skipSign 
+      ? `$ ${formattedAmount.replace("$", "").trim()}`
+      : `${sign} $ ${formattedAmount.replace("$", "").trim()}`
   }

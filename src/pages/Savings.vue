@@ -53,10 +53,10 @@
                   <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
                   <!-- Amounts -->
                   <q-item-label caption v-if="entry.amount">
-                    {{ formatCurrency(entry.amount) }} / {{ formatCurrency(entry.amount) }}
+                    {{ formatCurrency(entry.currentAmount, true) }} / {{ formatCurrency(entry.amount, true) }}
                   </q-item-label>
                   <q-item-label caption v-else>
-                    {{ formatCurrency(entry.amount) }} (No Goal)
+                    {{ formatCurrency(entry.currentAmount, true) }} (No Goal)
                   </q-item-label>
                   <!-- Progress Bar -->
                   <q-linear-progress
@@ -195,7 +195,25 @@ const currentMonthName = computed(() =>
 // Fetch incomes on mount
 onMounted(async () => {
   await savingsStore.fetchSavingGoals()
+  extendSavingGoalModel()
 })
+
+function extendSavingGoalModel() {
+  entries.value.forEach(goal => {
+    goal.currentAmount = goal.savingContributions.reduce((acc, { amount }) => acc + amount, 0)
+    goal.status = setCurrentProgressStatus(goal.currentAmount, goal.amount)
+  })
+}
+
+function setCurrentProgressStatus(currentAmount, goalAmount) {
+  if (currentAmount >= goalAmount) {
+        return "completed";
+    } else if (currentAmount >= goalAmount * 0.3 && currentAmount <= goalAmount * 0.5) {
+        return "on_track";
+    } else {
+        return "behind";
+    }
+}
 
 function prevMonth() {
   if (selectedMonth.value === 0) {
@@ -226,6 +244,7 @@ function updateMonthYear(date) {
 async function addContribution(contribution) {
   await savingsStore.addSavingContribution(contribution)
   isContributionDialogOpen.value = false  // Close dialog after saving
+  extendSavingGoalModel()
   $q.notify({
     message: 'Saving contribution added successfully!',
     color: 'positive',
@@ -271,13 +290,13 @@ function getSavingStatusIcon(saving) {
         : saving.status === "behind" ? "error"
         : "hourglass_top";
 }
-function   getSavingStatusColor(saving) {
+function getSavingStatusColor(saving) {
   return saving.status === "completed" ? "green-6" 
         : saving.status === "behind" ? "red-6"
         : "orange-6";
 }
 function getProgress(saving) {
-  return saving.currentAmount / saving.goalAmount;
+  return saving.currentAmount / saving.amount;
 }
 function getProgressColor(saving) {
   return saving.status === "completed" ? "green"
@@ -286,9 +305,6 @@ function getProgressColor(saving) {
 }
 function toggleExpand(savingId) {
   expandedSavingId.value = expandedSavingId.value === savingId ? null : savingId;
-}
-function getContributions(savingId) {
-  return contributionsList.filter(c => c.savingId === savingId);
 }
 function formatDate(date) {
   return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -304,43 +320,4 @@ async function handleSavingGoalSave(savingGoal) {
   })
 }
 const expandedSavingId = ref(null)
-const savingsList = [
-      {
-        id: 1,
-        title: "Vacation Fund",
-        goalAmount: 5000,
-        currentAmount: 3200,
-        status: "in-progress" // "in-progress", "completed", "behind"
-      },
-      {
-        id: 2,
-        title: "Emergency Fund",
-        goalAmount: 10000,
-        currentAmount: 10000,
-        status: "completed"
-      },
-      {
-        id: 3,
-        title: "New Laptop",
-        goalAmount: 1500,
-        currentAmount: 700,
-        status: "behind"
-      },
-      {
-        id: 5,
-        title: "Other",
-        goalAmount: 10000,
-        currentAmount: 3000,
-        status: "behind"
-      }
-  ]
-const contributionsList = [
-    { id: 1, savingId: 1, amount: 500, date: "2025-03-10" },
-    { id: 2, savingId: 1, amount: 300, date: "2025-02-20" },
-    { id: 3, savingId: 2, amount: 5000, date: "2024-12-01" },
-    { id: 4, savingId: 3, amount: 200, date: "2025-03-01" },
-    { id: 5, savingId: 3, amount: 500, date: "2025-02-15" },
-    { id: 6, savingId: 4, amount: 1000, date: "2025-01-10" },
-    { id: 7, savingId: 4, amount: 2500, date: "2025-02-05" }
-  ]
 </script>

@@ -61,9 +61,9 @@ export const useSavingsStore = defineStore('savings', () => {
     try {
       const response = await api.post('/savings/contribution', savingContribution)
       if (response.status === 201 || response.status === 200) { 
-        const index = entries.value.findIndex(entry => entry.id === savingContribution.goalId)
+        const index = entries.value.findIndex(entry => entry.id === savingContribution.savingGoal.id)
         if (index !== -1) {
-          entries.value[index].contributions.value.push(savingContribution)
+          entries.value[index].savingContributions.push(savingContribution)
         }
       } else {
         console.error('Failed to add saving contribution: Unexpected response status', response.status)
