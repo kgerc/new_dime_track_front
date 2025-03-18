@@ -39,48 +39,56 @@
         <q-item-label header>Savings</q-item-label>
 
         <template v-for="entry in entries" :key="entry.id">
-          <!-- Main Saving Item -->
-          <q-item clickable @click="toggleExpand(entry.id)">
-            <q-item-section>
-              <div class="row items-center">
-                <q-icon 
-                  :name="getSavingStatusIcon(entry)" 
-                  :color="getSavingStatusColor(entry)" 
-                  class="q-mr-sm" size="sm"
-                />
-                <div>
-                  <!-- Saving Title -->
-                  <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
-                  <!-- Amounts -->
-                  <q-item-label caption v-if="entry.amount">
-                    {{ formatCurrency(entry.currentAmount, true) }} / {{ formatCurrency(entry.amount, true) }}
-                  </q-item-label>
-                  <q-item-label caption v-else>
-                    {{ formatCurrency(entry.currentAmount, true) }} (No Goal)
-                  </q-item-label>
-                  <!-- Progress Bar -->
-                  <q-linear-progress
-                    v-if="entry.amount"
-                    :value="getProgress(entry)"
-                    :color="getProgressColor(entry)"
-                    class="q-mt-xs"
-                    rounded
+          <q-slide-item @right="removeSavingGoal(entry.id)">
+            <template v-slot:right>
+              <q-btn flat dense color="negative" icon="delete" @click="removeSavingGoal(entry.id)" />
+            </template>
+
+            <q-item clickable @click="toggleExpand(entry.id)">
+              <q-item-section>
+                <div class="row items-center">
+                  <q-icon 
+                    :name="getSavingStatusIcon(entry)" 
+                    :color="getSavingStatusColor(entry)" 
+                    class="q-mr-sm" size="sm"
+                  />
+                  <div>
+                    <!-- Saving Title -->
+                    <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
+                    <!-- Amounts -->
+                    <q-item-label caption v-if="entry.amount">
+                      {{ formatCurrency(entry.currentAmount, true) }} / {{ formatCurrency(entry.amount, true) }}
+                    </q-item-label>
+                    <q-item-label caption v-else>
+                      {{ formatCurrency(entry.currentAmount, true) }} (No Goal)
+                    </q-item-label>
+                    <!-- Progress Bar -->
+                    <q-linear-progress
+                      v-if="entry.amount"
+                      :value="getProgress(entry)"
+                      :color="getProgressColor(entry)"
+                      class="q-mt-xs"
+                      rounded
+                    />
+                  </div>
+                  <q-icon 
+                    v-if="expandedSavingId"
+                    name="edit" 
+                    size="sm" 
+                    color="primary" 
+                    style="margin-left: 12px;" 
+                    @click.stop="openDialog(entry)"
+                    clickable
                   />
                 </div>
-                <q-icon 
-                  v-if="expandedSavingId"
-                  name="edit" 
-                  size="sm" 
-                  color="primary" 
-                  style="margin-left: 12px;" 
-                  @click.stop="openDialog(entry)"
-                  clickable></q-icon>
-              </div>
-            </q-item-section>
-            <q-item-section side class="text-weight-bold text-positive">
-              {{ formatCurrency(entry.amount) }}
-            </q-item-section>
-          </q-item>
+              </q-item-section>
+
+              <q-item-section side class="text-weight-bold text-positive">
+                {{ formatCurrency(entry.amount) }}
+              </q-item-section>
+            </q-item>
+          </q-slide-item>
+
 
           <!-- Smooth Sliding Contributions List -->
           <q-slide-transition>
@@ -214,6 +222,11 @@ function extendSavingGoalModel() {
   })
 }
 
+function extendSavingGoalModelForNewSavingGoal(newSavingGoal) {
+  newSavingGoal.currentAmount = 0
+  newSavingGoal.status = setCurrentProgressStatus(goal.currentAmount, goal.amount)
+}
+
 function setCurrentProgressStatus(currentAmount, goalAmount) {
   if (currentAmount >= goalAmount) {
         return "completed";
@@ -262,7 +275,7 @@ async function addContribution(contribution) {
   })
 }
 
-function removeIncome(id) {
+function removeSavingGoal(id) {
   savingsStore.removeSavingGoal(id)
   // Toast notification for removing an expense
   $q.notify({
@@ -321,6 +334,7 @@ function formatDate(date) {
 async function handleSavingGoalSave(savingGoal) {
   if (isNewSavingGoal.value) {
     await handleNewSavingGoal(savingGoal)
+    extendSavingGoalModelForNewSavingGoal(savingGoal)
   } else {
     await handleUpdateSavingGoal(savingGoal)
   }
