@@ -35,7 +35,7 @@
 
     <div class="q-pa-md" style="margin-top: -20px;">
       <!-- Savings List -->
-      <q-list bordered separator>
+      <q-list bordered separator v-if="!loadingSavings">
         <q-item-label header>Savings</q-item-label>
 
         <template v-for="entry in entries" :key="entry.id">
@@ -103,7 +103,7 @@
               </q-item>
               <q-list dense>
                 <q-item v-for="contribution in entry.savingContributions" :key="contribution.id" 
-                  style="margin-left: 35px;" clickable> 
+                  style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)"> 
                   <q-item-section>
                     <q-item-label>
                       {{ formatCurrency(contribution.amount) }} 
@@ -139,7 +139,7 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="isContributionDialogOpen = true"/>
+          <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="openNewSavingContributionDialog"/>
           <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog"/>
         </div>
         <div class="col">
@@ -147,7 +147,7 @@
         </div>
       </q-form>
     </q-footer>
-    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingIncomes">
+    <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingSavings">
       <q-spinner
         color="primary"
         size="3em"
@@ -164,7 +164,8 @@
     <SavingContributionDialog 
       v-model="isContributionDialogOpen" 
       @save="addContribution" 
-      :isNewSavingContribution="true"
+      :isNewSavingContribution="isNewSavingContribution"
+      :savingContribution="selectedSavingContribution"
     />
   </q-page>
 </template>
@@ -199,9 +200,11 @@ const isCalendarOpen = ref(false)
 // Expense Editing
 const isDialogOpen = ref(false)
 const selectedSavingGoal = ref(null)
-let loadingIncomes = ref(false)
+const selectedSavingContribution = ref(null)
+let loadingSavings = ref(false)
 const itemsPerPage = 10  // Number of entries per page
 const isNewSavingGoal = ref(false)
+const isNewSavingContribution = ref(false)
 const isContributionDialogOpen = ref(false)
 const expandedSavingId = ref(null)
 
@@ -211,7 +214,9 @@ const currentMonthName = computed(() =>
 
 // Fetch incomes on mount
 onMounted(async () => {
+  loadingSavings.value = true
   await savingsStore.fetchSavingGoals()
+  loadingSavings.value = false
   extendSavingGoalModel()
 })
 
@@ -290,6 +295,18 @@ function openDialog(savingGoal) {
   selectedSavingGoal.value = { ...savingGoal }  // Copy to avoid direct mutation
   isNewSavingGoal.value = false
   isDialogOpen.value = true
+}
+
+function openSavingContributionDialog(savingContribution) {
+  selectedSavingContribution.value = { ...savingContribution }  // Copy to avoid direct mutation
+  isNewSavingContribution.value = false
+  isContributionDialogOpen.value = true
+}
+
+function openNewSavingContributionDialog() {
+  selectedSavingGoal.value = null // Copy to avoid direct mutation
+  isNewSavingContribution.value = true
+  isContributionDialogOpen.value = true
 }
 
 function toggleCalendar() {

@@ -59,6 +59,7 @@
   const savingGoalTitle = computed({
     get: () => localSavingContribution.value.savingGoal?.title || null,
     set: (value) => {
+      debugger;
       const savingGoalByName = entries.value.find(entry => entry.title === value);
       if (!localSavingContribution.value.savingGoal) {
         localSavingContribution.value.savingGoal = {};  // Create if null
@@ -70,9 +71,10 @@
   // Watch for dialog open and reset localSavingContribution accordingly
   watch(isOpen, (newVal) => {
     if (newVal) {
+      debugger;
       const newSavingContribution = props.isNewSavingContribution
         ? { id: uuidv4(), title: '', amount: 0, contributionDate: '', savingGoal: null }
-        : { ...props.income, incomeDcontributionDateate: format(new Date(props.savingContribution.incomeDate), 'yyyy-MM-dd') };
+        : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
   
         localSavingContribution.value = newSavingContribution;
         savingGoalTitle.value = newSavingContribution.savingGoal?.title || null;
