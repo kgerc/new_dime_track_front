@@ -163,7 +163,7 @@
     />
     <SavingContributionDialog 
       v-model="isContributionDialogOpen" 
-      @save="addContribution" 
+      @save="handleSavingContributionSave" 
       :isNewSavingContribution="isNewSavingContribution"
       :savingContribution="selectedSavingContribution"
     />
@@ -235,7 +235,7 @@ function extendSavingGoalModelForNewSavingGoal(newSavingGoal) {
 function setCurrentProgressStatus(currentAmount, goalAmount) {
   if (currentAmount >= goalAmount) {
         return "completed";
-    } else if (currentAmount >= goalAmount * 0.3 && currentAmount <= goalAmount * 0.5) {
+    } else if (currentAmount >= goalAmount * 0.3) {
         return "on_track";
     } else {
         return "behind";
@@ -266,18 +266,6 @@ function updateMonthYear(date) {
   selectedMonth.value = newDate.getMonth();
   selectedDay.value = newDate.getDate();
   isCalendarOpen.value = false;
-}
-
-async function addContribution(contribution) {
-  await savingsStore.addSavingContribution(contribution)
-  isContributionDialogOpen.value = false  // Close dialog after saving
-  extendSavingGoalModel()
-  $q.notify({
-    message: 'Saving contribution added successfully!',
-    color: 'positive',
-    position: 'top-right',
-    timeout: 2000
-  })
 }
 
 function removeSavingGoal(id) {
@@ -372,6 +360,37 @@ async function handleNewSavingGoal(savingGoal) {
   isDialogOpen.value = false  // Close dialog after saving
   $q.notify({
     message: 'Saving goal added successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
+}
+
+async function handleSavingContributionSave(savingContribution) {
+  if (isNewSavingContribution.value) {
+    await handleNewSavingContribution(savingContribution)
+  } else {
+    await handleUpdateSavingContribution(savingContribution)
+  }
+}
+
+async function handleUpdateSavingContribution(updatedSavingContribution) {
+  await savingsStore.updateSavingContribution(updatedSavingContribution)  // Call store action to update API and local store
+  extendSavingGoalModel()
+  $q.notify({
+    message: 'Saving contribution edited successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
+}
+
+async function handleNewSavingContribution(savingContribution) {
+  await savingsStore.addSavingContribution(savingContribution)
+  isContributionDialogOpen.value = false  // Close dialog after saving
+  extendSavingGoalModel()
+  $q.notify({
+    message: 'Saving contribution added successfully!',
     color: 'positive',
     position: 'top-right',
     timeout: 2000

@@ -75,11 +75,20 @@ export const useSavingsStore = defineStore('savings', () => {
 
   async function updateSavingContribution(updatedContribution) {
     try {
-      const response = await api.put(`/savings/contribution/${updatedContribution.id}`, updatedContribution)
+      const updatedContributionDto = {
+        id: updatedContribution.id,
+        amount: updatedContribution.amount,
+        contributionDate: updatedContribution.contributionDate,
+        savingGoalId: updatedContribution.savingGoal.id
+      };
+    
+      const response = await api.put(`/savings/contribution/${updatedContribution.id}`, updatedContributionDto)
       if (response.status === 200) {
-        const index = entries.value.findIndex(entry => entry.id === savingContribution.goalId)
+        const index = entries.value.findIndex(entry => entry.id === updatedContribution.savingGoal.id)
         if (index !== -1) {
-            //entries.value[index] = { ...updatedContribution }
+            const contributionIndex = entries.value[index].savingContributions
+              .findIndex(entry => entry.id === updatedContribution.id)
+            entries.value[index].savingContributions[contributionIndex] = { ...updatedContribution }
         }
       } else {
         console.error('Failed to update saving contribution:', response.status)
