@@ -59,11 +59,11 @@
   const savingGoalTitle = computed({
     get: () => localSavingContribution.value.savingGoal?.title || null,
     set: (value) => {
-      const savingGoalById = entries.value.find(entry => entry.id === value);
+      const savingGoalByName = entries.value.find(entry => entry.title === value);
       if (!localSavingContribution.value.savingGoal) {
         localSavingContribution.value.savingGoal = {};  // Create if null
       }
-      localSavingContribution.value.savingGoal = savingGoalById;
+      localSavingContribution.value.savingGoal = savingGoalByName;
     }
   });
   
@@ -75,7 +75,7 @@
         : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
   
         localSavingContribution.value = newSavingContribution;
-        savingGoalTitle.value = newSavingContribution.savingGoalId || null;
+        savingGoalTitle.value = newSavingContribution.savingGoalTitle || null;
     }
   });
   
