@@ -82,7 +82,8 @@
                 description: row["Description"],
                 amount: parseFloat(row["Amount"])
               }));
-              console.log("Parsed CSV Data:", this.parsedData);
+              console.log("Detected Columns:", Object.keys(results.data[0])); // Prints column names
+              console.log("Parsed Data:", results.data); // Prints full parsed CSV
             }
           });
         };
