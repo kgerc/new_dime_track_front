@@ -59,25 +59,23 @@
   const savingGoalTitle = computed({
     get: () => localSavingContribution.value.savingGoal?.title || null,
     set: (value) => {
-      debugger;
-      const savingGoalByName = entries.value.find(entry => entry.title === value);
+      const savingGoalById = entries.value.find(entry => entry.id === value);
       if (!localSavingContribution.value.savingGoal) {
         localSavingContribution.value.savingGoal = {};  // Create if null
       }
-      localSavingContribution.value.savingGoal = savingGoalByName;
+      localSavingContribution.value.savingGoal = savingGoalById;
     }
   });
   
   // Watch for dialog open and reset localSavingContribution accordingly
   watch(isOpen, (newVal) => {
     if (newVal) {
-      debugger;
       const newSavingContribution = props.isNewSavingContribution
         ? { id: uuidv4(), title: '', amount: 0, contributionDate: '', savingGoal: null }
         : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
   
         localSavingContribution.value = newSavingContribution;
-        savingGoalTitle.value = newSavingContribution.savingGoal?.title || null;
+        savingGoalTitle.value = newSavingContribution.savingGoalId || null;
     }
   });
   
