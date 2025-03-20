@@ -18,7 +18,6 @@ export const useSavingsStore = defineStore('savings', () => {
     try {
       const response = await api.post('/savings/goal', savingGoal)
       if (response.status === 201 || response.status === 200) { 
-        // Only push if response is successful
         entries.value.push(savingGoal)
       } else {
         console.error('Failed to add saving goals: Unexpected response status', response.status)
@@ -98,11 +97,15 @@ export const useSavingsStore = defineStore('savings', () => {
     }
   }
 
-  async function removeSavingContribution(id) {
+  async function removeSavingContribution(savingContribution) {
     try {
-      const response = await api.delete(`/savings/contribution/${id}`)
+      const response = await api.delete(`/savings/contribution/${savingContribution.id}`)
       if (response.status === 201 || response.status === 200) { 
-        //categories.value = categories.value.filter(entry => entry.id !== id)
+        const index = entries.value.findIndex(entry => entry.id === savingContribution.savingGoal.id)
+        if (index !== -1) {
+          entries.value[index].savingContributions = 
+          entries.value[index].savingContributions.filter(entry => entry.id !== savingContribution.id)
+        }
       } else {
         console.error('Failed to remove saving contribution: Unexpected response status', response.status)
       }

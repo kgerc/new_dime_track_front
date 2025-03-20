@@ -19,10 +19,13 @@
   
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+          <q-space />  <!-- This pushes the next buttons to the right -->
+          <q-btn v-if="!isNewSavingContribution" flat label="Delete" color="negative" @click="isWarningDialogOpened = true;"/>
           <q-btn flat label="Save" color="primary" @click="saveChanges" />
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <WarningDialog v-model="isWarningDialogOpened" @confirm="deleteSavingContribution" />
   </template>
   
   <script setup>
@@ -31,6 +34,7 @@
   import { format } from 'date-fns';
   import { useSavingsStore } from 'src/stores/savingsStore.js';
   import { storeToRefs } from 'pinia';
+  import WarningDialog from 'src/components/Base/WarningDialog.vue'
   
   const savingsStore = useSavingsStore();
   const { entries } = storeToRefs(savingsStore); 
@@ -44,6 +48,7 @@
   const emit = defineEmits(['update:modelValue', 'save']);
   
   const localSavingContribution = ref({ ...props.savingContribution });  // Local copy for editing
+  const isWarningDialogOpened = ref(false)
   
   const isOpen = computed({
     get: () => props.modelValue,
@@ -71,11 +76,11 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newSavingContribution = props.isNewSavingContribution
-        ? { id: uuidv4(), title: '', amount: 0, contributionDate: '', savingGoal: null }
+        ? { id: uuidv4(), amount: 0, contributionDate: '', savingGoal: null }
         : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
   
         localSavingContribution.value = newSavingContribution;
-        savingGoalTitle.value = newSavingContribution.savingGoalTitle || null;
+        savingGoalTitle.value = newSavingContribution.savingGoalTitle || newSavingContribution.savingGoal?.title;
     }
   });
   
@@ -83,6 +88,11 @@
     emit('update:modelValue', false);
   }
   
+  async function deleteSavingContribution() {
+    await savingsStore.removeSavingContribution(localSavingContribution.value)
+    emit('save', null) 
+  };
+
   function saveChanges() {
     emit('save', localSavingContribution.value);  // Send updated expense back
     closeDialog();

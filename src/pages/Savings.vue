@@ -84,7 +84,7 @@
               </q-item-section>
 
               <q-item-section side class="text-weight-bold text-positive">
-                {{ formatCurrency(entry.amount) }}
+                {{ formatCurrency(entry.currentAmount) }}
               </q-item-section>
             </q-item>
           </q-slide-item>
@@ -369,8 +369,17 @@ async function handleNewSavingGoal(savingGoal) {
 async function handleSavingContributionSave(savingContribution) {
   if (isNewSavingContribution.value) {
     await handleNewSavingContribution(savingContribution)
-  } else {
+  } else if (savingContribution){
     await handleUpdateSavingContribution(savingContribution)
+  } else {
+    isContributionDialogOpen.value = false; 
+    extendSavingGoalModel()
+    $q.notify({
+      message: 'Saving contribution deleted successfully!',
+      color: 'positive',
+      position: 'top-right',
+      timeout: 2000
+    });
   }
 }
 
