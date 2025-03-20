@@ -22,9 +22,16 @@
         </div>
       </q-card-section>
 
-      <q-card-section v-if="parsedData.length > 0">
+      <q-card-section v-if="parsedData && parsedData.length > 0">
         <h6 class="text-h6">Preview (First 5 Transactions)</h6>
-        <q-table :rows="parsedData" :columns="columns" row-key="id" dense flat />
+        <q-table
+          :rows="parsedData"
+          :columns="columns"
+          row-key="id"
+          dense
+          flat
+          :rows-per-page-options="[5, 10]" 
+        />
         
         <q-btn
           label="Upload to Server"
@@ -44,119 +51,125 @@
   </q-page>
 </template>
 
-<script>
-import Papa from "papaparse";
-import axios from "axios";
+<script setup>
+import { ref } from 'vue';
+import Papa from 'papaparse';
+import axios from 'axios';
+import { storeToRefs } from 'pinia';
+import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
 
-export default {
-  data() {
-    return {
-      file: null,
-      parsedData: [],
-      loading: false,
-      message: "",
-      success: false,
-      columns: [],
-      columnMapping: {
-        "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
-        "date": ["Date", "TransactionDate", "Data", "Data waluty"],
-        "amount": ["Amount", "Kwota", "Betrag"],
-        "currency": ["Currency", "Waluta"]
+// Pinia Store
+const importTransactionsStore = useImportTransactionsStore();
+const { file, parsedData } = storeToRefs(importTransactionsStore);
+
+// Reactive State
+const loading = ref(false);
+const message = ref('');
+const success = ref(false);
+const columns = ref([]);
+
+const columnMapping = {
+  "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
+  "date": ["Date", "TransactionDate", "Data", "Data waluty"],
+  "amount": ["Amount", "Kwota", "Betrag"],
+  "currency": ["Currency", "Waluta"]
+};
+
+// Function to handle file selection
+const onFileSelected = (selectedFile) => {
+  if (selectedFile) {
+    parseCSV(selectedFile);
+  } else {
+    parsedData.value = [];
+    columns.value = [];
+    message.value = '';
+  }
+};
+
+// Function to parse CSV file
+const parseCSV = (file) => {
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    Papa.parse(event.target.result, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const mappedData = results.data.map(row => ({
+          date: mapColumnValue(row, 'date'),
+          description: extractMerchant(row), // Extracts Merchant Name or Fallback
+          amount: mapColumnValue(row, 'amount'),
+          currency: mapColumnValue(row, 'currency')
+        }));
+
+        parsedData.value = mappedData;
+
+        columns.value = Object.keys(parsedData.value[0] || {}).map(col => ({
+          name: col,
+          label: col.charAt(0).toUpperCase() + col.slice(1),
+          field: col,
+          align: 'left'
+        }));
+
+        console.log('Parsed CSV Data:', parsedData.value);
       }
-    };
-  },
-  methods: {
-    onFileSelected(file) {
-      if (file) {
-        this.parseCSV(file);
-      } else {
-      // Reset data when file is cleared
-        this.parsedData = [];
-        this.columns = [];
-        this.message = "";
-      }
-    },
-    parseCSV(file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        Papa.parse(event.target.result, {
-          header: true,
-          dynamicTyping: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const mappedData = results.data.map(row => ({
-              date: this.mapColumnValue(row, "date"),
-              description: this.extractMerchant(row), // Extracts Merchant Name or Fallback
-              amount: this.mapColumnValue(row, "amount"),
-              currency: this.mapColumnValue(row, "currency")
-            }));
-            this.parsedData = mappedData;
+    });
+  };
+  reader.readAsText(file);
+};
 
-            this.columns = Object.keys(this.parsedData[0] || {}).map((col) => ({
-              name: col,
-              label: col.charAt(0).toUpperCase() + col.slice(1),
-              field: col,
-              align: "left"
-            }));
-            console.log("Detected Columns:", Object.keys(results.data[0])); // Prints column names
-            console.log("Parsed Data:", results.data); // Prints full parsed CSV
-            console.log("Parsed CSV Data:", this.parsedData);
-          }
-        });
-      };
-      reader.readAsText(file);
-    },
-
-    mapColumnValue(row, field) {
-      const possibleNames = this.columnMapping[field];
-      for (let name of possibleNames) {
-        if (row[name]) {
-          return field === "amount" ? parseFloat(row[name]) : row[name];
-        }
-      }
-      return null;
-    },
-
-    extractMerchant(row) {
-      if (row[""]) {
-        let locationText = row[""];
-        let match = locationText.match(/Adres:\s+([\w\s]+)/i);
-        if (match && match[1]) {
-          return match[1].trim();
-        }
-      }
-      return row["Opis transakcji"] || "Unknown";
-    },
-
-    async uploadTransactions() {
-      if (this.parsedData.length === 0) {
-        this.message = "No transactions to upload!";
-        this.success = false;
-        return;
-      }
-
-      this.loading = true;
-      this.message = "";
-
-      try {
-        const response = await axios.post("https://your-backend-api.com/api/transactions/upload", {
-          transactions: this.parsedData
-        });
-
-        this.message = "Transactions uploaded successfully!";
-        this.success = true;
-        console.log("Server Response:", response.data);
-      } catch (error) {
-        console.error("Upload Error:", error);
-        this.message = "Error uploading transactions.";
-        this.success = false;
-      } finally {
-        this.loading = false;
-      }
+// Function to map column values based on possible names
+const mapColumnValue = (row, field) => {
+  const possibleNames = columnMapping[field];
+  for (let name of possibleNames) {
+    if (row[name]) {
+      return field === 'amount' ? parseFloat(row[name]) : row[name];
     }
+  }
+  return null;
+};
+
+// Function to extract merchant name from a column
+const extractMerchant = (row) => {
+  if (row['']) {
+    let locationText = row[''];
+    let match = locationText.match(/Adres:\s+([\w\s]+)/i);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+  }
+  return row['Opis transakcji'] || 'Unknown';
+};
+
+// Function to upload transactions to API
+const uploadTransactions = async () => {
+  if (parsedData.value.length === 0) {
+    message.value = 'No transactions to upload!';
+    success.value = false;
+    return;
+  }
+
+  loading.value = true;
+  message.value = '';
+
+  try {
+    const response = await axios.post('https://your-backend-api.com/api/transactions/upload', {
+      transactions: parsedData.value
+    });
+
+    message.value = 'Transactions uploaded successfully!';
+    success.value = true;
+    console.log('Server Response:', response.data);
+  } catch (error) {
+    console.error('Upload Error:', error);
+    message.value = 'Error uploading transactions.';
+    success.value = false;
+  } finally {
+    loading.value = false;
   }
 };
 </script>
+
 
 <style scoped>
 .upload-card {
