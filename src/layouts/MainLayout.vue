@@ -92,6 +92,7 @@ export default {
         { title: 'Savings', to: '/savings' },
         { title: 'Expenses', to: '/expenses' },
         { title: 'Incomes', to: '/incomes' },
+        { title: 'Upload Transactions (CSV)', to: '/import_transactions' },
       ],
     };
   },
