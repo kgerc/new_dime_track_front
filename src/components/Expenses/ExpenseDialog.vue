@@ -1,53 +1,70 @@
 <template>
-  <q-dialog v-model="isOpen">
-    <q-card style="width: 400px">
-      <q-card-section>
-        <div class="text-h6">{{ isNewExpense ? 'New Expense' : 'Edit Expense' }}</div>
-      </q-card-section>
+<q-dialog v-model="isOpen">
+  <q-card style="width: 400px">
+    <q-card-section class="row justify-between items-center">
+      <div class="text-h6">{{ isNewExpense ? 'New Expense' : 'Edit Expense' }}</div>
+      
+      <!-- Currency Dropdown -->
+      <q-select
+        v-model="localExpense.currency"
+        :options="currencyOptions"
+        dense
+        outlined
+        style="min-width: 100px;"
+      />
+    </q-card-section>
 
-      <q-card-section class="q-gutter-md">
-        <q-input v-model="localExpense.title" label="Title" outlined dense />
-        <q-input v-model="localExpense.notes" label="Notes" outlined dense />
-        <q-input v-model.number="localExpense.amount" label="Amount" type="number" outlined dense />
+    <q-card-section class="q-gutter-md">
+      <q-input v-model="localExpense.title" label="Title" outlined dense />
+      <q-input v-model="localExpense.notes" label="Notes" outlined dense />
+      <q-input 
+        v-model.number="localExpense.amount" 
+        label="Amount" 
+        type="number" 
+        outlined 
+        dense 
+        :prefix="getCurrencySymbol(localExpense.currency)" 
+      />
 
-        <!-- Recurrence Frequency Dropdown -->
-        <q-select
-          v-if="isNewExpense"
-          v-model="localExpense.recurrenceFrequency"
-          :options="recurrenceOptions"
-          label="Recurrence"
-          outlined
-          dense
-        />
+      <!-- Recurrence Frequency Dropdown -->
+      <q-select
+        v-if="isNewExpense"
+        v-model="localExpense.recurrenceFrequency"
+        :options="recurrenceOptions"
+        label="Recurrence"
+        outlined
+        dense
+      />
 
-        <!-- Repeat Count Input (only visible if a recurrence is selected) -->
-        <q-input
-          v-if="localExpense.recurrenceFrequency !== 'None'"
-          v-model.number="localExpense.recurrence"
-          label="Repeat Count"
-          type="number"
-          outlined
-          dense
-        />
-        <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
+      <!-- Repeat Count Input (only visible if a recurrence is selected) -->
+      <q-input
+        v-if="localExpense.recurrenceFrequency !== 'None'"
+        v-model.number="localExpense.recurrence"
+        label="Repeat Count"
+        type="number"
+        outlined
+        dense
+      />
+      <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
 
-        <q-toggle v-model="localExpense.isPaid" label="Paid?" />
+      <q-toggle v-model="localExpense.isPaid" label="Paid?" />
 
-        <q-select
-          v-model="categoryTitle"
-          :options="categoryTitles"
-          label="Category"
-          outlined
-          dense
-        />
-      </q-card-section>
+      <q-select
+        v-model="categoryTitle"
+        :options="categoryTitles"
+        label="Category"
+        outlined
+        dense
+      />
+    </q-card-section>
 
-      <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
-        <q-btn flat label="Save" color="primary" @click="saveChanges" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+    <q-card-actions align="right">
+      <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+      <q-btn flat label="Save" color="primary" @click="saveChanges" />
+    </q-card-actions>
+  </q-card>
+</q-dialog>
+
 </template>
 
 <script setup>
@@ -55,6 +72,7 @@ import { defineProps, defineEmits, ref, computed, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 import { useExpensesStore } from 'src/stores/expensesStore';
+import { getCurrencySymbol } from 'src/helpers/formatCurrency.js'
 import { storeToRefs } from 'pinia';
 
 const expensesStore = useExpensesStore();
@@ -67,7 +85,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'save']);
-
+const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const localExpense = ref({ ...props.expense });  // Local copy for editing
 
 const isOpen = computed({
@@ -96,7 +114,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newExpense = props.isNewExpense
-      ? { id: uuidv4(), title: '', notes: '', amount: 0, recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
+      ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
       : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') };
 
     localExpense.value = newExpense;
