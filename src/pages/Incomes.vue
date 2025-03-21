@@ -119,7 +119,7 @@
       </q-list>
     </div>
     <!-- No Incomes Message -->
-    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column">
+    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="account_balance_wallet" size="4em" color="grey-6" />
       <div class="text-h6 text-grey-6 q-mt-md">No incomes this month</div>
     </div>

@@ -54,7 +54,6 @@
 <script setup>
 import { ref } from 'vue';
 import Papa from 'papaparse';
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
 
@@ -76,7 +75,6 @@ const columnMapping = {
 
 // Function to handle file selection
 const onFileSelected = (selectedFile) => {
-  debugger;
   if (selectedFile) {
     parseCSV(selectedFile);
   } else {
@@ -111,7 +109,7 @@ const parseCSV = (file) => {
           field: col,
           align: 'left'
         }));
-
+        console.log('CSV DATA', results)
         console.log('Parsed CSV Data:', parsedData.value);
       }
     });
@@ -134,9 +132,16 @@ const mapColumnValue = (row, field) => {
 const extractMerchant = (row) => {
   if (row['']) {
     let locationText = row[''];
-    let match = locationText.match(/Adres:\s+([\w\s]+)/i);
-    if (match && match[1]) {
-      return match[1].trim();
+    let locationText2 = row['_1'];
+    let expenseMatch = locationText.match(/Adres:\s+([\w\s]+)/i);
+    let expenseMatch2 = locationText2.match(/Adres:\s+([\w\s]+)/i);
+    let incomeMatch = locationText.match(/Nazwa nadawcy:\s+([\w\s]+)/i);
+    if (expenseMatch && expenseMatch[1]) {
+      return expenseMatch[1].trim();
+    } else if (expenseMatch2 && expenseMatch2[1]) {
+      return expenseMatch2[1].trim();
+    } else if (incomeMatch && incomeMatch[1]) {
+      return incomeMatch[1].trim();
     }
   }
   return row['Opis transakcji'] || 'Unknown';
