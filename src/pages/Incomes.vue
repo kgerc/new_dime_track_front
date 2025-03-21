@@ -35,7 +35,7 @@
 
     <div class="q-pa-md" style="margin-top: -20px;">
       <q-list bordered separator v-if="!loadingIncomes">
-        <q-item-label header>Recurring Incomes</q-item-label>
+        <q-item-label header v-if="filteredRecurrentEntries.length > 0">Recurring Incomes</q-item-label>
         <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
@@ -69,7 +69,7 @@
           </q-item>
         </q-slide-item>
 
-        <q-item-label header>Non-Recurring Incomes</q-item-label>
+        <q-item-label header v-if="filteredNonRecurrentEntries.length > 0">Non-Recurring Incomes</q-item-label>
         <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
@@ -117,6 +117,11 @@
           </q-item>
         </q-slide-item>
       </q-list>
+    </div>
+    <!-- No Incomes Message -->
+    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column">
+      <q-icon name="account_balance_wallet" size="4em" color="grey-6" />
+      <div class="text-h6 text-grey-6 q-mt-md">No incomes this month</div>
     </div>
 
     <!-- Footer: Balance & Add New Expense -->

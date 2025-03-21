@@ -60,13 +60,12 @@ import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
 
 // Pinia Store
 const importTransactionsStore = useImportTransactionsStore();
-const { file, parsedData } = storeToRefs(importTransactionsStore);
+const { file, parsedData, columns } = storeToRefs(importTransactionsStore);
 
 // Reactive State
 const loading = ref(false);
 const message = ref('');
 const success = ref(false);
-const columns = ref([]);
 
 const columnMapping = {
   "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
@@ -77,6 +76,7 @@ const columnMapping = {
 
 // Function to handle file selection
 const onFileSelected = (selectedFile) => {
+  debugger;
   if (selectedFile) {
     parseCSV(selectedFile);
   } else {
@@ -95,6 +95,7 @@ const parseCSV = (file) => {
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: (results) => {
+        debugger;
         const mappedData = results.data.map(row => ({
           date: mapColumnValue(row, 'date'),
           description: extractMerchant(row), // Extracts Merchant Name or Fallback
@@ -153,13 +154,9 @@ const uploadTransactions = async () => {
   message.value = '';
 
   try {
-    const response = await axios.post('https://your-backend-api.com/api/transactions/upload', {
-      transactions: parsedData.value
-    });
-
+    await importTransactionsStore.uploadTransactions()
     message.value = 'Transactions uploaded successfully!';
     success.value = true;
-    console.log('Server Response:', response.data);
   } catch (error) {
     console.error('Upload Error:', error);
     message.value = 'Error uploading transactions.';

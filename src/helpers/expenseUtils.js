@@ -16,7 +16,7 @@
   }
   
   export function getExpenseIconColor(entry, currentDate, currentMonth, currentYear) {
-    if (entry.isPaid) return 'green';  // Paid: Green
+    if (entry.isPaid) return 'positive';  // Paid: Green
     const entryDate = new Date(entry.paymentDate);
     if (
       entryDate.getFullYear() === currentYear &&
