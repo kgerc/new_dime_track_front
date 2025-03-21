@@ -64,7 +64,7 @@
               </div>
             </q-item-section>
             <q-item-section side class="text-weight-bold text-positive">
-              {{ formatCurrency(income.amount) }}
+              {{ formatCurrency(income.amount, income.currency) }}
             </q-item-section>
           </q-item>
         </q-slide-item>
@@ -112,7 +112,7 @@
               </q-icon>
             </q-item-section>
             <q-item-section side class="text-weight-bold text-positive fixed-width">
-              {{ formatCurrency(income.amount) }}
+              {{ formatCurrency(income.amount, income.currency) }}
             </q-item-section>
           </q-item>
         </q-slide-item>
@@ -137,7 +137,7 @@
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
-          {{ formatCurrency(totalBalance) }}
+          {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
       </div>
 

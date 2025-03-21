@@ -18,7 +18,7 @@
               class="text-weight-bold"
               :class="amountColor(entry.amount)" 
               side>
-              {{formatCurrency(entry.amount)}}
+              {{formatCurrency(entry.amount, entry.currency)}}
             </q-item-section>
           </q-item>
         </q-slide-item>
@@ -32,7 +32,7 @@
           Balance
         </div>
         <div class="col text-h6 text-right" :class="amountColor(balance)">
-          {{ formatCurrency(balance) }}
+          {{ formatCurrency(balance, 'PLN') }}
         </div>
       </div>
       <q-form 
@@ -79,22 +79,26 @@ const entries = ref([
   {
     id: 'id1',
     name: 'Salary',
-    amount: 4999.99
+    amount: 4999.99,
+    currency: 'USD'
   },
   {
     id: 'id2',
     name: 'Rent',
-    amount: -999
+    amount: -999,
+    currency: 'PLN'
   },
   {
     id: 'id3',
     name: 'Phone',
-    amount: -14.99
+    amount: -14.99,
+    currency: 'PLN'
   },
   {
     id: 'id4',
     name: 'Unknown',
-    amount: 0
+    amount: 0,
+    currency: 'PLN'
   }
 ])
 

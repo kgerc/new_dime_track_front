@@ -36,7 +36,7 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx)) }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), entry.currency) }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -62,7 +62,7 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-negative">
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx)) }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), entry.currency) }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -88,7 +88,7 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx)) }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), entry.currency) }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -114,21 +114,21 @@ const monthNames = [
 ]
 
 const savings = ref([
-  { name: 'Salary', amount: 4000, date: '2025-01-10' },
-  { name: 'Bonus', amount: 500, date: '2025-03-15' },
-  { name: 'Investment', amount: 1000, date: '2025-03-20' }
+  { name: 'Salary', amount: 4000, date: '2025-01-10', currency: 'PLN' },
+  { name: 'Bonus', amount: 500, date: '2025-03-15', currency: 'PLN'  },
+  { name: 'Investment', amount: 1000, date: '2025-03-20', currency: 'PLN'  }
 ])
 
 const expenses = ref([
-  { name: 'Rent', amount: -999, date: '2025-01-05' },
-  { name: 'Phone', amount: -14.99, date: '2025-02-12' },
-  { name: 'Groceries', amount: -120, date: '2025-03-01' }
+  { name: 'Rent', amount: -999, date: '2025-01-05', currency: 'PLN'  },
+  { name: 'Phone', amount: -14.99, date: '2025-02-12', currency: 'PLN'  },
+  { name: 'Groceries', amount: -120, date: '2025-03-01', currency: 'PLN'  }
 ])
 
 const incomes = ref([
-  { name: 'Freelance', amount: 2000, date: '2025-01-03' },
-  { name: 'Bonds', amount: 120, date: '2025-02-07' },
-  { name: 'Gift', amount: 500, date: '2025-03-10' }
+  { name: 'Freelance', amount: 2000, date: '2025-01-03', currency: 'PLN'  },
+  { name: 'Bonds', amount: 120, date: '2025-02-07', currency: 'PLN'  },
+  { name: 'Gift', amount: 500, date: '2025-03-10', currency: 'PLN'  }
 ])
 
 const currentMonthName = computed(() => monthNames[selectedMonth.value])

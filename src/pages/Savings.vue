@@ -57,10 +57,10 @@
                     <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
                     <!-- Amounts -->
                     <q-item-label caption v-if="entry.amount">
-                      {{ formatCurrency(entry.currentAmount, true) }} / {{ formatCurrency(entry.amount, true) }}
+                      {{ formatCurrency(entry.currentAmount, entry.currency, true) }} / {{ formatCurrency(entry.amount, entry.currency, true) }}
                     </q-item-label>
                     <q-item-label caption v-else>
-                      {{ formatCurrency(entry.currentAmount, true) }} (No Goal)
+                      {{ formatCurrency(entry.currentAmount, entry.currency, true) }} (No Goal)
                     </q-item-label>
                     <!-- Progress Bar -->
                     <q-linear-progress
@@ -84,7 +84,7 @@
               </q-item-section>
 
               <q-item-section side class="text-weight-bold text-positive">
-                {{ formatCurrency(entry.currentAmount) }}
+                {{ formatCurrency(entry.currentAmount, entry.currency) }}
               </q-item-section>
             </q-item>
           </q-slide-item>
@@ -106,7 +106,7 @@
                   style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)"> 
                   <q-item-section>
                     <q-item-label>
-                      {{ formatCurrency(contribution.amount) }} 
+                      {{ formatCurrency(contribution.amount, contribution.currency) }} 
                       <span class="text-grey-7">({{ formatDate(contribution.contributionDate) }})</span>
                     </q-item-label>
                   </q-item-section>
@@ -133,7 +133,7 @@
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
         <div class="col text-grey-7 text-h6">Balance</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
-          {{ formatCurrency(totalBalance) }}
+          {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
       </div>
 
