@@ -57,7 +57,7 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newSavingGoal = props.isNewSavingGoal
-        ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN' }
+        ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', savingContributions: [] }
         : { ...props.savingGoal };
        localSavingGoal.value = newSavingGoal;
     }

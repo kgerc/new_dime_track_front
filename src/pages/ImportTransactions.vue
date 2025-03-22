@@ -93,7 +93,6 @@ const parseCSV = (file) => {
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: (results) => {
-        debugger;
         const mappedData = results.data.map(row => ({
           date: mapColumnValue(row, 'date'),
           description: extractMerchant(row), // Extracts Merchant Name or Fallback
