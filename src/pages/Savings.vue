@@ -111,7 +111,7 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item v-if="!entry.savingContributions || entry.savingContributions.length === 0" style="margin-left: 33px;">
+                <q-item v-if="!isAnyGoalContribution(entry.id)" style="margin-left: 33px;">
                   <q-item-section>No contributions yet.</q-item-section>
                 </q-item>
               </q-list>
@@ -178,7 +178,7 @@
 
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
@@ -242,9 +242,49 @@ const currentMonthContributions = computed(() => {
   })
 })
 
+const previousMonthContributions = computed(() => {
+  const contributions = entries.value
+    .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
+
+  // Calculate the previous month and year
+  let prevMonth = selectedMonth.value - 1;
+  let prevYear = selectedYear.value;
+
+  if (prevMonth < 0) {
+    prevMonth = 11; // December (because January is 0)
+    prevYear -= 1;
+  }
+
+  return contributions.filter(entry => {
+    const entryDate = new Date(entry.contributionDate);
+    
+    const isMonthYearMatch = entryDate.getMonth() === prevMonth && entryDate.getFullYear() === prevYear;
+
+    const isDayMatch =
+      selectedDay.value == null || 
+      (entryDate.getDate() === selectedDay.value);
+
+    return isMonthYearMatch && isDayMatch;
+  });
+});
+
 function getCurrentMonthContributionsByGoalId(id) {
-  debugger;
-  return currentMonthContributions.filter(contribution => contribution.savingGoalId === id)
+  return currentMonthContributions.value.filter(contribution => contribution.savingGoalId === id)
+}
+
+function isAnyGoalContribution(id) {
+  const contributions = currentMonthContributions.value.filter(contribution => contribution.savingGoalId === id)
+  return contributions && contributions.length > 0;
+}
+
+function getTotalGoalBalanceFromCurrentMonth(id) {
+  return currentMonthContributions.value.filter(contribution => contribution.savingGoalId === id)
+    .reduce((acc, { amount }) => acc + amount, 0)
+}
+
+function getTotalGoalBalanceFromPreviousMonth(id) {
+  return previousMonthContributions.value.filter(contribution => contribution.savingGoalId === id)
+    .reduce((acc, { amount }) => acc + amount, 0)
 }
 
 const totalBalance = computed(() => {
@@ -253,10 +293,14 @@ const totalBalance = computed(() => {
 
 function extendSavingGoalModel() {
   entries.value.forEach(goal => {
-    goal.currentAmount = goal.savingContributions.reduce((acc, { amount }) => acc + amount, 0)
+    goal.currentAmount = getTotalGoalBalanceFromPreviousMonth(goal.id) + getTotalGoalBalanceFromCurrentMonth(goal.id)
     goal.status = setCurrentProgressStatus(goal.currentAmount, goal.amount)
   })
 }
+
+watch([selectedMonth, selectedYear], () => {
+  extendSavingGoalModel()
+});
 
 function extendSavingGoalModelForNewSavingGoal(newSavingGoal) {
   newSavingGoal.currentAmount = 0
