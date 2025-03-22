@@ -163,12 +163,9 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  const totalBalance = computed(() => {
-    return entries.value.reduce((acc, { amount }) => acc + amount, 0)
-  })
 
   return { entries, fetchExpenses, addExpense, removeExpense, updateExpense,
-     totalBalance, addExpenseCategory, fetchExpenseCategories, categories,
+     addExpenseCategory, fetchExpenseCategories, categories,
      limits, fetchExpenseLimits, addExpenseLimit, updateExpenseLimit, updateExpenseCategory,
      removeExpenseLimit, removeExpenseCategory }
 })

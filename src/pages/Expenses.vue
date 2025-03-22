@@ -144,7 +144,7 @@
         />
       </div>
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
-        <div class="col text-grey-7 text-h6">Balance</div>
+        <div class="col text-grey-7 text-h6">Expenses sum</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
           {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
@@ -185,7 +185,7 @@ import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue
 /* 🗄️ State Management */
 const $q = useQuasar()
 const expensesStore = useExpensesStore()
-const { entries, totalBalance, categories, limits } = storeToRefs(expensesStore)
+const { entries, categories, limits } = storeToRefs(expensesStore)
 
 /* 🗓️ Date and Calendar Handling */
 const months = [
@@ -290,6 +290,10 @@ const currentMonthEntries = computed(() => {
     
     return matchesSearch && isMonthYearMatch && isDayMatch;
   })
+})
+
+const totalBalance = computed(() => {
+  return currentMonthEntries.value.reduce((acc, { amount }) => acc + amount, 0)
 })
 
 // Month navigation

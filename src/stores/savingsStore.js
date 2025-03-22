@@ -77,6 +77,7 @@ export const useSavingsStore = defineStore('savings', () => {
       const updatedContributionDto = {
         id: updatedContribution.id,
         amount: updatedContribution.amount,
+        currency: updatedContribution.currency,
         contributionDate: updatedContribution.contributionDate,
         savingGoalId: updatedContribution.savingGoal.id
       };
@@ -113,13 +114,9 @@ export const useSavingsStore = defineStore('savings', () => {
       console.error('Error deleting saving contribution:', error)
     }
   }
-  
-  const totalBalance = computed(() => {
-    return entries.value.reduce((acc, { amount }) => acc + amount, 0)
-  })
 
   return { 
-    entries, totalBalance,
+    entries,
     fetchSavingGoals, addSavingGoal, removeSavingGoal, updateSavingGoal,
     addSavingContribution, updateSavingContribution, removeSavingContribution }
 })

@@ -195,7 +195,7 @@ import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialo
 const $q = useQuasar()
 const currentPage = ref(1)
 const incomesStore = useIncomesStore()
-const { entries, categories, totalBalance } = storeToRefs(incomesStore)
+const { entries, categories } = storeToRefs(incomesStore)
 
 // Date management
 const currentDate = new Date()
@@ -238,6 +238,10 @@ const currentMonthEntries = computed(() => {
 
     return matchesSearch && isMonthYearMatch && isDayMatch;
   })
+})
+
+const totalBalance = computed(() => {
+  return currentMonthEntries.value.reduce((acc, { amount }) => acc + amount, 0)
 })
 
 const recurringEntriesFromPrecedingPageCount = computed(() => {

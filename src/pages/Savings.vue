@@ -102,7 +102,7 @@
                 </q-item-section>
               </q-item>
               <q-list dense>
-                <q-item v-for="contribution in entry.savingContributions" :key="contribution.id" 
+                <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id" 
                   style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)"> 
                   <q-item-section>
                     <q-item-label>
@@ -191,7 +191,7 @@ import SavingContributionDialog from 'src/components/Savings/SavingContributionD
 const $q = useQuasar()
 const currentPage = ref(1)
 const savingsStore = useSavingsStore()
-const { totalBalance, entries } = storeToRefs(savingsStore)
+const { entries } = storeToRefs(savingsStore)
 
 // Date management
 const currentDate = new Date()
@@ -224,6 +224,31 @@ onMounted(async () => {
   await savingsStore.fetchSavingGoals()
   loadingSavings.value = false
   extendSavingGoalModel()
+})
+
+const currentMonthContributions = computed(() => {
+  const contributions = entries.value
+    .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
+  return contributions.filter(entry => {
+    const entryDate = new Date(entry.contributionDate)
+    const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
+    
+    const isDayMatch = selectedDay.value == null || 
+    (entryDate.getMonth() === selectedMonth.value && 
+    entryDate.getFullYear() === selectedYear.value &&
+    entryDate.getDate() === selectedDay.value)
+    
+    return isMonthYearMatch && isDayMatch;
+  })
+})
+
+function getCurrentMonthContributionsByGoalId(id) {
+  debugger;
+  return currentMonthContributions.filter(contribution => contribution.savingGoalId === id)
+}
+
+const totalBalance = computed(() => {
+  return currentMonthContributions.value.reduce((acc, { amount }) => acc + amount, 0)
 })
 
 function extendSavingGoalModel() {

@@ -110,12 +110,8 @@ export const useIncomesStore = defineStore('incomes', () => {
     }
   }
   
-  const totalBalance = computed(() => {
-    return entries.value.reduce((acc, { amount }) => acc + amount, 0)
-  })
-
   return { 
-    entries, categories, totalBalance,
+    entries, categories,
     fetchIncomes, addIncome, removeIncome, updateIncome,
     fetchIncomeCategories, addIncomeCategory, removeIncomeCategory, updateIncomeCategory }
 })
