@@ -85,6 +85,7 @@
         localSavingContribution.value.savingGoal = {};  // Create if null
       }
       localSavingContribution.value.savingGoal = savingGoalByName;
+      localSavingContribution.value.savingGoalId = savingGoalByName?.id;
     }
   });
   
@@ -92,7 +93,7 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newSavingContribution = props.isNewSavingContribution
-        ? { id: uuidv4(), amount: 0, currency: 'PLN', contributionDate: '', savingGoal: null }
+        ? { id: uuidv4(), amount: 0, currency: 'PLN', contributionDate: '', savingGoal: null, savingGoalId: null }
         : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
   
         localSavingContribution.value = newSavingContribution;
