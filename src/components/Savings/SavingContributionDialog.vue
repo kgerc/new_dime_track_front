@@ -1,12 +1,27 @@
 <template>
     <q-dialog v-model="isOpen">
       <q-card style="width: 400px">
-        <q-card-section>
+        <q-card-section class="row justify-between items-center">
           <div class="text-h6">{{ isNewSavingContribution ? 'New Saving Contribution' : 'Edit Saving Contribution' }}</div>
+          
+          <!-- Currency Dropdown -->
+          <q-select
+            v-model="localSavingContribution.currency"
+            :options="currencyOptions"
+            dense
+            outlined
+            style="min-width: 100px;"
+          />
         </q-card-section>
-  
+
         <q-card-section class="q-gutter-md">
-          <q-input v-model.number="localSavingContribution.amount" label="Amount" type="number" outlined dense />
+          <q-input 
+            v-model.number="localSavingContribution.amount" 
+            :prefix="getCurrencySymbol(localSavingContribution.currency)" 
+            label="Amount" 
+            type="number" 
+            outlined 
+            dense />
           <q-input v-model="localSavingContribution.contributionDate" label="Payment Date" type="date" outlined dense />
           <q-select
             v-model="savingGoalTitle"
@@ -34,6 +49,7 @@
   import { format } from 'date-fns';
   import { useSavingsStore } from 'src/stores/savingsStore.js';
   import { storeToRefs } from 'pinia';
+  import { getCurrencySymbol } from 'src/helpers/formatCurrency.js'
   import WarningDialog from 'src/components/Base/WarningDialog.vue'
   
   const savingsStore = useSavingsStore();
@@ -46,7 +62,7 @@
   });
   
   const emit = defineEmits(['update:modelValue', 'save']);
-  
+  const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
   const localSavingContribution = ref({ ...props.savingContribution });  // Local copy for editing
   const isWarningDialogOpened = ref(false)
   
@@ -76,7 +92,7 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newSavingContribution = props.isNewSavingContribution
-        ? { id: uuidv4(), amount: 0, contributionDate: '', savingGoal: null }
+        ? { id: uuidv4(), amount: 0, currency: 'PLN', contributionDate: '', savingGoal: null }
         : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
   
         localSavingContribution.value = newSavingContribution;

@@ -118,7 +118,7 @@
     </div>
     <!-- No Expenses Message -->
     <div v-if="filteredEntries.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
-      <q-icon name="savings" size="4em" color="grey-6" />
+      <q-icon name="shopping_cart" size="4em" color="grey-6" />
       <div class="text-h6 text-grey-6 q-mt-md">No expenses this month</div>
     </div>
     <!-- Expense Dialog -->

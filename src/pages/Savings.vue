@@ -36,7 +36,7 @@
     <div class="q-pa-md" style="margin-top: -20px;">
       <!-- Savings List -->
       <q-list bordered separator v-if="!loadingSavings">
-        <q-item-label header>Savings</q-item-label>
+        <q-item-label v-if="entries.length > 0" header>Savings</q-item-label>
 
         <template v-for="entry in entries" :key="entry.id">
           <q-slide-item @right="removeSavingGoal(entry.id)">
@@ -125,6 +125,7 @@
     <q-footer class="bg-white">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
+          v-if="entries.length > 0"
           v-model="currentPage"
           :max="3"
           input
@@ -154,6 +155,11 @@
         :thickness="2"
       />
       <span class="q-mt-xs">Loading savings...</span>
+    </div>
+    <!-- No Expenses Message -->
+    <div v-if="entries.length === 0 && !loadingSavings" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
+      <q-icon name="savings" size="4em" color="grey-6" />
+      <div class="text-h6 text-grey-6 q-mt-md">No savings this month</div>
     </div>
     <SavingGoalDialog
       v-model="isDialogOpen"

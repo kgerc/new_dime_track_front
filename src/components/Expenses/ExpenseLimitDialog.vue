@@ -1,13 +1,28 @@
 <template>
   <q-dialog v-model="isOpen">
     <q-card style="width: 400px">
-      <q-card-section>
+      <q-card-section class="row justify-between items-center">
         <div class="text-h6">{{ isNewLimit ? 'New Expense Limit' : 'Edit Expense Limit' }}</div>
+        
+        <!-- Currency Dropdown -->
+        <q-select
+          v-model="localLimit.currency"
+          :options="currencyOptions"
+          dense
+          outlined
+          style="min-width: 100px;"
+        />
       </q-card-section>
 
       <q-card-section class="q-gutter-md">
         <q-input v-model="localLimit.title" label="Title" outlined dense />
-        <q-input v-model.number="localLimit.limit" label="Limit Amount" type="number" outlined dense />
+        <q-input 
+          v-model.number="localLimit.limit" 
+          label="Limit Amount" 
+          type="number" 
+          outlined 
+          dense
+          :prefix="getCurrencySymbol(localLimit.currency)" />
 
         <q-input v-model="localLimit.month" label="Month (e.g., 01 for January)" outlined dense />
         <q-input v-model="localLimit.year" label="Year (e.g., 2025)" outlined dense />
@@ -55,6 +70,7 @@
 import { defineProps, defineEmits, ref, computed, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useExpensesStore } from 'src/stores/expensesStore';
+import { getCurrencySymbol } from 'src/helpers/formatCurrency.js'
 import { storeToRefs } from 'pinia';
 import WarningDialog from 'src/components/Base/WarningDialog.vue'
 
@@ -67,8 +83,8 @@ const props = defineProps({
   isNewLimit: Boolean, // Flag to distinguish between new and existing limit
 })
 
+const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const emit = defineEmits(['update:modelValue', 'save'])
-
 const localLimit = ref({ ...props.limit }) // Copy limit for local editing
 
 const isOpen = computed({
@@ -99,7 +115,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newLimit = props.isNewLimit
-      ? { id: uuidv4(), title: '', limit: 0, month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
+      ? { id: uuidv4(), title: '', limit: 0, currency: 'PLN', month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
       : { ...props.limit }
 
     localLimit.value = newLimit
