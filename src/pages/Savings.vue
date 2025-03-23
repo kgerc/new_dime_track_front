@@ -36,9 +36,9 @@
     <div class="q-pa-md" style="margin-top: -20px;">
       <!-- Savings List -->
       <q-list bordered separator v-if="!loadingSavings">
-        <q-item-label v-if="entries.length > 0" header>Savings</q-item-label>
+        <q-item-label v-if="currentMonthEntries.length > 0" header>Savings</q-item-label>
 
-        <template v-for="entry in entries" :key="entry.id">
+        <template v-for="entry in currentMonthEntries" :key="entry.id">
           <q-slide-item @right="removeSavingGoal(entry.id)">
             <template v-slot:right>
               <q-btn flat dense color="negative" icon="delete" @click="removeSavingGoal(entry.id)" />
@@ -84,7 +84,7 @@
               </q-item-section>
 
               <q-item-section side class="text-weight-bold text-positive">
-                {{ formatCurrency(entry.currentAmount, entry.currency) }}
+                {{ formatCurrency(entry.currentMonthAmountChange, entry.currency) }}
               </q-item-section>
             </q-item>
           </q-slide-item>
@@ -125,14 +125,14 @@
     <q-footer class="bg-white">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
-          v-if="entries.length > 0"
+          v-if="currentMonthEntries.length > 0"
           v-model="currentPage"
-          :max="3"
+          :max="maxPage"
           input
         />
       </div>
       <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
-        <div class="col text-grey-7 text-h6">Balance</div>
+        <div class="col text-grey-7 text-h6">Savings sum</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
           {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
@@ -157,7 +157,7 @@
       <span class="q-mt-xs">Loading savings...</span>
     </div>
     <!-- No Expenses Message -->
-    <div v-if="entries.length === 0 && !loadingSavings" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
+    <div v-if="currentMonthEntries.length === 0 && !loadingSavings" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="savings" size="4em" color="grey-6" />
       <div class="text-h6 text-grey-6 q-mt-md">No savings this month</div>
     </div>
@@ -218,6 +218,12 @@ const currentMonthName = computed(() =>
   format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
 );
 
+// Max page calculation
+const maxPage = computed(() => {
+  return Math.ceil(currentMonthEntries.value.length / itemsPerPage)
+})
+
+
 // Fetch incomes on mount
 onMounted(async () => {
   loadingSavings.value = true
@@ -226,8 +232,15 @@ onMounted(async () => {
   extendSavingGoalModel()
 })
 
+const currentMonthEntries = computed(() => {
+  return entries.value.filter(entry => {
+    const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    return matchesSearch;
+  })
+})
+
 const currentMonthContributions = computed(() => {
-  const contributions = entries.value
+  const contributions = currentMonthEntries.value
     .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
   return contributions.filter(entry => {
     const entryDate = new Date(entry.contributionDate)
@@ -243,30 +256,20 @@ const currentMonthContributions = computed(() => {
 })
 
 const previousMonthContributions = computed(() => {
-  const contributions = entries.value
+  const contributions = currentMonthEntries.value
     .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
-
-  // Calculate the previous month and year
-  let prevMonth = selectedMonth.value - 1;
-  let prevYear = selectedYear.value;
-
-  if (prevMonth < 0) {
-    prevMonth = 11; // December (because January is 0)
-    prevYear -= 1;
-  }
 
   return contributions.filter(entry => {
     const entryDate = new Date(entry.contributionDate);
     
-    const isMonthYearMatch = entryDate.getMonth() === prevMonth && entryDate.getFullYear() === prevYear;
+    const isBeforeSelectedMonth =
+      entryDate.getFullYear() < selectedYear.value ||
+      (entryDate.getFullYear() === selectedYear.value && entryDate.getMonth() < selectedMonth.value);
 
-    const isDayMatch =
-      selectedDay.value == null || 
-      (entryDate.getDate() === selectedDay.value);
-
-    return isMonthYearMatch && isDayMatch;
+    return isBeforeSelectedMonth;
   });
 });
+
 
 function getCurrentMonthContributionsByGoalId(id) {
   return currentMonthContributions.value.filter(contribution => contribution.savingGoalId === id)
@@ -292,8 +295,9 @@ const totalBalance = computed(() => {
 })
 
 function extendSavingGoalModel() {
-  entries.value.forEach(goal => {
+  currentMonthEntries.value.forEach(goal => {
     goal.currentAmount = getTotalGoalBalanceFromPreviousMonth(goal.id) + getTotalGoalBalanceFromCurrentMonth(goal.id)
+    goal.currentMonthAmountChange = getTotalGoalBalanceFromCurrentMonth(goal.id)
     goal.status = setCurrentProgressStatus(goal.currentAmount, goal.amount)
   })
 }
