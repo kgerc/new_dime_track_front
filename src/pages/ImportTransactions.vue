@@ -22,7 +22,28 @@
         </div>
       </q-card-section>
 
-      <q-card-section v-if="parsedData && parsedData.length > 0">
+      <q-card-section style="margin-top: -70px;">
+        <h6 class="text-h6">Savings Keywords</h6>
+        <q-input
+          v-model="newKeyword"
+          label="Add Savings Keyword"
+          filled
+          dense
+          @keyup.enter="addKeyword"
+        />
+        <div class="q-mt-md">
+          <q-chip
+            v-for="(keyword, index) in savingsKeywords"
+            :key="index"
+            removable
+            @remove="removeKeyword(index)"
+          >
+            {{ keyword }}
+          </q-chip>
+        </div>
+      </q-card-section>
+
+      <q-card-section v-if="parsedData.length > 0" style="margin-top: -55px;">
         <h6 class="text-h6">Preview (First 5 Transactions)</h6>
         <q-table
           :rows="parsedData"
@@ -30,7 +51,7 @@
           row-key="id"
           dense
           flat
-          :rows-per-page-options="[5, 10]" 
+          :rows-per-page-options="[5, 10]"
         />
         
         <q-btn
@@ -59,7 +80,8 @@ import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
 
 // Pinia Store
 const importTransactionsStore = useImportTransactionsStore();
-const { file, parsedData, columns } = storeToRefs(importTransactionsStore);
+const { file, parsedData, columns, savingsKeywords } = storeToRefs(importTransactionsStore);
+const newKeyword = ref("");
 
 // Reactive State
 const loading = ref(false);
@@ -106,7 +128,8 @@ const parseCSV = (file) => {
           date: mapColumnValue(row, 'date'),
           description: extractMerchant(row), // Extracts Merchant Name or Fallback
           amount: mapColumnValue(row, 'amount'),
-          currency: mapColumnValue(row, 'currency')
+          currency: mapColumnValue(row, 'currency'),
+          isSaving: isSaving(extractMerchant(row))
         }));
 
         parsedData.value = mappedData;
@@ -125,6 +148,21 @@ const parseCSV = (file) => {
 
   // Read the file as an ArrayBuffer
   reader.readAsArrayBuffer(file);
+};
+
+const isSaving = (title) => {
+  return savingsKeywords.value.some(keyword => title.includes(keyword));
+}
+
+const addKeyword = () => {
+  if (newKeyword.value.trim() && !savingsKeywords.value.includes(newKeyword.value.trim())) {
+    savingsKeywords.value.push(newKeyword.value.trim());
+    newKeyword.value = "";
+  }
+};
+
+const removeKeyword = (index) => {
+  savingsKeywords.value.splice(index, 1);
 };
 
 // Fix function to handle misinterpreted characters

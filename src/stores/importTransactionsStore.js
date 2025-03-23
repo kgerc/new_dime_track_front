@@ -6,6 +6,7 @@ export const useImportTransactionsStore = defineStore('importTransactions', () =
   const file = ref(null)
   const parsedData = ref([])
   const columns = ref([]) 
+  const savingsKeywords = ref(["OBLIGACJE SKARBOWE"]); // Default savings indicators
 
   async function uploadTransactions() {
     try {
@@ -21,5 +22,9 @@ export const useImportTransactionsStore = defineStore('importTransactions', () =
     }
   }
 
-  return { uploadTransactions, file, parsedData, columns }
+  const setSavingsKeywords = (keywords) => {
+    savingsKeywords.value = keywords;
+  };
+
+  return { uploadTransactions, file, parsedData, columns, savingsKeywords }
 })
