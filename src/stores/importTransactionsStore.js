@@ -10,8 +10,12 @@ export const useImportTransactionsStore = defineStore('importTransactions', () =
 
   async function uploadTransactions() {
     try {
-      const response = await api.post('/imports/transactions', parsedData.value)
-      if (response.status === 201 || response.status === 200) { 
+      const request = {
+        transactions: parsedData.value,
+        savingsKeywords: savingsKeywords.value
+      };
+      const response = await api.post('/imports/transactions', request)
+      if (response.status === 201 || response.status === 200) {
         file.value = null;
         parsedData.value = []
       } else {

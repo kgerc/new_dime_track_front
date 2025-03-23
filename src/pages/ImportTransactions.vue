@@ -128,8 +128,7 @@ const parseCSV = (file) => {
           date: mapColumnValue(row, 'date'),
           description: extractMerchant(row), // Extracts Merchant Name or Fallback
           amount: mapColumnValue(row, 'amount'),
-          currency: mapColumnValue(row, 'currency'),
-          isSaving: isSaving(extractMerchant(row))
+          currency: mapColumnValue(row, 'currency')
         }));
 
         parsedData.value = mappedData;
@@ -149,10 +148,6 @@ const parseCSV = (file) => {
   // Read the file as an ArrayBuffer
   reader.readAsArrayBuffer(file);
 };
-
-const isSaving = (title) => {
-  return savingsKeywords.value.some(keyword => title.includes(keyword));
-}
 
 const addKeyword = () => {
   if (newKeyword.value.trim() && !savingsKeywords.value.includes(newKeyword.value.trim())) {
