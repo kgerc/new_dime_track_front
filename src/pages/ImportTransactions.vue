@@ -84,11 +84,20 @@ const onFileSelected = (selectedFile) => {
   }
 };
 
-// Function to parse CSV file
 const parseCSV = (file) => {
   const reader = new FileReader();
+
   reader.onload = (event) => {
-    Papa.parse(event.target.result, {
+    const arrayBuffer = event.target.result;
+
+    // Decode the content using Windows-1252 (a common encoding for Polish)
+    const text = new TextDecoder('windows-1252').decode(arrayBuffer);
+
+    // Apply manual fixes to correct any misinterpreted characters
+    const fixedContent = manualFix(text);
+
+    // Parse the content using PapaParse
+    Papa.parse(fixedContent, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
@@ -113,7 +122,26 @@ const parseCSV = (file) => {
       }
     });
   };
-  reader.readAsText(file);
+
+  // Read the file as an ArrayBuffer
+  reader.readAsArrayBuffer(file);
+};
+
+// Fix function to handle misinterpreted characters
+const manualFix = (text) => {
+  return text
+    .replace(/[ý]/g, 'l')  // Replace misinterpreted 'ý' with 'ł'
+    .replace(/[£]/g, 'L')  // Replace '£' with 'Ł'
+    .replace(/[¯]/g, 'Z')  // Replace '¯' with 'Ą'
+    .replace(/[´]/g, 'e')  // Replace accented characters
+    .replace(/[Å]/g, 'Z')  // Polish 'Ż'
+    .replace(/[Ö]/g, 'Z')  // Another possible misinterpretation of 'Ż'
+    .replace(/[ý]/g, 'Z')  // Replace wrongly interpreted 'ý' with 'Ż' (if that's the case)
+    .replace(/[ü]/g, 'A')  // Misinterpreted 'ü' could be 'Ą'
+    .replace(/[ç]/g, 'C')  // Misinterpreted 'ç' to 'Ć'
+    .replace(/[À]/g, 'S')  // Misinterpreted 'À' with 'Ś'
+    .replace(/[\u0080-\u009F]/g, '') // Remove unwanted control characters
+    .replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII characters, cleaning up unwanted ones
 };
 
 // Function to map column values based on possible names
@@ -132,19 +160,45 @@ const extractMerchant = (row) => {
   if (row['']) {
     let locationText = row[''];
     let locationText2 = row['_1'];
-    let expenseMatch = locationText.match(/Adres:\s+([\w\s]+)/i);
-    let expenseMatch2 = locationText2.match(/Adres:\s+([\w\s]+)/i);
-    let incomeMatch = locationText.match(/Nazwa nadawcy:\s+([\w\s]+)/i);
+
+    // Improved regex to handle URLs properly in both locationText and locationText2
+    // Capture the address or URL after 'Adres:' until we encounter 'Miasto:', 'Kraj:', or end of string
+    let expenseMatch = locationText.match(/Adres:\s+(.+?)(?=\s+(?:Miasto:|Kraj:|$))/i);
+    let expenseMatch2 = locationText2.match(/Adres:\s+(.+?)(?=\s+(?:Miasto:|Kraj:|$))/i);
+    let expenseMatch3 = locationText2.match(/Adres:\s+(.+)/i); 
+    let expenseMatch4 = locationText.match(/Tytu:\s+(.+)/i); 
+    let incomeMatch = locationText.match(/Nazwa (?:nadawcy|odbiorcy):\s+(.+)/i); // Capture full name
+
+    let extractedText = "";
+    // If a match for locationText or locationText2 is found, use the address or URL found
     if (expenseMatch && expenseMatch[1]) {
-      return expenseMatch[1].trim();
+      extractedText = expenseMatch[1].trim();
     } else if (expenseMatch2 && expenseMatch2[1]) {
-      return expenseMatch2[1].trim();
+      extractedText = expenseMatch2[1].trim();
     } else if (incomeMatch && incomeMatch[1]) {
-      return incomeMatch[1].trim();
+      extractedText = incomeMatch[1].trim();
+    } else if (expenseMatch3 && expenseMatch3[1]) {
+      extractedText = expenseMatch3[1].trim();
+    } else if (expenseMatch4 && expenseMatch4[1]) {
+      // If "SPLATA" is part of the matched text from 'Tytu:', return only the part after 'SPLATA'
+      let splataMatch = expenseMatch4[1].match(/^SPLATA\s+([^\s]+)/i);
+      if (splataMatch) {
+        extractedText = `splata place pozniej`;  // Extracts just the part after "SPLATA"
+      } 
+    } else {
+      extractedText = row['Typ transakcji'] || 'Unknown';
     }
+
+    // Handle cases where the address may contain URLs (including ones without http:// or https://)
+    if (extractedText.match(/(?:https?:\/\/|www\.)[^\s]+/i)) {
+      return extractedText.trim();
+    }
+
+    return extractedText;
   }
   return row['Opis transakcji'] || 'Unknown';
 };
+
 
 // Function to upload transactions to API
 const uploadTransactions = async () => {
