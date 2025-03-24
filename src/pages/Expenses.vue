@@ -175,6 +175,7 @@ import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
 import { getExpenseIcon, getExpenseIconColor, getIncomingUnpaidExpenses } from 'src/helpers/expenseUtils.js'
 import { format } from 'date-fns'
+import { debounce } from 'lodash';
 
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
@@ -261,6 +262,7 @@ watch([selectedMonth, selectedYear], () => {
 
 // Filter entries by selected month, year, and day
 const searchQuery = ref('')
+const debouncedSearchQuery = ref('')
 const filteredEntries = computed(() => {
   currentMonthEntries.value.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
   const startIndex = (currentPage.value - 1) * itemsPerPage
@@ -275,22 +277,31 @@ const currentMonthLimits = computed(() => {
   })
 })
 
-const currentMonthEntries = computed(() => {
-  return entries.value.filter(entry => {
-    const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    // Debounce logic
+    const updateDebouncedSearch = debounce((query) => {
+      debouncedSearchQuery.value = query;
+    }, 300);
 
-    const entryDate = new Date(entry.paymentDate)
+    // Watch for changes in searchQuery and update debouncedSearchQuery
+    watch(searchQuery, (newQuery) => {
+      updateDebouncedSearch(newQuery);
+    });
 
-    const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
-    
-    const isDayMatch = selectedDay.value == null || 
-    (entryDate.getMonth() === selectedMonth.value && 
-    entryDate.getFullYear() === selectedYear.value &&
-    entryDate.getDate() === selectedDay.value)
-    
-    return matchesSearch && isMonthYearMatch && isDayMatch;
-  })
-})
+    // Computed property for filtered entries
+    const currentMonthEntries = computed(() => {
+      return entries.value.filter(entry => {
+        const matchesSearch = entry.title.toLowerCase().includes(debouncedSearchQuery.value.toLowerCase());
+
+        const entryDate = new Date(entry.paymentDate);
+        const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value;
+        const isDayMatch = selectedDay.value == null || 
+          (entryDate.getMonth() === selectedMonth.value &&
+          entryDate.getFullYear() === selectedYear.value &&
+          entryDate.getDate() === selectedDay.value);
+
+        return matchesSearch && isMonthYearMatch && isDayMatch;
+      });
+    });
 
 const totalBalance = computed(() => {
   return currentMonthEntries.value.reduce((acc, { amount }) => acc + amount, 0)
