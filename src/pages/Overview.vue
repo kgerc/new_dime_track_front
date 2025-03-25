@@ -2,7 +2,24 @@
   <q-page class="bg-grey-1">
     <!-- Month/Year Filter & View Toggle -->
     <div class="row justify-between items-center q-my-md q-px-md">
-      <div class="row items-center justify-center col" style="margin-left:170px;">
+<!-- Balance Display with Edit Option (Left-aligned) -->
+    <div class="row q-mt-md q-px-md q-py-sm bg-white shadow-2 rounded-borders">
+      <div class="text-h6 q-mr-sm">
+        Balance: <span :class="amountColor(balance)">{{ !isEditingBalance ? formatCurrency(balance, 'PLN') : '' }}</span>
+      </div>
+      <q-input
+        v-if="isEditingBalance"
+        v-model="balance"
+        dense
+        bg-color="white"
+        type="number"
+        class="q-mr-sm q-pa-none"
+        style="font-size: 20px; width:140px;height:25px;margin-top: -3px;"
+      />
+      <q-icon v-if="!isEditingBalance" name="edit" size="sm" color="primary" class="cursor-pointer" @click="editBalance" style="margin-top: 3px;"/>
+      <q-icon v-else name="check_circle" size="sm" color="primary" class="cursor-pointer" @click="saveBalance" style="margin-top: 7px;"/>
+    </div>
+      <div class="row items-center justify-center col" style="margin-right:115px;">
         <q-btn icon="arrow_back" flat @click="prevPeriod" />
         <div class="q-mx-md text-h6">
           {{ viewMode === 'monthly' ? `${currentMonthName} ${selectedYear}` : selectedYear }}
@@ -102,6 +119,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
+import { amountColor } from 'src/helpers/amountColor.js'
 
 const viewMode = ref("monthly")
 
@@ -191,5 +209,16 @@ function nextPeriod() {
   } else {
     selectedYear.value++
   }
+}
+
+
+const balance = ref(6000)
+const isEditingBalance = ref(false)
+function editBalance() {
+  isEditingBalance.value = true
+}
+
+function saveBalance() {
+  isEditingBalance.value = false
 }
 </script>
