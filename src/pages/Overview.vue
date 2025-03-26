@@ -175,18 +175,15 @@
               </template>
             </q-list>
             <q-list bordered separator v-else>
-              <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
+              <q-item v-for="(entry, idx) in displayedSavings" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
-                  </q-item-label>
-                  <q-item-label caption v-if="viewMode === 'monthly'">
-                    {{ formatDate(entry.incomeDate) }}
+                    {{ monthNames[idx] }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
-                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>  {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
+                  <q-item-label class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>  {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), 'PLN') }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -236,18 +233,39 @@ function formatDate(dateStr) {
 }
 
 // Yearly View Computation
-const yearlySummary = (data) => {
+const yearlyExpenseSummary = (data) => {
   const summary = Array(12).fill(0)
   data.value.forEach(entry => {
-    const month = new Date(entry.date).getMonth()
+    const month = new Date(entry.paymentDate).getMonth()
+    summary[month] += entry.amount
+  })
+  return summary
+}
+
+const yearlyIncomesSummary = (data) => {
+  const summary = Array(12).fill(0)
+  data.value.forEach(entry => {
+    const month = new Date(entry.incomeDate).getMonth()
+    summary[month] += entry.amount
+  })
+  return summary
+}
+
+const yearlySavingsSummary = (data) => {
+  const contributions = data.value
+    .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
+  const summary = Array(12).fill(0)
+  contributions.forEach(entry => {
+    const month = new Date(entry.contributionDate).getMonth()
     summary[month] += entry.amount
   })
   return summary
 }
 
 // Get the correct data based on view mode
-const displayedExpenses = computed(() => viewMode.value === "yearly" ? yearlySummary(expenses) : expenses.value.filter(entry => isInSelectedMonth(entry.paymentDate)))
-const displayedIncomes = computed(() => viewMode.value === "yearly" ? yearlySummary(incomes) : incomes.value.filter(entry => isInSelectedMonth(entry.incomeDate)))
+const displayedExpenses = computed(() => viewMode.value === "yearly" ? yearlyExpenseSummary(expenses) : expenses.value.filter(entry => isInSelectedMonth(entry.paymentDate)))
+const displayedIncomes = computed(() => viewMode.value === "yearly" ? yearlyIncomesSummary(incomes) : incomes.value.filter(entry => isInSelectedMonth(entry.incomeDate)))
+const displayedSavings = computed(() => viewMode.value === "yearly" ? yearlySavingsSummary(savings) : [])
 
 // Ensure formatCurrency receives a number
 function getAmount(entry, idx) {
