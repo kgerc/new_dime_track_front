@@ -100,7 +100,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 713px; overflow-y: auto;">
-            <q-list bordered separator>
+            <q-list bordered separator v-if="viewMode === 'monthly'">
               <template v-for="entry in savings" :key="entry.id">
                 <q-item clickable @click="toggleExpand(entry.id)">
                   <q-item-section>
@@ -173,6 +173,22 @@
                   </div>
                 </q-slide-transition>
               </template>
+            </q-list>
+            <q-list bordered separator v-else>
+              <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">
+                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
+                  </q-item-label>
+                  <q-item-label caption v-if="viewMode === 'monthly'">
+                    {{ formatDate(entry.incomeDate) }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section side top class="text-weight-bold text-positive">
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>  {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
+                </q-item-section>
+              </q-item>
             </q-list>
           </q-card-section>
         </q-card>
