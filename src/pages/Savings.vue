@@ -121,7 +121,6 @@
       </q-list>
     </div>
 
-    <!-- Footer: Balance & Add New Expense -->
     <q-footer class="bg-white">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
