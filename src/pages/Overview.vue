@@ -58,7 +58,9 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-negative">
-                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/> {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/> 
+                    {{ formatCurrency(getMonthBalance(10000, getAmount(entry, idx), 0), 'PLN', true) }}
+                  </q-item-label>
                   <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                 </q-item-section>
               </q-item>
@@ -85,7 +87,9 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
-                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>  {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/> 
+                      {{ formatCurrency(getMonthBalance(10000, getAmount(entry, idx), 0), 'PLN', true) }} 
+                    </q-item-label>
                   <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                 </q-item-section>
               </q-item>
@@ -235,18 +239,32 @@ function formatDate(dateStr) {
 // Yearly View Computation
 const yearlyExpenseSummary = (data) => {
   const summary = Array(12).fill(0)
-  data.value.forEach(entry => {
-    const month = new Date(entry.paymentDate).getMonth()
-    summary[month] += entry.amount
-  })
+  data.value
+    .filter(entry => {
+        const entryDate = new Date(entry.paymentDate)
+        const isYearMatch = entryDate.getFullYear() === selectedYear.value
+      
+        return isYearMatch;
+      })
+    .forEach(entry => {
+      const month = new Date(entry.paymentDate).getMonth()
+      summary[month] += entry.amount
+    })
   return summary
 }
 
 const yearlyIncomesSummary = (data) => {
   const summary = Array(12).fill(0)
-  data.value.forEach(entry => {
-    const month = new Date(entry.incomeDate).getMonth()
-    summary[month] += entry.amount
+  data.value
+    .filter(entry => {
+      const entryDate = new Date(entry.incomeDate)
+      const isYearMatch = entryDate.getFullYear() === selectedYear.value
+    
+      return isYearMatch;
+    })
+    .forEach(entry => {
+      const month = new Date(entry.incomeDate).getMonth()
+      summary[month] += entry.amount
   })
   return summary
 }
@@ -270,6 +288,18 @@ const displayedSavings = computed(() => viewMode.value === "yearly" ? yearlySavi
 // Ensure formatCurrency receives a number
 function getAmount(entry, idx) {
   return viewMode.value === "yearly" ? entry : entry.amount
+}
+
+function getMonthBalance(entry, monthlyExpensesAmount, monthlyIncomesAmount) {
+  return entry + monthlyIncomesAmount - monthlyExpensesAmount;
+}
+
+function getMonthExpensesAmount(entry) {
+  return entry + monthlyIncomesAmount - monthlyExpensesAmount;
+}
+
+function getMonthIncomesAmount(entry) {
+  return entry + monthlyIncomesAmount - monthlyExpensesAmount;
 }
 
 // Check if entry is in the selected month
