@@ -45,8 +45,7 @@ export const useBalancesStore = defineStore('balances', () => {
     }
   }
 
-  function createBalanceDictionary() {
-    debugger;
+  function createBalanceDictionary(expenses, incomes) {
     entries.value = [
       {
         year: 2024,
@@ -68,19 +67,49 @@ export const useBalancesStore = defineStore('balances', () => {
 
     // Fill missing months with the previous month's balance
     Object.keys(balanceDict.value).forEach(year => {
-        for (let month = 1; month < 12; month++) {
+        const yearlyExpenses = expenses
+          .filter(entry => {
+            const entryDate = new Date(entry.paymentDate)
+            const isYearMatch = entryDate.getFullYear() == year
+          
+            return isYearMatch;
+          })
+        const yearlyIncomes = incomes
+          .filter(entry => {
+            const entryDate = new Date(entry.incomeDate)
+            const isYearMatch = entryDate.getFullYear() == year
+          
+            return isYearMatch;
+          })
+        for (let month = 0; month <= 11; month++) {
+            // if given month balance is 0 set value from the previous month
             if (balanceDict.value[year][month] === 0) {
-                balanceDict.value[year][month] = balanceDict[year][month - 1];
+              balanceDict.value[year][month] = balanceDict.value
+              [month === 0 ? year -1 : year][month === 0 ? 12 : month - 1];
             }
+            // apply expenses
+            const monthlyExpensesSum = yearlyExpenses
+              .filter(entry => {
+                const entryDate = new Date(entry.paymentDate)
+                const isMonthMatch = entryDate.getMonth() == month
+              
+                return isMonthMatch;
+              }).reduce((acc, { amount }) => acc + amount, 0)
+            balanceDict.value[year][month] += monthlyExpensesSum
+            // apply incomes
+            const monthlyIncomesSum = yearlyIncomes
+            .filter(entry => {
+              const entryDate = new Date(entry.incomeDate)
+              const isMonthMatch = entryDate.getMonth() == month
+            
+              return isMonthMatch;
+            }).reduce((acc, { amount }) => acc + amount, 0)
+          balanceDict.value[year][month] += monthlyIncomesSum
         }
     });
   }
 
-  function updateMonthlyBalance(year, month, amount) {
-    balanceDict.value[year][month] = amount
-  }
-
   return { 
     entries, balanceDict, createBalanceDictionary, 
-    updateMonthlyBalance, fetchBalances, addBalance, updateBalance }
+     fetchBalances, addBalance, updateBalance }
 })

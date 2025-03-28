@@ -58,10 +58,10 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-negative">
+                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                   <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/> 
-                    {{ formatCurrency(getMonthBalance(getFirstDayMonthBalance(selectedYear, idx), getAmount(entry, idx), getMonthlyIncomesAmount(idx), idx), 'PLN', true) }}
+                    {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }}
                   </q-item-label>
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -87,10 +87,10 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
+                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                   <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/> 
-                      {{ formatCurrency(getMonthBalance(getFirstDayMonthBalance(selectedYear, idx), getMonthlyExpensesAmount(idx), getAmount(entry, idx), idx), 'PLN', true) }} 
-                    </q-item-label>
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
+                      {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }} 
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -186,8 +186,8 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
+                  <q-item-label>{{ formatCurrency(getAmount(entry), 'PLN') }}</q-item-label>
                   <q-item-label class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>  {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
-                  <q-item-label>{{ formatCurrency(getAmount(entry, idx), 'PLN') }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -233,7 +233,7 @@ onMounted(async () => {
   await expensesStore.fetchExpenses()
   await incomesStore.fetchIncomes()
   await savingsStore.fetchSavingGoals()
-  balancesStore.createBalanceDictionary()
+  balancesStore.createBalanceDictionary(expenses.value, incomes.value)
   extendSavingGoalModel()
 })
 
@@ -293,31 +293,12 @@ const displayedIncomes = computed(() => viewMode.value === "yearly" ? yearlyInco
 const displayedSavings = computed(() => viewMode.value === "yearly" ? yearlySavingsSummary(savings) : [])
 
 // Ensure formatCurrency receives a number
-function getAmount(entry, idx) {
+function getAmount(entry) {
   return viewMode.value === "yearly" ? entry : entry.amount
 }
 
-function getFirstDayMonthBalance(year, month) {
+function getMonthBalance(year, month) {
   return balanceDict.value[year][month]
-}
-
-function getMonthBalance(entry, monthlyExpensesAmount, monthlyIncomesAmount, monthNumber) {
-  const sum = entry + monthlyIncomesAmount + monthlyExpensesAmount;
-  balancesStore.updateMonthlyBalance(selectedYear.value, monthNumber, sum)
-  return entry + monthlyIncomesAmount + monthlyExpensesAmount + getMonthBalanceFromPreviousMonth(monthNumber);
-}
-
-function getMonthBalanceFromPreviousMonth(monthNumber) {
-  if (monthNumber === 0) return 0;
-  return getFirstDayMonthBalance(selectedYear.value, monthNumber) + getMonthlyExpensesAmount(monthNumber) + getMonthlyIncomesAmount(monthNumber);
-}
-
-function getMonthlyExpensesAmount(month) {
-  return yearlyExpenseSummary(expenses)[month];
-}
-
-function getMonthlyIncomesAmount(month) {
-  return yearlyIncomesSummary(incomes)[month];
 }
 
 // Check if entry is in the selected month
