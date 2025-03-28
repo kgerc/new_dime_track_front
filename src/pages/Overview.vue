@@ -59,7 +59,7 @@
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-negative">
                   <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/> 
-                    {{ formatCurrency(getMonthBalance(10000, getAmount(entry, idx), 0), 'PLN', true) }}
+                    {{ formatCurrency(getMonthBalance(getFirstDayMonthBalance(selectedYear, idx), getAmount(entry, idx), getMonthlyIncomesAmount(idx), idx), 'PLN', true) }}
                   </q-item-label>
                   <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                 </q-item-section>
@@ -88,7 +88,7 @@
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
                   <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/> 
-                      {{ formatCurrency(getMonthBalance(10000, getAmount(entry, idx), 0), 'PLN', true) }} 
+                      {{ formatCurrency(getMonthBalance(getFirstDayMonthBalance(selectedYear, idx), getMonthlyExpensesAmount(idx), getAmount(entry, idx), idx), 'PLN', true) }} 
                     </q-item-label>
                   <q-item-label>{{ formatCurrency(getAmount(entry, idx), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                 </q-item-section>
@@ -205,6 +205,7 @@ import { amountColor } from 'src/helpers/amountColor.js'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { useSavingsStore } from 'src/stores/savingsStore'
+import { useBalancesStore } from 'src/stores/balancesStore'
 import { storeToRefs } from 'pinia'
 const expensesStore = useExpensesStore()
 const { entries: expenses } = storeToRefs(expensesStore)
@@ -214,6 +215,9 @@ const { entries: incomes } = storeToRefs(incomesStore)
 
 const savingsStore = useSavingsStore()
 const { entries: savings } = storeToRefs(savingsStore)
+
+const balancesStore = useBalancesStore()
+const { balanceDict } = storeToRefs(balancesStore)
 
 const viewMode = ref("monthly")
 
@@ -226,7 +230,10 @@ const monthNames = [
 ]
 
 onMounted(async () => {
+  await expensesStore.fetchExpenses()
+  await incomesStore.fetchIncomes()
   await savingsStore.fetchSavingGoals()
+  balancesStore.createBalanceDictionary()
   extendSavingGoalModel()
 })
 
@@ -290,16 +297,27 @@ function getAmount(entry, idx) {
   return viewMode.value === "yearly" ? entry : entry.amount
 }
 
-function getMonthBalance(entry, monthlyExpensesAmount, monthlyIncomesAmount) {
-  return entry + monthlyIncomesAmount - monthlyExpensesAmount;
+function getFirstDayMonthBalance(year, month) {
+  return balanceDict.value[year][month]
 }
 
-function getMonthExpensesAmount(entry) {
-  return entry + monthlyIncomesAmount - monthlyExpensesAmount;
+function getMonthBalance(entry, monthlyExpensesAmount, monthlyIncomesAmount, monthNumber) {
+  const sum = entry + monthlyIncomesAmount + monthlyExpensesAmount;
+  balancesStore.updateMonthlyBalance(selectedYear.value, monthNumber, sum)
+  return entry + monthlyIncomesAmount + monthlyExpensesAmount + getMonthBalanceFromPreviousMonth(monthNumber);
 }
 
-function getMonthIncomesAmount(entry) {
-  return entry + monthlyIncomesAmount - monthlyExpensesAmount;
+function getMonthBalanceFromPreviousMonth(monthNumber) {
+  if (monthNumber === 0) return 0;
+  return getFirstDayMonthBalance(selectedYear.value, monthNumber) + getMonthlyExpensesAmount(monthNumber) + getMonthlyIncomesAmount(monthNumber);
+}
+
+function getMonthlyExpensesAmount(month) {
+  return yearlyExpenseSummary(expenses)[month];
+}
+
+function getMonthlyIncomesAmount(month) {
+  return yearlyIncomesSummary(incomes)[month];
 }
 
 // Check if entry is in the selected month
