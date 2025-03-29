@@ -55,10 +55,9 @@ export const useBalancesStore = defineStore('balances', () => {
         balanceDict.value[year][month - 1] = amount;
     });
     
-    // Check if 2024 exists but 2025 doesn't
+    // Check if 2024 exists but 2025 doesn't, and add 2025 if necessary
     if (yearsInEntries.has(2024) && !yearsInEntries.has(2025)) {
-        const lastMonth2024Value = balanceDict.value[2024]?.[11] || 0; // December 2024 value
-        balanceDict.value[2025] = Array.from({ length: 12 }, () => lastMonth2024Value);
+      balanceDict.value[2025] = Array.from({ length: 12 }, () => 0);
     }
 
     // Fill missing months with the previous month's balance

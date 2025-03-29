@@ -299,7 +299,7 @@ function getAmount(entry) {
 }
 
 function getMonthBalance(year, month) {
-  return balanceDict.value[year] && balanceDict.value[year][month]
+  return balanceDict.value[year] && balanceDict.value[year][month] ? balanceDict.value[year][month] : 0;
 }
 
 // Check if entry is in the selected month
