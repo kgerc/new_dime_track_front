@@ -230,6 +230,7 @@ const monthNames = [
 ]
 
 onMounted(async () => {
+  await balancesStore.fetchBalances()
   await expensesStore.fetchExpenses()
   await incomesStore.fetchIncomes()
   await savingsStore.fetchSavingGoals()
@@ -298,7 +299,7 @@ function getAmount(entry) {
 }
 
 function getMonthBalance(year, month) {
-  return balanceDict.value[year][month]
+  return balanceDict.value[year] && balanceDict.value[year][month]
 }
 
 // Check if entry is in the selected month
