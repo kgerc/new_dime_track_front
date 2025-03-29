@@ -62,12 +62,6 @@
           :loading="loading"
         />
       </q-card-section>
-
-      <q-card-section v-if="message">
-        <q-banner :class="success ? 'bg-green text-white' : 'bg-red text-white'">
-          {{ message }}
-        </q-banner>
-      </q-card-section>
     </q-card>
   </q-page>
 </template>
@@ -76,17 +70,17 @@
 import { ref } from 'vue';
 import Papa from 'papaparse';
 import { storeToRefs } from 'pinia';
+import { useQuasar } from 'quasar'
 import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
 
 // Pinia Store
 const importTransactionsStore = useImportTransactionsStore();
 const { file, parsedData, columns, savingsKeywords } = storeToRefs(importTransactionsStore);
 const newKeyword = ref("");
+const $q = useQuasar()
 
 // Reactive State
 const loading = ref(false);
-const message = ref('');
-const success = ref(false);
 
 const columnMapping = {
   "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
@@ -240,22 +234,31 @@ const extractMerchant = (row) => {
 // Function to upload transactions to API
 const uploadTransactions = async () => {
   if (parsedData.value.length === 0) {
-    message.value = 'No transactions to upload!';
-    success.value = false;
+    $q.notify({
+        message: 'No transactions to upload',
+        color: 'warning',
+        position: 'top-right',
+        timeout: 2000
+      });
     return;
   }
 
-  loading.value = true;
-  message.value = '';
-
   try {
     await importTransactionsStore.uploadTransactions()
-    message.value = 'Transactions uploaded successfully!';
-    success.value = true;
+    $q.notify({
+        message: 'Transactions successfully uploaded!',
+        color: 'positive',
+        position: 'top-right',
+        timeout: 2000
+      });
   } catch (error) {
     console.error('Upload Error:', error);
-    message.value = 'Error uploading transactions.';
-    success.value = false;
+    $q.notify({
+        message: 'Error uploading transactions!',
+        color: 'negative',
+        position: 'top-right',
+        timeout: 2000
+      });
   } finally {
     loading.value = false;
   }
