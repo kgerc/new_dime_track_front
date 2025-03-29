@@ -46,7 +46,6 @@ export const useBalancesStore = defineStore('balances', () => {
   }
 
   function createBalanceDictionary(expenses, incomes) {
-    debugger;
     const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
 
     entries.value.forEach(({ year, month, amount }) => {
