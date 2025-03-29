@@ -92,7 +92,8 @@ const columnMapping = {
   "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
   "date": ["Date", "TransactionDate", "Data", "Data waluty"],
   "amount": ["Amount", "Kwota", "Betrag"],
-  "currency": ["Currency", "Waluta"]
+  "currency": ["Currency", "Waluta"],
+  "balanceAfterTransaction": ["Saldo po transakcji"]
 };
 
 // Function to handle file selection
@@ -128,7 +129,8 @@ const parseCSV = (file) => {
           date: mapColumnValue(row, 'date'),
           description: extractMerchant(row), // Extracts Merchant Name or Fallback
           amount: mapColumnValue(row, 'amount'),
-          currency: mapColumnValue(row, 'currency')
+          currency: mapColumnValue(row, 'currency'),
+          balanceAfterTransaction: mapColumnValue(row, 'balanceAfterTransaction')
         }));
 
         parsedData.value = mappedData;
@@ -182,7 +184,9 @@ const mapColumnValue = (row, field) => {
   const possibleNames = columnMapping[field];
   for (let name of possibleNames) {
     if (row[name]) {
-      return field === 'amount' ? parseFloat(row[name]) : row[name];
+      return field === 'amount' || field === 'balanceAfterTransaction' 
+        ? parseFloat(row[name]) 
+        : row[name];
     }
   }
   return null;
