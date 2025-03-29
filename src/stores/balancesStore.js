@@ -5,6 +5,7 @@ import api from 'src/api/axiosInstance' // Import the configured Axios instance
 export const useBalancesStore = defineStore('balances', () => {
   const entries = ref([])
   const balanceDict = ref({});
+  const savingsBalanceDict = ref({})
 
   async function fetchBalances() {
     try {
@@ -45,7 +46,7 @@ export const useBalancesStore = defineStore('balances', () => {
     }
   }
 
-  function createBalanceDictionary(expenses, incomes) {
+  function createIncomeExpensesBalanceDictionary(expenses, incomes) {
     const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
 
     entries.value.forEach(({ year, month, amount }) => {
@@ -105,7 +106,53 @@ export const useBalancesStore = defineStore('balances', () => {
     });
   }
 
+  function createSavingsBalanceDictionary(savings) {
+    const contributions = savings
+    .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
+    const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
+
+    entries.value.forEach(({ year, month, amount }) => {
+        if (!savingsBalanceDict.value[year]) {
+          savingsBalanceDict.value[year] = Array.from({ length: 12 }, () => 0);
+        }
+        savingsBalanceDict.value[year][month - 1] = amount;
+    });
+    
+    // Check if 2024 exists but 2025 doesn't, and add 2025 if necessary
+    if (yearsInEntries.has(2024) && !yearsInEntries.has(2025)) {
+      savingsBalanceDict.value[2025] = Array.from({ length: 12 }, () => 0);
+    }
+
+    // Fill missing months with the previous month's balance
+    Object.keys(savingsBalanceDict.value).forEach(year => {
+        const isPrecedingYear = yearsInEntries.has(year - 1)
+        const yearlyContributions = contributions
+          .filter(entry => {
+            const entryDate = new Date(entry.contributionDate)
+            const isYearMatch = entryDate.getFullYear() == year
+          
+            return isYearMatch;
+          })
+        for (let month = 0; month <= 11; month++) {
+            // if given month balance is 0 set value from the previous month
+            if (savingsBalanceDict.value[year][month] === 0) {
+              savingsBalanceDict.value[year][month] = savingsBalanceDict.value
+              [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month - 1];
+            }
+            // apply savings
+            const monthlyContributionsSum = yearlyContributions
+              .filter(entry => {
+                const entryDate = new Date(entry.contributionDate)
+                const isMonthMatch = entryDate.getMonth() == month
+              
+                return isMonthMatch;
+              }).reduce((acc, { amount }) => acc + amount, 0)
+              savingsBalanceDict.value[year][month] += monthlyContributionsSum
+        }
+    });
+  }
+
   return { 
-    entries, balanceDict, createBalanceDictionary, 
-     fetchBalances, addBalance, updateBalance }
+    entries, balanceDict, createIncomeExpensesBalanceDictionary, savingsBalanceDict,
+    createSavingsBalanceDictionary, fetchBalances, addBalance, updateBalance }
 })

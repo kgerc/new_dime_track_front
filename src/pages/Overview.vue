@@ -217,7 +217,7 @@ const savingsStore = useSavingsStore()
 const { entries: savings } = storeToRefs(savingsStore)
 
 const balancesStore = useBalancesStore()
-const { balanceDict } = storeToRefs(balancesStore)
+const { balanceDict, savingsBalanceDict } = storeToRefs(balancesStore)
 
 const viewMode = ref("monthly")
 
@@ -234,7 +234,8 @@ onMounted(async () => {
   await expensesStore.fetchExpenses()
   await incomesStore.fetchIncomes()
   await savingsStore.fetchSavingGoals()
-  balancesStore.createBalanceDictionary(expenses.value, incomes.value)
+  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value)
+  balancesStore.createSavingsBalanceDictionary(savings.value)
   extendSavingGoalModel()
 })
 
@@ -300,6 +301,10 @@ function getAmount(entry) {
 
 function getMonthBalance(year, month) {
   return balanceDict.value[year] && balanceDict.value[year][month] ? balanceDict.value[year][month] : 0;
+}
+
+function getSavingsMonthBalance(year, month) {
+  return savingsBalanceDict.value[year] && savingsBalanceDict.value[year][month] ? savingsBalanceDict.value[year][month] : 0;
 }
 
 // Check if entry is in the selected month
