@@ -127,6 +127,7 @@
       :expense="selectedExpense"
       :isNewExpense="isNewExpense"
       @save="handleExpenseSave"
+      @moveExpenseToSavings="handleMoveExpenseToSavings"
     />
     <ExpenseCategoryDialog v-model="isCategoryDialogOpen" @save="addCategory" :isNewCategory="true"/>
     <ExpenseLimitDialog v-model="isLimitDialogOpen" :isNewLimit="true" @save="handleExpenseLimitSave"/>
@@ -169,6 +170,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
+import { useSavingsStore } from 'src/stores/savingsStore'
 import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
@@ -186,6 +188,7 @@ import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue
 /* 🗄️ State Management */
 const $q = useQuasar()
 const expensesStore = useExpensesStore()
+const savingsStore = useSavingsStore()
 const { entries, categories, limits } = storeToRefs(expensesStore)
 
 /* 🗓️ Date and Calendar Handling */
@@ -386,6 +389,17 @@ async function handleExpenseSave(expense) {
     await handleUpdateExpense(expense)
   }
   isDialogOpen.value = false  // Close dialog after saving
+}
+
+async function handleMoveExpenseToSavings(id) {
+  await expensesStore.moveExpenseToSavings(id)
+  await savingsStore.fetchSavingGoals()
+  $q.notify({
+    message: 'Expense moved to savings successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 async function addCategory(newCategory) {

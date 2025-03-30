@@ -60,6 +60,8 @@
 
     <q-card-actions align="right">
       <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+      <q-space />  <!-- This pushes the next buttons to the right -->
+      <q-btn flat label="Move to savings" color="primary" @click="moveExpenseToSavings" />
       <q-btn flat label="Save" color="primary" @click="saveChanges" />
     </q-card-actions>
   </q-card>
@@ -84,7 +86,7 @@ const props = defineProps({
   isNewExpense: Boolean, // Flag to distinguish between new and existing expense
 });
 
-const emit = defineEmits(['update:modelValue', 'save']);
+const emit = defineEmits(['update:modelValue', 'save', 'moveExpenseToSavings']);
 const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const localExpense = ref({ ...props.expense });  // Local copy for editing
 
@@ -128,6 +130,11 @@ function closeDialog() {
 
 function saveChanges() {
   emit('save', localExpense.value);  // Send updated expense back
+  closeDialog();
+}
+
+function moveExpenseToSavings() {
+  emit('moveExpenseToSavings', localExpense.value.id);  // Send updated expense back
   closeDialog();
 }
 
