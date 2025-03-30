@@ -236,7 +236,7 @@ onMounted(async () => {
   await expensesStore.fetchExpenses()
   await incomesStore.fetchIncomes()
   await savingsStore.fetchSavingGoals()
-  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value)
+  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
   balancesStore.createSavingsBalanceDictionary(savings.value)
   extendSavingGoalModel()
 })

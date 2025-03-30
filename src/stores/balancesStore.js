@@ -46,7 +46,10 @@ export const useBalancesStore = defineStore('balances', () => {
     }
   }
 
-  function createIncomeExpensesBalanceDictionary(expenses, incomes) {
+  function createIncomeExpensesBalanceDictionary(expenses, incomes, savings) {
+    const contributionsToDeductFromBalance = savings
+      .reduce((acc, goal) => acc.concat(goal.savingContributions), [])
+      .filter(con => con.deductFromIncomeBalance);
     const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
 
     entries.value.forEach(({ year, month, amount }) => {
@@ -78,6 +81,13 @@ export const useBalancesStore = defineStore('balances', () => {
           
             return isYearMatch;
           })
+        const yearlyContributions = contributionsToDeductFromBalance
+          .filter(entry => {
+            const entryDate = new Date(entry.contributionDate)
+            const isYearMatch = entryDate.getFullYear() == year
+          
+            return isYearMatch;
+          })
         for (let month = 0; month <= 11; month++) {
             // if given month balance is 0 set value from the previous month
             if (balanceDict.value[year][month] === 0) {
@@ -102,12 +112,20 @@ export const useBalancesStore = defineStore('balances', () => {
               return isMonthMatch;
             }).reduce((acc, { amount }) => acc + amount, 0)
           balanceDict.value[year][month] += monthlyIncomesSum
+          // apply contributions to deduct from incomes balance
+          const monthlyContributionsSum = yearlyContributions
+          .filter(entry => {
+            const entryDate = new Date(entry.contributionDate)
+            const isMonthMatch = entryDate.getMonth() == month
+          
+            return isMonthMatch;
+          }).reduce((acc, { amount }) => acc + amount, 0)
+          balanceDict.value[year][month] -= monthlyContributionsSum
         }
     });
   }
 
   function createSavingsBalanceDictionary(savings) {
-    debugger
     const contributions = savings
     .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
     const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
@@ -135,13 +153,12 @@ export const useBalancesStore = defineStore('balances', () => {
             return isYearMatch;
           })
         for (let month = 0; month <= 11; month++) {
-            debugger;
             // if given month balance is 0 set value from the previous month
             if (savingsBalanceDict.value[year][month] === 0) {
               savingsBalanceDict.value[year][month] = savingsBalanceDict.value
               [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month === 0 ? month : month - 1];
             }
-            // apply savings
+            // apply contributions
             const monthlyContributionsSum = yearlyContributions
               .filter(entry => {
                 const entryDate = new Date(entry.contributionDate)
@@ -149,7 +166,7 @@ export const useBalancesStore = defineStore('balances', () => {
               
                 return isMonthMatch;
               }).reduce((acc, { amount }) => acc + amount, 0)
-              savingsBalanceDict.value[year][month] += monthlyContributionsSum
+            savingsBalanceDict.value[year][month] += monthlyContributionsSum
         }
     });
   }
