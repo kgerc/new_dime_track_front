@@ -25,25 +25,23 @@
           <!-- Single Language Avatar with Dropdown -->
           <div>
             <q-avatar
-              size="40px"
-              color="blue"
-              text-color="white"
-              class="cursor-pointer"
-              @click="languageMenu = true"
+            size="40px"
+            color="blue"
+            text-color="white"
+            class="cursor-pointer"
             >
               <q-icon name="language" />
+              <q-menu v-model="languageMenu" style="width:40px;">
+                <q-list>
+                  <q-item clickable v-ripple @click="toggleLanguage('EN')">
+                    <q-item-section><span style="margin-left: -5px;">EN</span></q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple @click="toggleLanguage('PL')">
+                    <q-item-section><span style="margin-left: -5px;">PL</span></q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
             </q-avatar>
-
-            <q-menu v-model="languageMenu" anchor="top right" self="top right">
-              <q-list>
-                <q-item clickable v-ripple @click="toggleLanguage('EN')">
-                  <q-item-section>EN</q-item-section>
-                </q-item>
-                <q-item clickable v-ripple @click="toggleLanguage('PL')">
-                  <q-item-section>PL</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
           </div>
 
           <!-- User Avatar with initials -->
