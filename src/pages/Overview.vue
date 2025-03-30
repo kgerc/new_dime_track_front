@@ -187,7 +187,9 @@
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
                   <q-item-label>{{ formatCurrency(getAmount(entry), 'PLN') }}</q-item-label>
-                  <q-item-label class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>  {{ formatCurrency(10000, 'PLN', true) }}</q-item-label>
+                  <q-item-label class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>
+                    {{ formatCurrency(getSavingsMonthBalance(selectedYear, idx), 'PLN', true) }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -282,10 +284,17 @@ const yearlySavingsSummary = (data) => {
   const contributions = data.value
     .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
   const summary = Array(12).fill(0)
-  contributions.forEach(entry => {
-    const month = new Date(entry.contributionDate).getMonth()
-    summary[month] += entry.amount
-  })
+  contributions
+    .filter(entry => {
+      const entryDate = new Date(entry.contributionDate)
+      const isYearMatch = entryDate.getFullYear() === selectedYear.value
+    
+      return isYearMatch;
+    })
+    .forEach(entry => {
+      const month = new Date(entry.contributionDate).getMonth()
+      summary[month] += entry.amount
+    })
   return summary
 }
 

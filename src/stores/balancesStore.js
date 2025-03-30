@@ -82,7 +82,7 @@ export const useBalancesStore = defineStore('balances', () => {
             // if given month balance is 0 set value from the previous month
             if (balanceDict.value[year][month] === 0) {
               balanceDict.value[year][month] = balanceDict.value
-              [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month - 1];
+              [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month === 0 ? month : month - 1];
             }
             // apply expenses
             const monthlyExpensesSum = yearlyExpenses
@@ -107,6 +107,7 @@ export const useBalancesStore = defineStore('balances', () => {
   }
 
   function createSavingsBalanceDictionary(savings) {
+    debugger
     const contributions = savings
     .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
     const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
@@ -115,7 +116,7 @@ export const useBalancesStore = defineStore('balances', () => {
         if (!savingsBalanceDict.value[year]) {
           savingsBalanceDict.value[year] = Array.from({ length: 12 }, () => 0);
         }
-        savingsBalanceDict.value[year][month - 1] = amount;
+        savingsBalanceDict.value[year][month - 1] = 0;
     });
     
     // Check if 2024 exists but 2025 doesn't, and add 2025 if necessary
@@ -134,10 +135,11 @@ export const useBalancesStore = defineStore('balances', () => {
             return isYearMatch;
           })
         for (let month = 0; month <= 11; month++) {
+            debugger;
             // if given month balance is 0 set value from the previous month
             if (savingsBalanceDict.value[year][month] === 0) {
               savingsBalanceDict.value[year][month] = savingsBalanceDict.value
-              [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month - 1];
+              [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month === 0 ? month : month - 1];
             }
             // apply savings
             const monthlyContributionsSum = yearlyContributions
