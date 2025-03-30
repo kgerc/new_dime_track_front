@@ -163,9 +163,21 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  async function moveExpenseToSavings(id) {
+    try {
+      const response = await api.delete(`/expenses/moveExpenseToSavings/${id}`)
+      if (response.status === 201 || response.status === 200) { 
+        entries.value = entries.value.filter(entry => entry.id !== id)
+      } else {
+        console.error('Failed to move expense to savings: Unexpected response status', response.status)
+      }
+    } catch (error) {
+      console.error('Error moving expense to savings:', error)
+    }
+  }
 
   return { entries, fetchExpenses, addExpense, removeExpense, updateExpense,
      addExpenseCategory, fetchExpenseCategories, categories,
      limits, fetchExpenseLimits, addExpenseLimit, updateExpenseLimit, updateExpenseCategory,
-     removeExpenseLimit, removeExpenseCategory }
+     removeExpenseLimit, removeExpenseCategory, moveExpenseToSavings }
 })
