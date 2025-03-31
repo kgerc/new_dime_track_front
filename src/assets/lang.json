@@ -66,5 +66,13 @@
     "december": {
         "en": "December",
         "pl": "Grudzień"
+    },
+    "switchToYearlyMode": {
+        "en": "Switch to Yearly View",
+        "pl": "Przełącz na widok roczny"
+    },
+    "switchToMonthlyMode": {
+        "en": "Switch to Monthly View",
+        "pl": "Przełącz na widok miesięczny"
     }
   }

@@ -34,7 +34,7 @@
 
       <!-- Toggle View Mode Button -->
       <q-btn flat dense @click="toggleViewMode">
-        {{ viewMode === 'monthly' ? "Switch to Yearly View" : "Switch to Monthly View" }}
+        {{ viewMode === 'monthly' ? t('switchToYearlyMode') : t('switchToMonthlyMode') }}
       </q-btn>
     </div>
 
