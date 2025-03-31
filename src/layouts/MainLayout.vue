@@ -21,7 +21,9 @@
 
         <!-- Right side: single language avatar + user initials avatar -->
         <div class="row items-center q-gutter-md">
-
+          <q-avatar size="40px" color="grey-8" text-color="white" class="cursor-pointer">
+            <q-icon :name="isDarkMode ? 'light_mode' : 'dark_mode'" clickable @click="toggleDarkMode"/>
+          </q-avatar>
           <!-- Single Language Avatar with Dropdown -->
           <div>
             <q-avatar
@@ -105,6 +107,7 @@ const { currentLanguage } = storeToRefs(langStore);
 // Reactive state variables
 const leftDrawerOpen = ref(false);
 const languageMenu = ref(false);
+const isDarkMode = ref(false);
 const navLinks = ref([
   { title: 'Overview', to: '/' },
   { title: 'Savings', to: '/savings' },
@@ -122,6 +125,11 @@ const toggleLanguage = (lang) => {
   langStore.setLanguage(lang);
   languageMenu.value = false;
   currentLanguage.value = lang;
+};
+
+// Toggle function
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
 };
 </script>
 
