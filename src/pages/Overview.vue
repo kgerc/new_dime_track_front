@@ -51,7 +51,7 @@
               <q-item v-for="(entry, idx) in displayedExpenses" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ viewMode === 'yearly' ? monthNames.value[idx] : entry.title }}
+                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
                   </q-item-label>
                   <q-item-label caption v-if="viewMode === 'monthly'">
                     {{ formatDate(entry.paymentDate) }}
@@ -80,7 +80,7 @@
               <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ viewMode === 'yearly' ? monthNames.value[idx] : entry.title }}
+                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
                   </q-item-label>
                   <q-item-label caption v-if="viewMode === 'monthly'">
                     {{ formatDate(entry.incomeDate) }}
@@ -182,7 +182,7 @@
               <q-item v-for="(entry, idx) in displayedSavings" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ monthNames.value[idx] }}
+                    {{ monthNames[idx] }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
