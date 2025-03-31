@@ -31,13 +31,29 @@
             class="cursor-pointer"
             >
               <q-icon name="language" />
-              <q-menu v-model="languageMenu" style="width:40px;">
-                <q-list>
-                  <q-item clickable v-ripple @click="toggleLanguage('EN')">
-                    <q-item-section><span style="margin-left: -5px;">EN</span></q-item-section>
+              <q-menu v-model="languageMenu" class="bg-grey-3" style="min-width: 150px;">
+                <q-list separator>
+                  <q-item clickable v-ripple @click="toggleLanguage('en')" :active="currentLanguage === 'en'">
+                    <q-item-section avatar>
+                      <q-avatar size="24px">
+                        <img src="https://flagcdn.com/w40/gb.png" alt="English" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>English</q-item-section>
+                    <q-item-section side v-if="currentLanguage === 'en'">
+                      <q-icon name="check" color="primary" />
+                    </q-item-section>
                   </q-item>
-                  <q-item clickable v-ripple @click="toggleLanguage('PL')">
-                    <q-item-section><span style="margin-left: -5px;">PL</span></q-item-section>
+                  <q-item clickable v-ripple @click="toggleLanguage('pl')" :active="currentLanguage === 'pl'">
+                    <q-item-section avatar>
+                      <q-avatar size="24px">
+                        <img src="https://flagcdn.com/w40/pl.png" alt="Polski" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>Polski</q-item-section>
+                    <q-item-section side v-if="currentLanguage === 'pl'">
+                      <q-icon name="check" color="primary" />
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -76,34 +92,36 @@
   </q-layout>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useLangStore } from 'src/stores/langStore';
 import NavLink from 'src/components/Navigation/NavLink.vue';
 
-export default {
-  components: { NavLink },
-  data() {
-    return {
-      leftDrawerOpen: false,
-      languageMenu: false,
-      navLinks: [
-        { title: 'Overview', to: '/' },
-        { title: 'Savings', to: '/savings' },
-        { title: 'Expenses', to: '/expenses' },
-        { title: 'Incomes', to: '/incomes' },
-        { title: 'Upload Transactions (CSV)', to: '/import_transactions' },
-      ],
-    };
-  },
-  methods: {
-    toggleLeftDrawer() {
-      this.leftDrawerOpen = !this.leftDrawerOpen;
-    },
-    toggleLanguage(lang) {
-      // Implement logic to change app language here
-      console.log(`Language switched to: ${lang}`);
-      this.languageMenu = false;
-    },
-  },
+// Using the lang store
+const langStore = useLangStore();
+const { currentLanguage } = storeToRefs(langStore);
+
+// Reactive state variables
+const leftDrawerOpen = ref(false);
+const languageMenu = ref(false);
+const navLinks = ref([
+  { title: 'Overview', to: '/' },
+  { title: 'Savings', to: '/savings' },
+  { title: 'Expenses', to: '/expenses' },
+  { title: 'Incomes', to: '/incomes' },
+  { title: 'Upload Transactions (CSV)', to: '/import_transactions' },
+]);
+
+// Methods
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+
+const toggleLanguage = (lang) => {
+  langStore.setLanguage(lang);
+  languageMenu.value = false;
+  currentLanguage.value = lang;
 };
 </script>
 

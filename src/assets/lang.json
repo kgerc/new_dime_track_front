@@ -1,0 +1,70 @@
+{
+    "welcome": {
+      "en": "Welcome",
+      "pl": "Witaj"
+    },
+    "settings": {
+      "en": "Settings",
+      "pl": "Ustawienia"
+    },
+    "expenses": {
+      "en": "Expenses",
+      "pl": "Wydatki"
+    },
+    "savings": {
+      "en": "Savings",
+      "pl": "Oszczędności"
+    },
+    "incomes": {
+        "en": "Incomes",
+        "pl": "Przychody"
+      },
+    "january": {
+        "en": "January",
+        "pl": "Styczeń"
+    },
+    "february": {
+        "en": "February",
+        "pl": "Luty"
+    },
+    "march": {
+        "en": "March",
+        "pl": "Marzec"
+    },
+    "april": {
+        "en": "April",
+        "pl": "Kwiecień"
+    },
+    "may": {
+        "en": "May",
+        "pl": "Maj"
+    },
+    "june": {
+        "en": "June",
+        "pl": "Czerwiec"
+    },
+    "july": {
+        "en": "July",
+        "pl": "Lipiec"
+    },
+    "august": {
+        "en": "August",
+        "pl": "Sierpień"
+    },
+    "september": {
+        "en": "September",
+        "pl": "Wrzesień"
+    },
+    "october": {
+        "en": "October",
+        "pl": "Październik"
+    },
+    "november": {
+        "en": "November",
+        "pl": "Listopad"
+    },
+    "december": {
+        "en": "December",
+        "pl": "Grudzień"
+    }
+  }

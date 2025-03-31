@@ -43,7 +43,7 @@
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-            <div class="text-h6 text-center">Expenses</div>
+            <div class="text-h6 text-center">{{ t('expenses') }}</div>
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 713px; overflow-y: auto;">
@@ -51,7 +51,7 @@
               <q-item v-for="(entry, idx) in displayedExpenses" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
+                    {{ viewMode === 'yearly' ? monthNames.value[idx] : entry.title }}
                   </q-item-label>
                   <q-item-label caption v-if="viewMode === 'monthly'">
                     {{ formatDate(entry.paymentDate) }}
@@ -72,7 +72,7 @@
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-            <div class="text-h6 text-center">Incomes</div>
+            <div class="text-h6 text-center">{{ t('incomes') }}</div>
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 800px; overflow-y: auto;">
@@ -80,7 +80,7 @@
               <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
+                    {{ viewMode === 'yearly' ? monthNames.value[idx] : entry.title }}
                   </q-item-label>
                   <q-item-label caption v-if="viewMode === 'monthly'">
                     {{ formatDate(entry.incomeDate) }}
@@ -100,7 +100,7 @@
       <div class="col-12 col-md-4">
         <q-card>
           <q-card-section>
-        <div class="text-h6 text-center">Savings</div>
+        <div class="text-h6 text-center">{{ t('savings') }}</div>
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 713px; overflow-y: auto;">
@@ -182,7 +182,7 @@
               <q-item v-for="(entry, idx) in displayedSavings" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ monthNames[idx] }}
+                    {{ monthNames.value[idx] }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
@@ -208,6 +208,7 @@ import { useExpensesStore } from 'src/stores/expensesStore'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { useSavingsStore } from 'src/stores/savingsStore'
 import { useBalancesStore } from 'src/stores/balancesStore'
+import { useLangStore } from "src/stores/langStore"
 import { storeToRefs } from 'pinia'
 const expensesStore = useExpensesStore()
 const { entries: expenses } = storeToRefs(expensesStore)
@@ -221,15 +222,17 @@ const { entries: savings } = storeToRefs(savingsStore)
 const balancesStore = useBalancesStore()
 const { balanceDict, savingsBalanceDict } = storeToRefs(balancesStore)
 
+const { t } = useLangStore();
+
 const viewMode = ref("monthly")
 
 const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
 
-const monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
+const monthNames = computed(() => [
+  t('january'), t('february'), t('march'), t('april'), t('may'), t('june'),
+  t('july'), t('august'), t('september'), t('october'), t('november'), t('december')
+]);
 
 onMounted(async () => {
   await balancesStore.fetchBalances()
@@ -241,7 +244,7 @@ onMounted(async () => {
   extendSavingGoalModel()
 })
 
-const currentMonthName = computed(() => monthNames[selectedMonth.value])
+const currentMonthName = computed(() => monthNames.value[selectedMonth.value])
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString()
