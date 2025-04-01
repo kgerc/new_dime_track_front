@@ -98,16 +98,20 @@
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useLangStore } from 'src/stores/langStore';
+import { useThemeStore } from 'src/stores/themeStore';
 import NavLink from 'src/components/Navigation/NavLink.vue';
 
 // Using the lang store
 const langStore = useLangStore();
 const { currentLanguage } = storeToRefs(langStore);
+// Using the theme store
+const themeStore = useThemeStore();
+const { isDarkMode } = storeToRefs(themeStore);
+const { toggleDarkMode } = themeStore;
 
 // Reactive state variables
 const leftDrawerOpen = ref(false);
 const languageMenu = ref(false);
-const isDarkMode = ref(false);
 const navLinks = ref([
   { title: 'Overview', to: '/' },
   { title: 'Savings', to: '/savings' },
@@ -125,11 +129,6 @@ const toggleLanguage = (lang) => {
   langStore.setLanguage(lang);
   languageMenu.value = false;
   currentLanguage.value = lang;
-};
-
-// Toggle function
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
 };
 </script>
 
