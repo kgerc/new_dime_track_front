@@ -6,6 +6,7 @@ export const useBalancesStore = defineStore('balances', () => {
   const entries = ref([])
   const balanceDict = ref({});
   const savingsBalanceDict = ref({})
+  const hasInitialized = ref(false)
 
   async function fetchBalances() {
     try {
@@ -169,9 +170,12 @@ export const useBalancesStore = defineStore('balances', () => {
             savingsBalanceDict.value[year][month] += monthlyContributionsSum
         }
     });
+    if (!hasInitialized.value) {
+      hasInitialized.value = true;
+    }
   }
 
   return { 
     entries, balanceDict, createIncomeExpensesBalanceDictionary, savingsBalanceDict,
-    createSavingsBalanceDictionary, fetchBalances, addBalance, updateBalance }
+    createSavingsBalanceDictionary, fetchBalances, addBalance, updateBalance, hasInitialized }
 })

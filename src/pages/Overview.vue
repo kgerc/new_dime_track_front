@@ -220,7 +220,7 @@ const savingsStore = useSavingsStore()
 const { entries: savings } = storeToRefs(savingsStore)
 
 const balancesStore = useBalancesStore()
-const { balanceDict, savingsBalanceDict } = storeToRefs(balancesStore)
+const { balanceDict, savingsBalanceDict, hasInitialized } = storeToRefs(balancesStore)
 
 const { t } = useLangStore();
 
@@ -235,13 +235,15 @@ const monthNames = computed(() => [
 ]);
 
 onMounted(async () => {
-  await balancesStore.fetchBalances()
-  await expensesStore.fetchExpenses()
-  await incomesStore.fetchIncomes()
-  await savingsStore.fetchSavingGoals()
-  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
-  balancesStore.createSavingsBalanceDictionary(savings.value)
-  extendSavingGoalModel()
+  if (!hasInitialized.value) {
+    await balancesStore.fetchBalances()
+    await expensesStore.fetchExpenses()
+    await incomesStore.fetchIncomes()
+    await savingsStore.fetchSavingGoals()
+    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
+    balancesStore.createSavingsBalanceDictionary(savings.value)
+    extendSavingGoalModel()
+  }
 })
 
 const currentMonthName = computed(() => monthNames.value[selectedMonth.value])
