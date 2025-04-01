@@ -220,7 +220,7 @@ const savingsStore = useSavingsStore()
 const { entries: savings } = storeToRefs(savingsStore)
 
 const balancesStore = useBalancesStore()
-const { balanceDict, savingsBalanceDict, hasInitialized } = storeToRefs(balancesStore)
+const { balanceDict, savingsBalanceDict, hasInitialized, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
 
 const { t } = useLangStore();
 
@@ -243,6 +243,9 @@ onMounted(async () => {
     balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
     balancesStore.createSavingsBalanceDictionary(savings.value)
     extendSavingGoalModel()
+  } else if (reloadIncomeExpensesDictionary.value) {
+    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
+    balancesStore.createSavingsBalanceDictionary(savings.value)
   }
 })
 

@@ -7,6 +7,8 @@ export const useBalancesStore = defineStore('balances', () => {
   const balanceDict = ref({});
   const savingsBalanceDict = ref({})
   const hasInitialized = ref(false)
+  const reloadIncomeExpensesDictionary = ref(false)
+  const reloadSavingsDictionary = ref(false)
 
   async function fetchBalances() {
     try {
@@ -48,6 +50,9 @@ export const useBalancesStore = defineStore('balances', () => {
   }
 
   function createIncomeExpensesBalanceDictionary(expenses, incomes, savings) {
+    if (reloadIncomeExpensesDictionary.value) {
+      balanceDict.value = {}
+    }
     const contributionsToDeductFromBalance = savings
       .reduce((acc, goal) => acc.concat(goal.savingContributions), [])
       .filter(con => con.deductFromIncomeBalance);
@@ -127,6 +132,9 @@ export const useBalancesStore = defineStore('balances', () => {
   }
 
   function createSavingsBalanceDictionary(savings) {
+    if (reloadSavingsDictionary.value) {
+      savingsBalanceDict.value = {}
+    }
     const contributions = savings
     .reduce((acc, goal) => acc.concat(goal.savingContributions), []);
     const yearsInEntries = new Set(entries.value.map(({ year }) => Number(year)));
@@ -177,5 +185,6 @@ export const useBalancesStore = defineStore('balances', () => {
 
   return { 
     entries, balanceDict, createIncomeExpensesBalanceDictionary, savingsBalanceDict,
-    createSavingsBalanceDictionary, fetchBalances, addBalance, updateBalance, hasInitialized }
+    createSavingsBalanceDictionary, fetchBalances, addBalance, updateBalance, hasInitialized,
+    reloadSavingsDictionary, reloadIncomeExpensesDictionary }
 })

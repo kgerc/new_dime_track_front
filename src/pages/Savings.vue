@@ -182,6 +182,7 @@ import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useSavingsStore } from 'src/stores/savingsStore'
+import { useBalancesStore } from 'src/stores/balancesStore'
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import SavingGoalDialog from 'src/components/Savings/SavingGoalDialog.vue'
@@ -191,6 +192,9 @@ const $q = useQuasar()
 const currentPage = ref(1)
 const savingsStore = useSavingsStore()
 const { entries } = storeToRefs(savingsStore)
+
+const balancesStore = useBalancesStore()
+const { hasInitialized, reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
 
 // Date management
 const currentDate = new Date()
@@ -225,10 +229,12 @@ const maxPage = computed(() => {
 
 // Fetch incomes on mount
 onMounted(async () => {
-  loadingSavings.value = true
-  await savingsStore.fetchSavingGoals()
-  loadingSavings.value = false
-  extendSavingGoalModel()
+  if (!hasInitialized.value) {
+    loadingSavings.value = true
+    await savingsStore.fetchSavingGoals()
+    loadingSavings.value = false
+    extendSavingGoalModel()
+  }
 })
 
 const currentMonthEntries = computed(() => {
@@ -459,6 +465,8 @@ async function handleSavingContributionSave(savingContribution) {
       timeout: 2000
     });
   }
+  reloadSavingsDictionary.value = true
+  reloadIncomeExpensesDictionary.value = true
 }
 
 async function handleUpdateSavingContribution(updatedSavingContribution) {
