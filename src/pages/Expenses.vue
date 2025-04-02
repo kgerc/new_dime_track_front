@@ -391,6 +391,7 @@ async function handleExpenseSave(expense) {
   isDialogOpen.value = false  // Close dialog after saving
   await expensesStore.fetchExpenseLimits()
   sumExpensesByCategory();
+  checkAndNotifyExceededLimits();  // Check whenever expense is edited
 }
 
 async function handleMoveExpenseToSavings(id) {
