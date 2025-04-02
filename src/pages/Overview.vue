@@ -7,7 +7,7 @@
       <div class="text-h6 q-mr-sm">
         <q-icon name="account_balance" size="md" color="grey" style="margin-top: -5px;">                
           <q-tooltip anchor="top middle" self="bottom middle">
-            <div class="text-caption">Balance</div>
+            <div class="text-caption">t('balance')</div>
           </q-tooltip>
         </q-icon> 
         <span :class="amountColor(balance)" style="margin-left: 5px;">{{ !isEditingBalance ? formatCurrency(balance, 'PLN') : '' }}</span>
@@ -71,7 +71,7 @@
                 size="3em"
                 :thickness="2"
               />
-              <span class="q-mt-xs">Loading expenses...</span>
+              <span class="q-mt-xs">{{ t('loadingExpenses') }}</span>
             </div>
           </q-card-section>
         </q-card>
@@ -108,7 +108,7 @@
                 size="3em"
                 :thickness="2"
               />
-              <span class="q-mt-xs">Loading incomes...</span>
+              <span class="q-mt-xs">{{ t('loadingIncomes') }}</span>
             </div>
           </q-card-section>
         </q-card>
@@ -132,7 +132,7 @@
                       />
                       <div>
                         <!-- Saving Title -->
-                        <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
+                        <q-item-label class="text-weight-bold">{{ getTitle(entry) }}</q-item-label>
                         <!-- Amounts -->
                         <q-item-label caption v-if="entry.amount">
                           {{ formatCurrency(entry.currentAmount, entry.currency, true) }} / {{ formatCurrency(entry.amount, entry.currency, true) }}
@@ -215,7 +215,7 @@
                 size="3em"
                 :thickness="2"
               />
-              <span class="q-mt-xs">Loading incomes...</span>
+              <span class="q-mt-xs">{{ t('loadingSavings') }}</span>
             </div>
           </q-card-section>
         </q-card>
@@ -257,6 +257,10 @@ const monthNames = computed(() => [
   t('january'), t('february'), t('march'), t('april'), t('may'), t('june'),
   t('july'), t('august'), t('september'), t('october'), t('november'), t('december')
 ]);
+
+const getTitle = computed(() => (entry) => {
+  return entry.title === "No goal" ? t('noGoal') : entry.title;
+});
 
 let loadingExpenses = ref(false)
 let loadingIncomes = ref(false)

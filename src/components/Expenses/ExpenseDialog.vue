@@ -117,7 +117,7 @@ watch(isOpen, (newVal) => {
   if (newVal) {
     const newExpense = props.isNewExpense
       ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
-      : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), 'yyyy-MM-dd') };
+      : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), "yyyy-MM-dd'T00:00:00'") };
 
     localExpense.value = newExpense;
     categoryTitle.value = newExpense.expenseCategory?.title || null;

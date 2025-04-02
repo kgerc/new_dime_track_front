@@ -3,9 +3,9 @@
     <q-card style="width: 400px">
       <!-- Summary Section -->
       <q-card-section class="text-center q-py-sm">
-        <div class="text-h6">Expense Limits</div>
+        <div class="text-h6">Limity wydatków</div>
         <div class="text-body2">
-          Spent: €{{ totalSpent }} / Limit: €{{ totalLimit }}
+          Wydane: PLN {{ totalSpent }} / Limit: PLN {{ totalLimit }}
         </div>
         <q-linear-progress
           :value="totalSpent / totalLimit"
@@ -25,12 +25,12 @@
           icon="circle"
           expand-separator
           class="custom-expansion-item"
-          :style="{ '--icon-color': limit.expenseCategory.color }"
+          :style="{ '--icon-color': limit.expenseCategory?.color }"
         >
           <q-item>
             <q-item-section>
               <q-chip>
-                Spent: €{{ limit.spent }} / Limit: €{{ limit.limit }}
+                Wydane: PLN {{ formatCurrency(limit.spent, 'PLN', true) }} / Limit: PLN {{ limit.limit }}
               </q-chip>
               <div
                 :class="isLimitExceeded(limit) ? 'text-red' : 'text-green'"
@@ -45,10 +45,10 @@
                     class="q-mr-xs"
                   />
                   <span v-if="isLimitExceeded(limit)">
-                    Exceeded by €{{ getExceededAmount(limit) }}
+                    Przekroczone o PLN{{ getExceededAmount(limit) }}
                   </span>
                   <span v-else>
-                    Within limit
+                    W limice
                   </span>
                 </div>
                 <q-btn
@@ -82,6 +82,7 @@ import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
 import { useExpensesStore } from 'src/stores/expensesStore';
+import { formatCurrency } from 'src/helpers/formatCurrency.js'
 
 const $q = useQuasar();
 const expensesStore = useExpensesStore();
@@ -114,7 +115,7 @@ const totalLimit = computed(() => {
 });
 
 // Helper methods
-const getLimitCategory = (limit) => limit.expenseCategory.title;
+const getLimitCategory = (limit) => limit.expenseCategory?.title;
 
 const isLimitExceeded = (limit) => limit.spent > limit.limit;
 

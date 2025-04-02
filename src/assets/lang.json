@@ -18,7 +18,27 @@
     "incomes": {
         "en": "Incomes",
         "pl": "Przychody"
-      },
+    },
+    "balance": {
+        "en": "Balance",
+        "pl": "Saldo"
+    },
+    "loadingExpenses": {
+        "en": "Loading expenses...",
+        "pl": "Ładowanie wydatków..."
+    },
+    "loadingIncomes": {
+        "en": "Loading incomes...",
+        "pl": "Ładowanie przychodów..."
+    },
+    "loadingSavings": {
+        "en": "Loading savings...",
+        "pl": "Ładowanie oszczędności..."
+    },
+    "noGoal": {
+        "en": "No goal",
+        "pl": "Ogólne"
+    },
     "january": {
         "en": "January",
         "pl": "Styczeń"

@@ -281,30 +281,30 @@ const currentMonthLimits = computed(() => {
 })
 
     // Debounce logic
-    const updateDebouncedSearch = debounce((query) => {
-      debouncedSearchQuery.value = query;
-    }, 300);
+  const updateDebouncedSearch = debounce((query) => {
+    debouncedSearchQuery.value = query;
+  }, 300);
 
-    // Watch for changes in searchQuery and update debouncedSearchQuery
-    watch(searchQuery, (newQuery) => {
-      updateDebouncedSearch(newQuery);
+  // Watch for changes in searchQuery and update debouncedSearchQuery
+  watch(searchQuery, (newQuery) => {
+    updateDebouncedSearch(newQuery);
+  });
+
+  // Computed property for filtered entries
+  const currentMonthEntries = computed(() => {
+    return entries.value.filter(entry => {
+      const matchesSearch = entry.title.toLowerCase().includes(debouncedSearchQuery.value.toLowerCase());
+
+      const entryDate = new Date(entry.paymentDate);
+      const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value;
+      const isDayMatch = selectedDay.value == null || 
+        (entryDate.getMonth() === selectedMonth.value &&
+        entryDate.getFullYear() === selectedYear.value &&
+        entryDate.getDate() === selectedDay.value);
+
+      return matchesSearch && isMonthYearMatch && isDayMatch;
     });
-
-    // Computed property for filtered entries
-    const currentMonthEntries = computed(() => {
-      return entries.value.filter(entry => {
-        const matchesSearch = entry.title.toLowerCase().includes(debouncedSearchQuery.value.toLowerCase());
-
-        const entryDate = new Date(entry.paymentDate);
-        const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value;
-        const isDayMatch = selectedDay.value == null || 
-          (entryDate.getMonth() === selectedMonth.value &&
-          entryDate.getFullYear() === selectedYear.value &&
-          entryDate.getDate() === selectedDay.value);
-
-        return matchesSearch && isMonthYearMatch && isDayMatch;
-      });
-    });
+  });
 
 const totalBalance = computed(() => {
   return currentMonthEntries.value.reduce((acc, { amount }) => acc + amount, 0)
@@ -389,6 +389,8 @@ async function handleExpenseSave(expense) {
     await handleUpdateExpense(expense)
   }
   isDialogOpen.value = false  // Close dialog after saving
+  await expensesStore.fetchExpenseLimits()
+  sumExpensesByCategory();
 }
 
 async function handleMoveExpenseToSavings(id) {
@@ -446,6 +448,7 @@ const exceededLimits = computed(() => {
   // Assuming mockedLimits contains limit, spent, and category information
   return currentMonthLimits.value.filter(limit => limit.spent > limit.limit);
 });
+
 watch([selectedMonth, selectedYear], () => {
   checkAndNotifyExceededLimits();  // Check whenever month or year changes
   checkAndNotifyUpcomingUnpaidExpenses();
