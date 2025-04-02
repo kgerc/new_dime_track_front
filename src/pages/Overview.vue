@@ -47,7 +47,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 713px; overflow-y: auto;">
-            <q-list bordered separator>
+            <q-list bordered separator  v-if="!loadingExpenses">
               <q-item v-for="(entry, idx) in displayedExpenses" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
@@ -65,6 +65,14 @@
                 </q-item-section>
               </q-item>
             </q-list>
+            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="2"
+              />
+              <span class="q-mt-xs">Loading expenses...</span>
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -76,7 +84,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 800px; overflow-y: auto;">
-            <q-list bordered separator>
+            <q-list bordered separator v-if="!loadingIncomes">
               <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
@@ -94,6 +102,14 @@
                 </q-item-section>
               </q-item>
             </q-list>
+            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingIncomes">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="2"
+              />
+              <span class="q-mt-xs">Loading incomes...</span>
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -104,7 +120,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section style="max-height: 713px; overflow-y: auto;">
-            <q-list bordered separator v-if="viewMode === 'monthly'">
+            <q-list bordered separator v-if="viewMode === 'monthly' && !loadingSavings">
               <template v-for="entry in savings" :key="entry.id">
                 <q-item clickable @click="toggleExpand(entry.id)">
                   <q-item-section>
@@ -178,7 +194,7 @@
                 </q-slide-transition>
               </template>
             </q-list>
-            <q-list bordered separator v-else>
+            <q-list bordered separator v-else-if="!loadingSavings">
               <q-item v-for="(entry, idx) in displayedSavings" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
@@ -193,6 +209,14 @@
                 </q-item-section>
               </q-item>
             </q-list>
+            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingSavings">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="2"
+              />
+              <span class="q-mt-xs">Loading incomes...</span>
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -224,7 +248,7 @@ const { balanceDict, savingsBalanceDict, hasInitialized, reloadIncomeExpensesDic
 
 const { t } = useLangStore();
 
-const viewMode = ref("monthly")
+const viewMode = ref("yearly")
 
 const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
@@ -234,12 +258,21 @@ const monthNames = computed(() => [
   t('july'), t('august'), t('september'), t('october'), t('november'), t('december')
 ]);
 
+let loadingExpenses = ref(false)
+let loadingIncomes = ref(false)
+let loadingSavings = ref(false)
 onMounted(async () => {
   if (!hasInitialized.value) {
+    loadingExpenses.value = true
+    loadingIncomes.value = true
+    loadingSavings.value = true
     await balancesStore.fetchBalances()
     await expensesStore.fetchExpenses()
+    loadingExpenses.value = false
     await incomesStore.fetchIncomes()
+    loadingIncomes.value = false
     await savingsStore.fetchSavingGoals()
+    loadingSavings.value = false
     balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
     balancesStore.createSavingsBalanceDictionary(savings.value)
     extendSavingGoalModel()
