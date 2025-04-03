@@ -176,8 +176,16 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  async function assignExpenseCategories() {
+    try {
+      await api.post(`/expenses/assignCategories`)
+    } catch (error) {
+      console.error('Error moving expense to savings:', error)
+    }
+  }
+
   return { entries, fetchExpenses, addExpense, removeExpense, updateExpense,
      addExpenseCategory, fetchExpenseCategories, categories,
      limits, fetchExpenseLimits, addExpenseLimit, updateExpenseLimit, updateExpenseCategory,
-     removeExpenseLimit, removeExpenseCategory, moveExpenseToSavings }
+     removeExpenseLimit, removeExpenseCategory, moveExpenseToSavings, assignExpenseCategories }
 })

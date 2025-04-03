@@ -156,6 +156,7 @@
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
           <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="category" :label="`Categories (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="assignment_turned_in" label="Assign categories" color="white" flat @click="assignCategories" class="q-mr-sm" />
           <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
@@ -511,6 +512,17 @@ const maxPage = computed(() => {
 
 async function refetchExpenses(isCategoryEdited) {
   if (isCategoryEdited) await expensesStore.fetchExpenses() 
+}
+
+async function assignCategories() {
+  await expensesStore.assignExpenseCategories()
+  await expensesStore.fetchExpenses()
+  $q.notify({
+    message: 'Expense categories assigned successfully!',
+    color: 'positive',
+    position: 'top-right',
+    timeout: 2000
+  })
 }
 
 </script>
