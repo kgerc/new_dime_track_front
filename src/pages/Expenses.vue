@@ -517,6 +517,7 @@ async function refetchExpenses(isCategoryEdited) {
 async function assignCategories() {
   await expensesStore.assignExpenseCategories()
   await expensesStore.fetchExpenses()
+  currentPage.value = 1
   $q.notify({
     message: 'Expense categories assigned successfully!',
     color: 'positive',
