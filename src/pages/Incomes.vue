@@ -223,6 +223,7 @@ const currentMonthName = computed(() =>
 );
 
 const currentMonthEntries = computed(() => {
+  currentPage.value = 1
   return entries.value.filter(entry => {
     const matchesSearch = entry.title.toLowerCase().includes(searchQuery.value.toLowerCase())
 
