@@ -135,36 +135,43 @@
     <ExpenseCategoriesDialog v-model="isCategoriesListDialogOpen" @isCategoryEdited="refetchExpenses" />
 
     <!-- Footer: Balance & Add New Expense -->
-    <q-footer class="bg-white">
-      <div class="q-pa-xs flex flex-center">
-        <q-pagination
-          v-if="filteredEntries.length > 0"
-          v-model="currentPage"
-          :max="maxPage"
-          input
+    <q-footer :class="footerClasses">
+    <div class="q-pa-xs flex flex-center">
+      <q-pagination
+        v-if="filteredEntries.length > 0"
+        v-model="currentPage"
+        :max="maxPage"
+        input
+      />
+    </div>
+    <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
+      <div class="col" :class="titleClasses">Expenses sum</div>
+      <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
+        {{ formatCurrency(totalBalance, 'PLN') }}
+      </div>
+    </div>
+
+    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm" :class="formClasses">
+      <div class="row items-center q-pr-md">
+        <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
+        <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
+        <q-btn icon="category" :label="`Categories (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
+        <q-btn icon="assignment_turned_in" label="Assign categories" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
+        <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
+        <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
+      </div>
+      <div class="col">
+        <q-input
+          v-model="searchQuery"
+          outlined
+          dense
+          :class="formClasses"
+          placeholder="Search expenses"
+          class="q-mb-sm"
         />
       </div>
-      <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
-        <div class="col text-grey-7 text-h6">Expenses sum</div>
-        <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
-          {{ formatCurrency(totalBalance, 'PLN') }}
-        </div>
-      </div>
-
-      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
-        <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
-          <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
-          <q-btn icon="category" :label="`Categories (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
-          <q-btn icon="assignment_turned_in" label="Assign categories" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
-          <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
-          <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
-        </div>
-        <div class="col">
-          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
-        </div>
-      </q-form>
-    </q-footer>
+    </q-form>
+  </q-footer>
   </q-page>
   <ConfirmDialog v-model="isConfirmDialogOpened" @confirm="assignCategories" />
 </template>
@@ -172,6 +179,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
+import { useThemeStore } from 'src/stores/themeStore';
 import { useSavingsStore } from 'src/stores/savingsStore'
 import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
@@ -193,12 +201,14 @@ const $q = useQuasar()
 const expensesStore = useExpensesStore()
 const savingsStore = useSavingsStore()
 const { entries, categories, limits } = storeToRefs(expensesStore)
+const themeStore = useThemeStore();
+const { isDarkMode } = storeToRefs(themeStore);
 
 /* 🗓️ Date and Calendar Handling */
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June', 
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
+const months = computed(() => [
+  t('january'), t('february'), t('march'), t('april'), t('may'), t('june'),
+  t('july'), t('august'), t('september'), t('october'), t('november'), t('december')
+]);
 const currentDate = new Date()
 const currentMonth = currentDate.getMonth()
 const currentYear = currentDate.getFullYear()
@@ -528,5 +538,14 @@ async function assignCategories() {
     timeout: 2000
   })
 }
+
+// Footer classes
+const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-white text-dark');
+
+// Example: For the title in the summary section
+const titleClasses = computed(() => isDarkMode.value ? 'text-white' : 'text-grey-7');
+
+// For the form, switch the background accordingly:
+const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
 
 </script>
