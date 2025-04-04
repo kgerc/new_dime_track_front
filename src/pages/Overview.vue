@@ -272,14 +272,14 @@ onMounted(async () => {
     loadingSavings.value = true
     await balancesStore.fetchBalances()
     await expensesStore.fetchExpenses()
-    loadingExpenses.value = false
     await incomesStore.fetchIncomes()
-    loadingIncomes.value = false
     await savingsStore.fetchSavingGoals()
-    loadingSavings.value = false
     balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
     balancesStore.createSavingsBalanceDictionary(savings.value)
     extendSavingGoalModel()
+    loadingExpenses.value = false
+    loadingIncomes.value = false
+    loadingSavings.value = false
   } else if (reloadIncomeExpensesDictionary.value) {
     balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
     balancesStore.createSavingsBalanceDictionary(savings.value)

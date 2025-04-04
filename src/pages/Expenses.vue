@@ -156,7 +156,7 @@
           <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
           <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="category" :label="`Categories (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
-          <q-btn icon="assignment_turned_in" label="Assign categories" color="white" flat @click="assignCategories" class="q-mr-sm" />
+          <q-btn icon="assignment_turned_in" label="Assign categories" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
           <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
@@ -166,6 +166,7 @@
       </q-form>
     </q-footer>
   </q-page>
+  <ConfirmDialog v-model="isConfirmDialogOpened" @confirm="assignCategories" />
 </template>
 
 <script setup>
@@ -185,6 +186,7 @@ import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog
 import ExpenseCategoriesDialog from 'src/components/Expenses/ExpenseCategoriesDialog.vue'
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue'
 import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue'
+import ConfirmDialog from 'src/components/Base/ConfirmDialog.vue'
 
 /* 🗄️ State Management */
 const $q = useQuasar()
@@ -210,7 +212,7 @@ const selectedDay = ref(null)    // For day filtering
 const isCalendarOpen = ref(false)
 const isNewExpense = ref(false)
 const isCategoriesListDialogOpen = ref(false)
-
+const isConfirmDialogOpened = ref(false)
 
 function toggleCalendar() {
   isCalendarOpen.value = !isCalendarOpen.value
