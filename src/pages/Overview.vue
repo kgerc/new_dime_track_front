@@ -1,9 +1,9 @@
 <template>
-  <q-page class="bg-grey-1">
+  <q-page :class="isDarkMode ? 'bg-dark' : 'bg-grey-1'">
     <!-- Month/Year Filter & View Toggle -->
     <div class="row justify-between items-center q-my-md q-px-md">
     <!-- Balance Display with Edit Option (Left-aligned) -->
-    <div class="row q-mt-md q-px-md q-py-sm bg-white shadow-2 rounded-borders" v-if="viewMode === 'monthly'">
+    <div class="row q-mt-md q-px-md q-py-sm shadow-2 rounded-borders" :class="isDarkMode ? 'bg-grey-9' : 'bg-white'" v-if="viewMode === 'monthly'">
       <div class="text-h6 q-mr-sm">
         <q-icon name="account_balance" size="md" color="grey" style="margin-top: -5px;">                
           <q-tooltip anchor="top middle" self="bottom middle">
@@ -41,13 +41,13 @@
     <!-- Three panels for Savings, Expenses, Incomes -->
     <div class="row q-col-gutter-md q-px-md q-pb-md">
       <div class="col-12 col-md-4">
-        <q-card>
+        <q-card :class="isDarkMode ? 'bg-grey-9' : 'bg-white'">
           <q-card-section>
             <div class="text-h6 text-center">{{ t('expenses') }}</div>
           </q-card-section>
           <q-separator />
-          <q-card-section style="max-height: 713px; overflow-y: auto;">
-            <q-list bordered separator  v-if="!loadingExpenses">
+          <q-card-section style="max-height: 713px; overflow-y: auto;" class="custom-scroll">
+            <q-list bordered separator v-if="!loadingExpenses">
               <q-item v-for="(entry, idx) in displayedExpenses" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
@@ -78,12 +78,12 @@
       </div>
 
       <div class="col-12 col-md-4">
-        <q-card>
+        <q-card :class="isDarkMode ? 'bg-grey-9' : 'bg-white'">
           <q-card-section>
             <div class="text-h6 text-center">{{ t('incomes') }}</div>
           </q-card-section>
           <q-separator />
-          <q-card-section style="max-height: 800px; overflow-y: auto;">
+          <q-card-section style="max-height: 800px; overflow-y: auto;" class="custom-scroll">
             <q-list bordered separator v-if="!loadingIncomes">
               <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
                 <q-item-section>
@@ -114,12 +114,12 @@
         </q-card>
       </div>
       <div class="col-12 col-md-4">
-        <q-card>
+        <q-card :class="isDarkMode ? 'bg-grey-9' : 'bg-white'">
           <q-card-section>
         <div class="text-h6 text-center">{{ t('savings') }}</div>
           </q-card-section>
           <q-separator />
-          <q-card-section style="max-height: 713px; overflow-y: auto;">
+          <q-card-section style="max-height: 713px; overflow-y: auto;" class="custom-scroll">
             <q-list bordered separator v-if="viewMode === 'monthly' && !loadingSavings">
               <template v-for="entry in savings" :key="entry.id">
                 <q-item clickable @click="toggleExpand(entry.id)">
@@ -232,6 +232,7 @@ import { useExpensesStore } from 'src/stores/expensesStore'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { useSavingsStore } from 'src/stores/savingsStore'
 import { useBalancesStore } from 'src/stores/balancesStore'
+import { useThemeStore } from 'src/stores/themeStore';
 import { useLangStore } from "src/stores/langStore"
 import { storeToRefs } from 'pinia'
 const expensesStore = useExpensesStore()
@@ -247,6 +248,9 @@ const balancesStore = useBalancesStore()
 const { balanceDict, savingsBalanceDict, hasInitialized, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
 
 const { t } = useLangStore();
+
+const themeStore = useThemeStore();
+const { isDarkMode } = storeToRefs(themeStore);
 
 const viewMode = ref("yearly")
 
