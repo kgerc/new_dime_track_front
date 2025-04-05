@@ -125,7 +125,7 @@
     </div>
 
     <!-- Footer: Balance & Add New Expense -->
-    <q-footer class="bg-white">
+    <q-footer :class="footerClasses">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
           v-if="currentMonthEntries.length > 0"
@@ -134,21 +134,28 @@
           input
         />
       </div>
-      <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
-        <div class="col text-grey-7 text-h6">Incomes sum</div>
+      <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
+        <div class="col" :class="titleClasses">Incomes sum</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
           {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
       </div>
 
-      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
           <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
           <q-btn icon="category" :label="`Categories (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
         <div class="col">
-          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search expenses" class="q-mb-sm"></q-input>
+          <q-input 
+            v-model="searchQuery" 
+            outlined 
+            dense 
+            :class="searchClasses"
+            placeholder="Search incomes" 
+            class="q-mb-sm">
+          </q-input>
         </div>
       </q-form>
     </q-footer>
@@ -185,6 +192,7 @@ import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
+import { useThemeStore } from 'src/stores/themeStore';
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
@@ -196,6 +204,8 @@ const $q = useQuasar()
 const currentPage = ref(1)
 const incomesStore = useIncomesStore()
 const { entries, categories } = storeToRefs(incomesStore)
+const themeStore = useThemeStore();
+const { isDarkMode } = storeToRefs(themeStore);
 
 // Date management
 const currentDate = new Date()
@@ -390,4 +400,14 @@ async function addCategory(newCategory) {
 async function refetchIncomes(isCategoryEdited) {
   if (isCategoryEdited) await incomesStore.fetchIncomes() 
 }
+
+const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-white text-dark');
+
+// Example: For the title in the summary section
+const titleClasses = computed(() => isDarkMode.value ? 'text-white' : 'text-grey-7');
+
+// For the form, switch the background accordingly:
+const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
+
+const searchClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-white');
 </script>

@@ -28,12 +28,12 @@
           <div>
             <q-avatar
             size="40px"
-            color="blue"
+            :color="isDarkMode ? 'grey-8' : 'blue'"
             text-color="white"
             class="cursor-pointer"
             >
               <q-icon name="language" />
-              <q-menu v-model="languageMenu" class="bg-grey-3" style="min-width: 150px;">
+              <q-menu v-model="languageMenu" :class="isDarkMode ? 'bg-grey-9' : 'bg-grey-3'" style="min-width: 150px;">
                 <q-list separator>
                   <q-item clickable v-ripple @click="toggleLanguage('en')" :active="currentLanguage === 'en'">
                     <q-item-section avatar>

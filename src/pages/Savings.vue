@@ -121,7 +121,7 @@
       </q-list>
     </div>
 
-    <q-footer class="bg-white">
+    <q-footer :class="footerClasses">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
           v-if="currentMonthEntries.length > 0"
@@ -130,20 +130,27 @@
           input
         />
       </div>
-      <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
-        <div class="col text-grey-7 text-h6">Savings sum</div>
+      <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
+        <div class="col" :class="titleClasses">Savings sum</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
           {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
       </div>
 
-      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="openNewSavingContributionDialog"/>
           <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog"/>
         </div>
         <div class="col">
-          <q-input v-model="searchQuery" outlined dense bg-color="white" placeholder="Search savings" class="q-mb-sm"></q-input>
+          <q-input 
+            v-model="searchQuery" 
+            outlined 
+            dense 
+            :class="searchClasses"
+            placeholder="Search savings" 
+            class="q-mb-sm">
+          </q-input>
         </div>
       </q-form>
     </q-footer>
@@ -183,6 +190,7 @@ import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useSavingsStore } from 'src/stores/savingsStore'
 import { useBalancesStore } from 'src/stores/balancesStore'
+import { useThemeStore } from 'src/stores/themeStore';
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import SavingGoalDialog from 'src/components/Savings/SavingGoalDialog.vue'
@@ -192,7 +200,8 @@ const $q = useQuasar()
 const currentPage = ref(1)
 const savingsStore = useSavingsStore()
 const { entries } = storeToRefs(savingsStore)
-
+const themeStore = useThemeStore();
+const { isDarkMode } = storeToRefs(themeStore);
 const balancesStore = useBalancesStore()
 const { hasInitialized, reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
 
@@ -491,4 +500,14 @@ async function handleNewSavingContribution(savingContribution) {
     timeout: 2000
   })
 }
+
+const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-white text-dark');
+
+// Example: For the title in the summary section
+const titleClasses = computed(() => isDarkMode.value ? 'text-white' : 'text-grey-7');
+
+// For the form, switch the background accordingly:
+const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
+
+const searchClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-white');
 </script>
