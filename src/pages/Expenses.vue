@@ -151,7 +151,7 @@
       </div>
     </div>
 
-    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm" :class="formClasses">
+    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm" :class="formClasses" style="margin-left: -1px;">
       <div class="row items-center q-pr-md">
         <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
         <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
@@ -165,7 +165,7 @@
           v-model="searchQuery"
           outlined
           dense
-          :class="formClasses"
+          :class="searchClasses"
           placeholder="Search expenses"
           class="q-mb-sm"
         />
@@ -181,6 +181,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { useThemeStore } from 'src/stores/themeStore';
 import { useSavingsStore } from 'src/stores/savingsStore'
+import { useLangStore } from "src/stores/langStore"
 import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
@@ -203,6 +204,7 @@ const savingsStore = useSavingsStore()
 const { entries, categories, limits } = storeToRefs(expensesStore)
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
+const { t } = useLangStore();
 
 /* 🗓️ Date and Calendar Handling */
 const months = computed(() => [
@@ -215,7 +217,7 @@ const currentYear = currentDate.getFullYear()
 
 const selectedMonth = ref(currentMonth)
 const selectedYear = ref(currentYear)
-const currentMonthName = computed(() => months[selectedMonth.value])
+const currentMonthName = computed(() => months.value[selectedMonth.value])
 
 const selectedDate = ref(null)   // For calendar selection
 const selectedDay = ref(null)    // For day filtering
@@ -547,5 +549,7 @@ const titleClasses = computed(() => isDarkMode.value ? 'text-white' : 'text-grey
 
 // For the form, switch the background accordingly:
 const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
+
+const searchClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-white');
 
 </script>

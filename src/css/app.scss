@@ -23,6 +23,18 @@ input::-webkit-inner-spin-button {
     text-align: right;
   }
 
-  body.body--dark {
-    background: #121212
+body.body--dark {
+  background: #121212;
+}
+
+body.body--dark {
+  .q-item__section {
+    color: #ececec;
   }
+}
+
+body.body--light {
+  .text-weight-bold {
+    color: rgb(43, 43, 43)
+  }
+}

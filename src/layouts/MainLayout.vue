@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR lFf">
     <!-- Pinned Header -->
-    <q-header elevated>
+    <q-header :elevated="!isDarkMode" :class="headerClasses">
       <q-toolbar>
 
         <!-- Menu button on the left -->
@@ -74,7 +74,7 @@
     <!-- Left Drawer -->
     <q-drawer
       v-model="leftDrawerOpen"
-      class="bg-primary"
+      :class="footerClasses"
       show-if-above
       bordered
       :width="250"
@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useLangStore } from 'src/stores/langStore';
 import { useThemeStore } from 'src/stores/themeStore';
@@ -130,6 +130,11 @@ const toggleLanguage = (lang) => {
   languageMenu.value = false;
   currentLanguage.value = lang;
 };
+
+const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-primary');
+
+const headerClasses = computed(() =>  isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
+
 </script>
 
 <style scoped>
