@@ -1,13 +1,13 @@
 <template>
-  <q-page :class="isDarkMode ? 'bg-dark' : 'bg-grey-1'">
+  <q-page :class="isDarkMode ? 'black' : 'bg-grey-1'">
     <!-- Month/Year Filter & View Toggle -->
-    <div class="row justify-between items-center q-my-md q-px-md">
+    <div class="row justify-between items-center q-my-md q-px-md ">
     <!-- Balance Display with Edit Option (Left-aligned) -->
-    <div class="row q-mt-md q-px-md q-py-sm shadow-2 rounded-borders" :class="isDarkMode ? 'bg-grey-9' : 'bg-white'" v-if="viewMode === 'monthly'">
+    <div class="row q-mt-md q-px-md q-py-sm shadow-2 rounded-borders" :class="isDarkMode ? 'bg-grey-10' : 'bg-white'" v-if="viewMode === 'monthly'">
       <div class="text-h6 q-mr-sm">
         <q-icon name="account_balance" size="md" color="grey" style="margin-top: -5px;">                
           <q-tooltip anchor="top middle" self="bottom middle">
-            <div class="text-caption">t('balance')</div>
+            <div class="text-caption">{{t('balance')}}</div>
           </q-tooltip>
         </q-icon> 
         <span :class="amountColor(balance)" style="margin-left: 5px;">{{ !isEditingBalance ? formatCurrency(balance, 'PLN') : '' }}</span>
@@ -41,7 +41,7 @@
     <!-- Three panels for Savings, Expenses, Incomes -->
     <div class="row q-col-gutter-md q-px-md q-pb-md">
       <div class="col-12 col-md-4">
-        <q-card :class="isDarkMode ? 'bg-grey-9' : 'bg-white'">
+        <q-card :class="isDarkMode ? 'bg-grey-10' : 'bg-white'">
           <q-card-section>
             <div class="text-h6 text-center">{{ t('expenses') }}</div>
           </q-card-section>
@@ -78,7 +78,7 @@
       </div>
 
       <div class="col-12 col-md-4">
-        <q-card :class="isDarkMode ? 'bg-grey-9' : 'bg-white'">
+        <q-card :class="isDarkMode ? 'bg-grey-10' : 'bg-white'">
           <q-card-section>
             <div class="text-h6 text-center">{{ t('incomes') }}</div>
           </q-card-section>
@@ -114,7 +114,7 @@
         </q-card>
       </div>
       <div class="col-12 col-md-4">
-        <q-card :class="isDarkMode ? 'bg-grey-9' : 'bg-white'">
+        <q-card :class="isDarkMode ? 'bg-grey-10' : 'bg-white'">
           <q-card-section>
         <div class="text-h6 text-center">{{ t('savings') }}</div>
           </q-card-section>

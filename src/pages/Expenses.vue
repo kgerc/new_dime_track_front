@@ -21,18 +21,19 @@
               @update:model-value="updateMonthYear"
               bordered
               minimal
+              :lang="currentLanguage"
               class="shadow-2 rounded-borders"
             >
               <div class="row items-center justify-between">
                 <q-btn
                   v-close-popup
-                  label="Whole month"
+                  :label="t('wholeMonth')"
                   color="primary"
                   flat
                   :class="{'bg-primary text-white': !selectedDay}"
                   @click="resetToWholeMonth"
                 />
-                <q-btn v-close-popup label="Close" color="primary" flat />
+                <q-btn v-close-popup :label="t('close')" color="primary" flat />
               </div>
             </q-date>
           </q-popup-proxy>
@@ -68,7 +69,7 @@
                     size="sm"
                   >
                   <q-tooltip anchor="top middle" self="bottom middle">
-                    <div class="text-caption">{{ entry.isPaid ? 'Paid' : 'Unpaid' }}</div>
+                    <div class="text-caption">{{ entry.isPaid ? t('paid') : t('unpaid') }}</div>
                   </q-tooltip>
                   </q-icon>
                   <div>
@@ -76,7 +77,7 @@
                     <div class="text-grey-5 text-caption">
                       {{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}
                       <q-chip 
-                      :label="entry.expenseCategory?.title ?? 'No Category'" 
+                      :label="entry.expenseCategory?.title ?? t('noCategory')" 
                       :text-color="entry.expenseCategory?.title || isDarkMode ? 'white' : 'black'"
                       :style="{ backgroundColor: entry.expenseCategory?.color ?? (isDarkMode ? '#424242' : 'lightgrey')}" 
                       size='sm'
@@ -114,12 +115,12 @@
         size="3em"
         :thickness="2"
       />
-      <span class="q-mt-xs">Loading expenses...</span>
+      <span class="q-mt-xs">{{ t('loadingExpenses') }}</span>
     </div>
     <!-- No Expenses Message -->
     <div v-if="filteredEntries.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="shopping_cart" size="4em" color="grey-6" />
-      <div class="text-h6 text-grey-6 q-mt-md">No expenses this month</div>
+      <div class="text-h6 text-grey-6 q-mt-md">{{ t('noExpensesThisMonth') }}</div>
     </div>
     <!-- Expense Dialog -->
     <ExpenseDialog
@@ -145,7 +146,7 @@
       />
     </div>
     <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
-      <div class="col" :class="titleClasses">Expenses sum</div>
+      <div class="col" :class="titleClasses">{{ t('expensesSum') }}</div>
       <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
         {{ formatCurrency(totalBalance, 'PLN') }}
       </div>
@@ -153,12 +154,12 @@
 
     <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm" :class="formClasses" style="margin-left: -1px;">
       <div class="row items-center q-pr-md">
-        <q-btn icon="add" label="New Expense" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
-        <q-btn icon="add_box" label="New Category" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
-        <q-btn icon="category" :label="`Categories (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
-        <q-btn icon="assignment_turned_in" label="Assign categories" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
-        <q-btn icon="filter_list" label="Set Expense Limit" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
-        <q-btn icon="list" :label="`Limits (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
+        <q-btn icon="add" :label="t('newExpense')" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
+        <q-btn icon="add_box" :label="t('newCategory')" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
+        <q-btn icon="category" :label="`${t('categories')} (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
+        <q-btn icon="assignment_turned_in" :label="t('assignCategories')" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
+        <q-btn icon="filter_list" :label="t('setExpenseLimit')" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
+        <q-btn icon="list" :label="`${t('limits')} (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
       </div>
       <div class="col">
         <q-input
@@ -166,7 +167,7 @@
           outlined
           dense
           :class="searchClasses"
-          placeholder="Search expenses"
+          :placeholder="t('searchExpenses')"
           class="q-mb-sm"
         />
       </div>
@@ -204,7 +205,7 @@ const savingsStore = useSavingsStore()
 const { entries, categories, limits } = storeToRefs(expensesStore)
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
-const { t } = useLangStore();
+const { t, currentLanguage } = useLangStore();
 
 /* 🗓️ Date and Calendar Handling */
 const months = computed(() => [
@@ -348,7 +349,7 @@ function removeEntry(id) {
   expensesStore.removeExpense(id)
   // Toast notification for removing an expense
   $q.notify({
-    message: 'Expense deleted successfully!',
+    message: t('expenseDeleted'),
     color: 'negative',
     position: 'top-right',
     timeout: 2000
@@ -389,7 +390,7 @@ async function handleNewExpense(newExpense) {
   }
   isDialogOpen.value = false  // Close dialog after saving
   $q.notify({
-    message: 'Expense added successfully!',
+    message: t('expenseAdded'),
     color: 'positive',
     position: 'top-right',
     timeout: 2000
@@ -414,7 +415,7 @@ async function handleMoveExpenseToSavings(id) {
   await expensesStore.moveExpenseToSavings(id)
   await savingsStore.fetchSavingGoals()
   $q.notify({
-    message: 'Expense moved to savings successfully!',
+    message: t('expenseMovedToSavings'),
     color: 'positive',
     position: 'top-right',
     timeout: 2000
@@ -425,7 +426,7 @@ async function addCategory(newCategory) {
   await expensesStore.addExpenseCategory(newCategory)
   isCategoryDialogOpen.value = false  // Close dialog after saving
   $q.notify({
-    message: 'Expense category added successfully!',
+    message: t('expenseCategoryAdded'),
     color: 'positive',
     position: 'top-right',
     timeout: 2000
@@ -452,7 +453,7 @@ async function handleNewExpenseLimit(newExpenseLimit) {
   }
   isLimitDialogOpen.value = false  // Close dialog after saving
   $q.notify({
-    message: 'Expense limit added successfully!',
+    message: t('expenseLimitAdded'),
     color: 'positive',
     position: 'top-right',
     timeout: 2000
@@ -534,7 +535,7 @@ async function assignCategories() {
   await expensesStore.fetchExpenses()
   currentPage.value = 1
   $q.notify({
-    message: 'Expense categories assigned successfully!',
+    message: t('expenseCategoriesAssigned'),
     color: 'positive',
     position: 'top-right',
     timeout: 2000

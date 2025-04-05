@@ -94,5 +94,85 @@
     "switchToMonthlyMode": {
         "en": "Switch to Monthly View",
         "pl": "Przełącz na widok miesięczny"
-    }
+    },
+    "wholeMonth": {
+        "en": "Whole month",
+        "pl": "Cały miesiąc"
+      },
+      "close": {
+        "en": "Close",
+        "pl": "Zamknij"
+      },
+      "paid": {
+        "en": "Paid",
+        "pl": "Opłacony"
+      },
+      "unpaid": {
+        "en": "Unpaid",
+        "pl": "Nieopłacony"
+      },
+      "noCategory": {
+        "en": "No Category",
+        "pl": "Brak kategorii"
+      },
+      "noExpensesThisMonth": {
+        "en": "No expenses this month",
+        "pl": "Brak wydatków w tym miesiącu"
+      },
+      "expensesSum": {
+        "en": "Expenses sum",
+        "pl": "Suma wydatków"
+      },
+      "newExpense": {
+        "en": "New Expense",
+        "pl": "Nowy wydatek"
+      },
+      "newCategory": {
+        "en": "New Category",
+        "pl": "Nowa kategoria"
+      },
+      "categories": {
+        "en": "Categories",
+        "pl": "Kategorie"
+      },
+      "assignCategories": {
+        "en": "Assign categories",
+        "pl": "Przypisz kategorie"
+      },
+      "setExpenseLimit": {
+        "en": "Set Expense Limit",
+        "pl": "Ustaw limit wydatków"
+      },
+      "limits": {
+        "en": "Limits",
+        "pl": "Limity"
+      },
+      "searchExpenses": {
+        "en": "Search expenses",
+        "pl": "Szukaj wydatków"
+      },
+      "expenseDeleted": {
+        "en": "Expense deleted successfully!",
+        "pl": "Wydatek został usunięty!"
+      },
+      "expenseAdded": {
+        "en": "Expense added successfully!",
+        "pl": "Wydatek został dodany!"
+      },
+      "expenseLimitAdded": {
+        "en": "Expense limit added successfully!",
+        "pl": "Limit wydatków został dodany!"
+      },
+      "expenseCategoryAdded": {
+        "en": "Expense category added successfully!",
+        "pl": "Kategoria wydatków została dodana!"
+      },
+      "expenseMovedToSavings": {
+        "en": "Expense moved to savings successfully!",
+        "pl": "Wydatek został przeniesiony do oszczędności!"
+      },
+      "expenseCategoriesAssigned": {
+        "en": "Expense categories assigned successfully!",
+        "pl": "Kategorie wydatków zostały przypisane!"
+      }
   }
