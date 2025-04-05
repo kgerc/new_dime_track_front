@@ -38,3 +38,8 @@ body.body--light {
     color: rgb(43, 43, 43)
   }
 }
+
+.thin-border {
+  border-top: 1px solid darkgray;
+  border-radius: 2px; /* optional */
+}

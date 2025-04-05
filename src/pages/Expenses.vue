@@ -77,8 +77,8 @@
                       {{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}
                       <q-chip 
                       :label="entry.expenseCategory?.title ?? 'No Category'" 
-                      text-color="white"
-                      :style="{ backgroundColor: entry.expenseCategory?.color }" 
+                      :text-color="entry.expenseCategory?.title || isDarkMode ? 'white' : 'black'"
+                      :style="{ backgroundColor: entry.expenseCategory?.color ?? (isDarkMode ? '#424242' : 'lightgrey')}" 
                       size='sm'
                     >
                     </q-chip>
@@ -144,7 +144,7 @@
         input
       />
     </div>
-    <div class="row q-mb-sm q-px-md q-py-sm shadow-up-3">
+    <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
       <div class="col" :class="titleClasses">Expenses sum</div>
       <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
         {{ formatCurrency(totalBalance, 'PLN') }}
