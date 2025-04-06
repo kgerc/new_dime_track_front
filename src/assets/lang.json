@@ -386,5 +386,33 @@
   "incomeCategoryAdded": {
     "en": "Income category added successfully!",
     "pl": "Kategoria dochodu została dodana pomyślnie!"
+  },
+  "contributions": {
+    "en": "Contributions",
+    "pl": "Wkłady"
+  },
+  "noContributionsYet": {
+    "en": "No contributions yet.",
+    "pl": "Brak wkładów."
+  },
+  "savingsSum": {
+    "en": "Savings sum",
+    "pl": "Suma oszczędności"
+  },
+  "newContribution": {
+    "en": "New Contribution",
+    "pl": "Nowy wkład"
+  },
+  "newSavingGoal": {
+    "en": "New Saving Goal",
+    "pl": "Nowy cel oszczędnościowy"
+  },
+  "searchSavings": {
+    "en": "Search savings",
+    "pl": "Szukaj oszczędności"
+  },
+  "noSavingsThisMonth": {
+    "en": "No savings this month",
+    "pl": "Brak oszczędności w tym miesiącu"
   }
 }

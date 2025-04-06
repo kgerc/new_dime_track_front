@@ -20,8 +20,8 @@
               minimal 
               class="shadow-2 rounded-borders">
                 <div class="row items-center justify-between">
-                  <q-btn v-close-popup label="Whole month" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
-                  <q-btn v-close-popup label="Close" color="primary" flat />
+                  <q-btn v-close-popup :label="t('wholeMonth')" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
+                  <q-btn v-close-popup :label="t('close')" color="primary" flat />
                 </div>
             </q-date>
           </q-popup-proxy>
@@ -34,9 +34,8 @@
     </div>
 
     <div class="q-pa-md" style="margin-top: -20px;">
-      <!-- Savings List -->
       <q-list bordered separator v-if="!loadingSavings">
-        <q-item-label v-if="currentMonthEntries.length > 0" header>Savings</q-item-label>
+        <q-item-label v-if="currentMonthEntries.length > 0" header>{{ t("savings") }}</q-item-label>
 
         <template v-for="entry in currentMonthEntries" :key="entry.id">
           <q-slide-item @right="removeSavingGoal(entry.id)">
@@ -53,16 +52,13 @@
                     class="q-mr-sm" size="sm"
                   />
                   <div>
-                    <!-- Saving Title -->
                     <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
-                    <!-- Amounts -->
                     <q-item-label caption v-if="entry.amount">
                       {{ formatCurrency(entry.currentAmount, entry.currency, true) }} / {{ formatCurrency(entry.amount, entry.currency, true) }}
                     </q-item-label>
                     <q-item-label caption v-else>
-                      {{ formatCurrency(entry.currentAmount, entry.currency, true) }} (No Goal)
+                      {{ formatCurrency(entry.currentAmount, entry.currency, true) }} ({{ t("noGoal") }})
                     </q-item-label>
-                    <!-- Progress Bar -->
                     <q-linear-progress
                       v-if="entry.amount"
                       :value="getProgress(entry)"
@@ -89,16 +85,14 @@
             </q-item>
           </q-slide-item>
 
-
-          <!-- Smooth Sliding Contributions List -->
           <q-slide-transition>
             <div v-if="expandedSavingId === entry.id">
-              <q-item style="margin-left: 5px;max-width: 80px;" >
+              <q-item style="margin-left: 5px;max-width: 80px;">
                 <q-item-section style="margin-bottom: 8px;">
                   <q-icon name="subdirectory_arrow_right" size="sm"/>
                 </q-item-section>
                 <q-item-section style="margin-left: -25px;">
-                  <q-item-label header>Contributions</q-item-label>
+                  <q-item-label header>{{ t("contributions") }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-list dense>
@@ -112,7 +106,7 @@
                   </q-item-section>
                 </q-item>
                 <q-item v-if="!isAnyGoalContribution(entry.id)" style="margin-left: 33px;">
-                  <q-item-section>No contributions yet.</q-item-section>
+                  <q-item-section>{{ t("noContributionsYet") }}</q-item-section>
                 </q-item>
               </q-list>
             </div>
@@ -122,7 +116,7 @@
     </div>
 
     <q-footer :class="footerClasses">
-      <div class="q-pa-xs flex flex-center">
+      <div :class="isDarkMode ? 'q-pa-xs flex flex-center pagination-dark' : 'q-pa-xs flex flex-center'">
         <q-pagination
           v-if="currentMonthEntries.length > 0"
           v-model="currentPage"
@@ -131,7 +125,7 @@
         />
       </div>
       <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
-        <div class="col" :class="titleClasses">Savings sum</div>
+        <div class="col" :class="titleClasses">{{ t("savingsSum") }}</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
           {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
@@ -139,35 +133,33 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary justify-between" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Contribution" color="white" flat class="q-mr-sm" @click="openNewSavingContributionDialog" />
-          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog" />
+          <q-btn icon="add" :label="t('newContribution')" color="white" flat class="q-mr-sm" @click="openNewSavingContributionDialog" />
+          <q-btn icon="savings" :label="t('newSavingGoal')" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog" />
         </div>
-        <div class="row items-center justify-end col-auto">
+        <div class="row items-center justify-end col-auto"  style="margin-bottom: -5px;">
           <q-input 
             v-model="searchQuery" 
             outlined 
             dense 
             :class="searchClasses"
             style="width: 400px;" 
-            placeholder="Search savings"
+            :placeholder="t('searchSavings')"
             class="q-mb-sm"
           />
         </div>
       </q-form>
     </q-footer>
+
     <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingSavings">
-      <q-spinner
-        color="primary"
-        size="3em"
-        :thickness="2"
-      />
-      <span class="q-mt-xs">Loading savings...</span>
+      <q-spinner color="primary" size="3em" :thickness="2" />
+      <span class="q-mt-xs">{{ t('loadingSavings') }}</span>
     </div>
-    <!-- No Expenses Message -->
+
     <div v-if="currentMonthEntries.length === 0 && !loadingSavings" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="savings" size="4em" color="grey-6" />
-      <div class="text-h6 text-grey-6 q-mt-md">No savings this month</div>
+      <div class="text-h6 text-grey-6 q-mt-md">{{ t('noSavingsThisMonth') }}</div>
     </div>
+
     <SavingGoalDialog
       v-model="isDialogOpen"
       :savingGoal="selectedSavingGoal"
@@ -192,6 +184,7 @@ import { storeToRefs } from 'pinia'
 import { useSavingsStore } from 'src/stores/savingsStore'
 import { useBalancesStore } from 'src/stores/balancesStore'
 import { useThemeStore } from 'src/stores/themeStore';
+import { useLangStore } from "src/stores/langStore"
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import SavingGoalDialog from 'src/components/Savings/SavingGoalDialog.vue'
@@ -205,6 +198,7 @@ const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
 const balancesStore = useBalancesStore()
 const { hasInitialized, reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
+const { t } = useLangStore();
 
 // Date management
 const currentDate = new Date()

@@ -124,7 +124,7 @@
     </div>
 
     <q-footer :class="footerClasses">
-      <div class="q-pa-xs flex flex-center">
+      <div :class="isDarkMode ? 'q-pa-xs flex flex-center pagination-dark' : 'q-pa-xs flex flex-center'">
         <q-pagination
           v-if="currentMonthEntries.length > 0"
           v-model="currentPage"
@@ -145,7 +145,7 @@
           <q-btn icon="add_box" :label="t('newCategory')" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
           <q-btn icon="category" :label="`${t('categories')} (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
-        <div class="row items-center justify-end col-auto">
+        <div class="row items-center justify-end col-auto" style="margin-bottom: -5px;">
           <q-input 
             v-model="searchQuery" 
             outlined 

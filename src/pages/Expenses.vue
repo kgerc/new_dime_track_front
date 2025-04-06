@@ -137,7 +137,7 @@
 
     <!-- Footer: Balance & Add New Expense -->
     <q-footer :class="footerClasses">
-    <div class="q-pa-xs flex flex-center">
+    <div :class="isDarkMode ? 'q-pa-xs flex flex-center pagination-dark' : 'q-pa-xs flex flex-center'">
       <q-pagination
         v-if="filteredEntries.length > 0"
         v-model="currentPage"
@@ -161,7 +161,7 @@
           <q-btn icon="filter_list" :label="t('setExpenseLimit')" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`${t('limits')} (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
-        <div class="row items-center justify-end col-auto">
+        <div class="row items-center justify-end col-auto" style="margin-bottom: -5px;">
           <q-input 
             v-model="searchQuery" 
             outlined 
