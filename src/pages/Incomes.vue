@@ -20,8 +20,8 @@
               minimal 
               class="shadow-2 rounded-borders">
                 <div class="row items-center justify-between">
-                  <q-btn v-close-popup label="Whole month" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
-                  <q-btn v-close-popup label="Close" color="primary" flat />
+                  <q-btn v-close-popup :label="t('wholeMonth')" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
+                  <q-btn v-close-popup :label="t('close')" color="primary" flat />
                 </div>
             </q-date>
           </q-popup-proxy>
@@ -35,7 +35,7 @@
 
     <div class="q-pa-md" style="margin-top: -20px;">
       <q-list bordered separator v-if="!loadingIncomes">
-        <q-item-label header v-if="filteredRecurrentEntries.length > 0">Recurring Incomes</q-item-label>
+        <q-item-label header v-if="filteredRecurrentEntries.length > 0">{{ t('recurringIncomes') }}</q-item-label>
         <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
@@ -51,14 +51,14 @@
                   style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
+                  <q-item-label caption style="margin-top: -5px;">
+                    {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
                     <q-chip 
-                      label="No Category" 
+                      :label="t('noCategory')" 
                       text-color="white"
                       style="{ backgroundColor: '#fffff'}" 
-                      size='sm'
-                    >
-                    </q-chip>
+                      size="sm"
+                    />
                   </q-item-label>
                 </div>
               </div>
@@ -69,7 +69,7 @@
           </q-item>
         </q-slide-item>
 
-        <q-item-label header v-if="filteredNonRecurrentEntries.length > 0">Non-Recurring Incomes</q-item-label>
+        <q-item-label header v-if="filteredNonRecurrentEntries.length > 0">{{ t('nonRecurringIncomes') }}</q-item-label>
         <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
           <template v-slot:right>
             <q-icon name="delete" />
@@ -85,19 +85,18 @@
                   style="margin-top: -5px;"/>
                 <div>
                   <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption style="margin-top: -5px;">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
+                  <q-item-label caption style="margin-top: -5px;">
+                    {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
                     <q-chip 
-                      label="No Category" 
+                      :label="t('noCategory')" 
                       text-color="white"
                       style="{ backgroundColor: '#fffff'}" 
-                      size='sm'
-                    >
-                    </q-chip>
+                      size="sm"
+                    />
                   </q-item-label>
                 </div>
               </div>
             </q-item-section>
-            <!-- Notes Icon with Tooltip -->
             <q-item-section side class="q-mr-xs">
               <q-icon
                 v-if="income.notes"
@@ -118,13 +117,12 @@
         </q-slide-item>
       </q-list>
     </div>
-    <!-- No Incomes Message -->
+
     <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="account_balance_wallet" size="4em" color="grey-6" />
-      <div class="text-h6 text-grey-6 q-mt-md">No incomes this month</div>
+      <div class="text-h6 text-grey-6 q-mt-md">{{ t('noIncomes') }}</div>
     </div>
 
-    <!-- Footer: Balance & Add New Expense -->
     <q-footer :class="footerClasses">
       <div class="q-pa-xs flex flex-center">
         <q-pagination
@@ -135,7 +133,7 @@
         />
       </div>
       <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
-        <div class="col" :class="titleClasses">Incomes sum</div>
+        <div class="col" :class="titleClasses">{{ t('incomesSum') }}</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
           {{ formatCurrency(totalBalance, 'PLN') }}
         </div>
@@ -143,9 +141,9 @@
 
       <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Income" color="white" flat  class="q-mr-sm" @click="openNewIncomeDialog"/>
-          <q-btn icon="add_box" label="New Category" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
-          <q-btn icon="category" :label="`Categories (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
+          <q-btn icon="add" :label="t('newIncome')" color="white" flat class="q-mr-sm" @click="openNewIncomeDialog"/>
+          <q-btn icon="add_box" :label="t('newCategory')" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
+          <q-btn icon="category" :label="`${t('categories')} (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
         <div class="col">
           <q-input 
@@ -153,20 +151,18 @@
             outlined 
             dense 
             :class="searchClasses"
-            placeholder="Search incomes" 
+            :placeholder="t('searchIncomes')" 
             class="q-mb-sm">
           </q-input>
         </div>
       </q-form>
     </q-footer>
+
     <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingIncomes">
-      <q-spinner
-        color="primary"
-        size="3em"
-        :thickness="2"
-      />
-      <span class="q-mt-xs">Loading incomes...</span>
+      <q-spinner color="primary" size="3em" :thickness="2" />
+      <span class="q-mt-xs">{{ t('loadingIncomes') }}</span>
     </div>
+
     <IncomeDialog
       v-model="isDialogOpen"
       :income="selectedIncome"
@@ -186,6 +182,7 @@
 </template>
 
 
+
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar'
@@ -193,6 +190,7 @@ import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { useThemeStore } from 'src/stores/themeStore';
+import { useLangStore } from "src/stores/langStore"
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
@@ -206,6 +204,7 @@ const incomesStore = useIncomesStore()
 const { entries, categories } = storeToRefs(incomesStore)
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
+const { t } = useLangStore();
 
 // Date management
 const currentDate = new Date()
@@ -329,9 +328,8 @@ function updateMonthYear(date) {
 
 function removeIncome(id) {
   incomesStore.removeIncome(id)
-  // Toast notification for removing an expense
   $q.notify({
-    message: 'Income deleted successfully!',
+    message: t('incomeDeleted'), // 'Income deleted successfully!'
     color: 'negative',
     position: 'top-right',
     timeout: 2000
@@ -370,12 +368,12 @@ async function handleIncomeSave(income) {
 }
 
 async function handleNewIncome(income) {
-  await incomesStore.addIncome(income)  
+  await incomesStore.addIncome(income)
   if (income.recurrenceFrequency !== 'None') {
-    await incomesStore.fetchIncomes() 
+    await incomesStore.fetchIncomes()
   }
   $q.notify({
-    message: 'Income added successfully!',
+    message: t('incomeAdded'), // 'Income added successfully!'
     color: 'positive',
     position: 'top-right',
     timeout: 2000
@@ -388,9 +386,9 @@ async function handleUpdateIncome(updatedIncome) {
 
 async function addCategory(newCategory) {
   await incomesStore.addIncomeCategory(newCategory)
-  isCategoryDialogOpen.value = false  // Close dialog after saving
+  isCategoryDialogOpen.value = false
   $q.notify({
-    message: 'Income category added successfully!',
+    message: t('incomeCategoryAdded'), // 'Income category added successfully!'
     color: 'positive',
     position: 'top-right',
     timeout: 2000

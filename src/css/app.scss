@@ -70,7 +70,7 @@ body.body--light {
   scrollbar-color: #999 transparent;
 }
 
-body.body--dark .custom-scroll::-webkit-scrollbar-thumb {
+body.body--dark .custom-scroll::-webkit-scrollbar-thumb, .q-chip {
   background-color: #555;
 }
 

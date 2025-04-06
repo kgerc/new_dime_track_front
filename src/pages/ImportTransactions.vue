@@ -2,9 +2,9 @@
   <q-page class="q-pa-md">
     <q-card class="upload-card">
       <q-card-section>
-        <h5 class="text-h5">Upload Transactions (CSV)</h5>
+        <h5 class="text-h5">{{ t('uploadTitle') }}</h5>
         <p class="text-caption text-grey">
-          Drag & drop your CSV file here or click to select a file.
+          {{ t('uploadSubtitle') }}
         </p>
       </q-card-section>
 
@@ -12,7 +12,7 @@
         <div class="drop-zone">
           <q-file
             v-model="file"
-            label="Drop CSV file here or click to upload"
+            :label="t('fileLabel')"
             filled
             use-chips
             use-drop
@@ -23,10 +23,10 @@
       </q-card-section>
 
       <q-card-section style="margin-top: -70px;">
-        <h6 class="text-h6">Savings Keywords</h6>
+        <h6 class="text-h6">{{ t('savingsKeywords') }}</h6>
         <q-input
           v-model="newKeyword"
-          label="Add Savings Keyword"
+          :label="t('addSavingsKeyword')"
           filled
           dense
           @keyup.enter="addKeyword"
@@ -44,7 +44,7 @@
       </q-card-section>
 
       <q-card-section v-if="parsedData.length > 0" style="margin-top: -55px;">
-        <h6 class="text-h6">Preview (First 5 Transactions)</h6>
+        <h6 class="text-h6">{{ t('previewTitle') }}</h6>
         <q-table
           :rows="parsedData"
           :columns="columns"
@@ -53,9 +53,9 @@
           flat
           :rows-per-page-options="[5, 10]"
         />
-        
+
         <q-btn
-          label="Upload to Server"
+          :label="t('uploadToServer')"
           color="primary"
           class="q-mt-md"
           @click="uploadTransactions"
@@ -70,16 +70,15 @@
 import { ref } from 'vue';
 import Papa from 'papaparse';
 import { storeToRefs } from 'pinia';
-import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar';
 import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
-
-// Pinia Store
+import { useLangStore } from "src/stores/langStore"
+// Store setup
 const importTransactionsStore = useImportTransactionsStore();
 const { file, parsedData, columns, savingsKeywords } = storeToRefs(importTransactionsStore);
 const newKeyword = ref("");
-const $q = useQuasar()
-
-// Reactive State
+const $q = useQuasar();
+const { t } = useLangStore();
 const loading = ref(false);
 
 const columnMapping = {
@@ -264,7 +263,6 @@ const uploadTransactions = async () => {
   }
 };
 </script>
-
 
 <style scoped>
 .upload-card {

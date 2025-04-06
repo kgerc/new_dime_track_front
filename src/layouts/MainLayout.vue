@@ -80,6 +80,7 @@
       bordered
       :width="250"
       :breakpoint="767"
+      
     >
       <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
@@ -102,7 +103,7 @@
     >
       <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
-          <q-item-section avatar>
+          <q-item-section avatar style="min-width: 15px;">
             <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
           </q-item-section>
         </q-item>

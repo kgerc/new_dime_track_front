@@ -322,5 +322,69 @@
   "recurrenceYearly": {
     "en": "Yearly",
     "pl": "Rocznie"
+  },
+  "uploadTitle": {
+    "en": "Upload Transactions (CSV)",
+    "pl": "Prześlij transakcje (CSV)"
+  },
+  "uploadSubtitle": {
+    "en": "Drag & drop your CSV file here or click to select a file.",
+    "pl": "Przeciągnij i upuść plik CSV lub kliknij, aby go wybrać."
+  },
+  "fileLabel": {
+    "en": "Drop CSV file here or click to upload",
+    "pl": "Upuść plik CSV tutaj lub kliknij, aby go przesłać"
+  },
+  "savingsKeywords": {
+    "en": "Savings Keywords",
+    "pl": "Słowa kluczowe oszczędności"
+  },
+  "addSavingsKeyword": {
+    "en": "Add Savings Keyword",
+    "pl": "Dodaj słowo kluczowe"
+  },
+  "previewTitle": {
+    "en": "Preview (First 5 Transactions)",
+    "pl": "Podgląd (pierwsze 5 transakcji)"
+  },
+  "uploadToServer": {
+    "en": "Upload to Server",
+    "pl": "Prześlij na serwer"
+  },
+  "recurringIncomes": {
+    "en": "Recurring Incomes",
+    "pl": "Dochody cykliczne"
+  },
+  "nonRecurringIncomes": {
+    "en": "Non-Recurring Incomes",
+    "pl": "Dochody jednorazowe"
+  },
+  "noIncomes": {
+    "en": "No incomes this month",
+    "pl": "Brak dochodów w tym miesiącu"
+  },
+  "incomesSum": {
+    "en": "Incomes sum",
+    "pl": "Suma dochodów"
+  },
+  "newIncome": {
+    "en": "New Income",
+    "pl": "Nowy dochód"
+  },
+  "searchIncomes": {
+    "en": "Search incomes",
+    "pl": "Szukaj dochodów"
+  },
+  "incomeDeleted": {
+    "en": "Income deleted successfully!",
+    "pl": "Dochód został pomyślnie usunięty!"
+  },
+  "incomeAdded": {
+    "en": "Income added successfully!",
+    "pl": "Dochód został pomyślnie dodany!"
+  },
+  "incomeCategoryAdded": {
+    "en": "Income category added successfully!",
+    "pl": "Kategoria dochodu została dodana pomyślnie!"
   }
 }
