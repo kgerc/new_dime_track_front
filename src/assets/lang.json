@@ -7,6 +7,10 @@
     "en": "Settings",
     "pl": "Ustawienia"
   },
+  "overview": {
+    "en": "Overview",
+    "pl": "Zestawienie"
+  },
   "expenses": {
     "en": "Expenses",
     "pl": "Wydatki"
@@ -272,6 +276,42 @@
     "pl": "Kwartalnie"
   },
   "yearly": {
+    "en": "Yearly",
+    "pl": "Rocznie"
+  },
+  "newExpenseLimit": {
+    "en": "New Expense Limit",
+    "pl": "Nowy Limit Wydatków"
+  },
+  "editExpenseLimit": {
+    "en": "Edit Expense Limit",
+    "pl": "Edytuj Limit Wydatków"
+  },
+  "limitAmount": {
+    "en": "Limit Amount",
+    "pl": "Kwota Limitu"
+  },
+  "monthPlaceholder": {
+    "en": "Month (e.g., 01 for January)",
+    "pl": "Miesiąc (np. 01 dla stycznia)"
+  },
+  "yearPlaceholder": {
+    "en": "Year (e.g., 2025)",
+    "pl": "Rok (np. 2025)"
+  },
+  "recurrenceNone": {
+    "en": "None",
+    "pl": "Brak"
+  },
+  "recurrenceMonthly": {
+    "en": "Monthly",
+    "pl": "Miesięcznie"
+  },
+  "recurrenceQuarterly": {
+    "en": "Quarterly",
+    "pl": "Kwartalnie"
+  },
+  "recurrenceYearly": {
     "en": "Yearly",
     "pl": "Rocznie"
   }

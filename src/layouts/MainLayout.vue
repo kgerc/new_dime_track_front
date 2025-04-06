@@ -73,6 +73,7 @@
 
     <!-- Left Drawer -->
     <q-drawer
+      v-if="leftDrawerOpen"
       v-model="leftDrawerOpen"
       :class="footerClasses"
       show-if-above
@@ -83,7 +84,30 @@
       <q-list>
         <q-item-label class="text-white" header >Navigation</q-item-label>
         <q-separator color="grey" inset />
-        <NavLink v-for="link in navLinks" :key="link.title" v-bind="link" />
+        <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
+          <q-item-section avatar>
+            <q-icon :name="link.icon" />
+          </q-item-section>
+          <q-item-section>{{ link.title }}</q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
+
+    <q-drawer
+      v-if="!leftDrawerOpen"
+      v-model="leftDrawerOpenTest"
+      :class="footerClasses"
+      show-if-above
+      bordered
+      :width="60"
+      :breakpoint="767"
+    >
+      <q-list >
+        <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
+          <q-item-section avatar>
+            <q-icon :name="link.icon" />
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -99,30 +123,33 @@ import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useLangStore } from 'src/stores/langStore';
 import { useThemeStore } from 'src/stores/themeStore';
-import NavLink from 'src/components/Navigation/NavLink.vue';
+import { useRouter } from 'vue-router';
 
 // Using the lang store
 const langStore = useLangStore();
-const { currentLanguage } = storeToRefs(langStore);
+const { t, currentLanguage } = useLangStore();
 // Using the theme store
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
 const { toggleDarkMode } = themeStore;
+const router = useRouter();
 
 // Reactive state variables
 const leftDrawerOpen = ref(false);
+const leftDrawerOpenTest = ref(false);
 const languageMenu = ref(false);
 const navLinks = ref([
-  { title: 'Overview', to: '/' },
-  { title: 'Savings', to: '/savings' },
-  { title: 'Expenses', to: '/expenses' },
-  { title: 'Incomes', to: '/incomes' },
-  { title: 'Upload Transactions (CSV)', to: '/import_transactions' },
+  { title: t('overview'), to: '/', icon: 'home' },
+  { title: t('savings'), to: '/savings', icon: 'savings' },
+  { title: t('expenses'), to: '/expenses', icon: 'credit_card' },
+  { title: t('incomes'), to: '/incomes', icon: 'attach_money' },
+  { title: 'Upload Transactions (CSV)', to: '/import_transactions', icon: 'upload' },
 ]);
 
 // Methods
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+  leftDrawerOpenTest.value = !leftDrawerOpen.value;
 };
 
 const toggleLanguage = (lang) => {
@@ -134,6 +161,10 @@ const toggleLanguage = (lang) => {
 const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-primary');
 
 const headerClasses = computed(() =>  isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
+
+const navigate = (link) => {
+  router.push(link.to);
+};
 
 </script>
 

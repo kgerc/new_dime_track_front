@@ -2,7 +2,7 @@
   <q-dialog v-model="isOpen">
     <q-card style="width: 400px">
       <q-card-section class="row justify-between items-center">
-        <div class="text-h6">{{ isNewLimit ? 'New Expense Limit' : 'Edit Expense Limit' }}</div>
+        <div class="text-h6">{{ isNewLimit ? t('newExpenseLimit') : t('editExpenseLimit') }}</div>
         
         <!-- Currency Dropdown -->
         <q-select
@@ -15,23 +15,24 @@
       </q-card-section>
 
       <q-card-section class="q-gutter-md">
-        <q-input v-model="localLimit.title" label="Title" outlined dense />
+        <q-input v-model="localLimit.title" :label="t('title')" outlined dense />
         <q-input 
           v-model.number="localLimit.limit" 
-          label="Limit Amount" 
+          :label="t('limitAmount')" 
           type="number" 
           outlined 
           dense
           :prefix="getCurrencySymbol(localLimit.currency)" />
 
-        <q-input v-model="localLimit.month" label="Month (e.g., 01 for January)" outlined dense />
-        <q-input v-model="localLimit.year" label="Year (e.g., 2025)" outlined dense />
+        <q-input v-model="localLimit.month" :label="t('monthPlaceholder')" outlined dense />
+        <q-input v-model="localLimit.year" :label="t('yearPlaceholder')" outlined dense />
 
         <!-- Recurrence Frequency Dropdown -->
         <q-select
+          v-if="isNewLimit"
           v-model="localLimit.recurrenceFrequency"
           :options="recurrenceOptions"
-          label="Recurrence"
+          :label="t('recurrence')"
           outlined
           dense
         />
@@ -40,7 +41,7 @@
         <q-input
           v-if="localLimit.recurrenceFrequency !== 'None'"
           v-model.number="localLimit.recurrence"
-          label="Repeat Count"
+          :label="t('repeatCount')"
           type="number"
           outlined
           dense
@@ -49,17 +50,17 @@
         <q-select
           v-model="categoryTitle"
           :options="categoryTitles"
-          label="Category"
+          :label="t('category')"
           outlined
           dense
         />
       </q-card-section>
 
       <q-card-actions>
-        <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+        <q-btn flat :label="t('cancel')" color="grey" @click="closeDialog" />
         <q-space />  <!-- This pushes the next buttons to the right -->
-        <q-btn v-if="!isNewLimit" flat label="Delete" color="negative" @click="isWarningDialogOpened = true;"/>
-        <q-btn flat label="Save" color="primary" @click="saveChanges" />
+        <q-btn v-if="!isNewLimit" flat :label="t('delete')" color="negative" @click="isWarningDialogOpened = true;"/>
+        <q-btn flat :label="t('save')" color="primary" @click="saveChanges" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -73,7 +74,8 @@ import { useExpensesStore } from 'src/stores/expensesStore';
 import { getCurrencySymbol } from 'src/helpers/formatCurrency.js'
 import { storeToRefs } from 'pinia';
 import WarningDialog from 'src/components/Base/WarningDialog.vue'
-
+import { useLangStore } from "src/stores/langStore"
+const { t } = useLangStore();
 const expensesStore = useExpensesStore();
 const { categories } = storeToRefs(expensesStore);  // Using Pinia store for categories
 
@@ -134,9 +136,7 @@ function saveChanges() {
   closeDialog()
 }
 
-const recurrenceOptions = [
-  'None', 'Monthly', 'Quarterly', 'Yearly'
-];
+const recurrenceOptions = ['None', 'Monthly', 'Quarterly', 'Yearly'];
 
 const isWarningDialogOpened = ref(false)
 async function deleteLimit() {
