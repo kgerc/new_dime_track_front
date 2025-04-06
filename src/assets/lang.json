@@ -7,6 +7,14 @@
     "en": "Settings",
     "pl": "Ustawienia"
   },
+  "navigation": {
+    "en": "Navigation",
+    "pl": "Nawigacja"
+  },
+  "uploadTansactions": {
+    "en": "Upload transactions",
+    "pl": "Import transakcji"
+  },
   "overview": {
     "en": "Overview",
     "pl": "Zestawienie"

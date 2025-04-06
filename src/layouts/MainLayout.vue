@@ -80,13 +80,12 @@
       bordered
       :width="250"
       :breakpoint="767"
+      style="margin-top: 5px;"
     >
       <q-list>
-        <q-item-label class="text-white" header >Navigation</q-item-label>
-        <q-separator color="grey" inset />
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
           <q-item-section avatar>
-            <q-icon :name="link.icon" />
+            <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
           </q-item-section>
           <q-item-section>{{ link.title }}</q-item-section>
         </q-item>
@@ -101,11 +100,12 @@
       bordered
       :width="60"
       :breakpoint="767"
+      style="margin-top: 5px;"
     >
       <q-list >
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
           <q-item-section avatar>
-            <q-icon :name="link.icon" />
+            <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
           </q-item-section>
         </q-item>
       </q-list>
@@ -143,7 +143,7 @@ const navLinks = ref([
   { title: t('savings'), to: '/savings', icon: 'savings' },
   { title: t('expenses'), to: '/expenses', icon: 'credit_card' },
   { title: t('incomes'), to: '/incomes', icon: 'attach_money' },
-  { title: 'Upload Transactions (CSV)', to: '/import_transactions', icon: 'upload' },
+  { title: t('uploadTansactions'), to: '/import_transactions', icon: 'upload' },
 ]);
 
 // Methods
