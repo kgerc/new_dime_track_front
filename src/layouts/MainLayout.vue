@@ -14,8 +14,8 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-avatar>
-          <q-icon name="savings" size="md"/>
+        <q-avatar style="margin-left: 12px;">
+          <q-icon name="track_changes" size="md"/>
         </q-avatar>
         <q-toolbar-title>Dime Track</q-toolbar-title>
 
@@ -80,9 +80,8 @@
       bordered
       :width="250"
       :breakpoint="767"
-      style="margin-top: 5px;"
     >
-      <q-list>
+      <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
           <q-item-section avatar>
             <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
@@ -100,9 +99,8 @@
       bordered
       :width="60"
       :breakpoint="767"
-      style="margin-top: 5px;"
     >
-      <q-list >
+      <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
           <q-item-section avatar>
             <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
