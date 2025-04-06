@@ -152,26 +152,27 @@
       </div>
     </div>
 
-    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm" :class="formClasses" style="margin-left: -1px;">
-      <div class="row items-center q-pr-md">
-        <q-btn icon="add" :label="t('newExpense')" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
-        <q-btn icon="add_box" :label="t('newCategory')" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
-        <q-btn icon="category" :label="`${t('categories')} (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
-        <q-btn icon="assignment_turned_in" :label="t('assignCategories')" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
-        <q-btn icon="filter_list" :label="t('setExpenseLimit')" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
-        <q-btn icon="list" :label="`${t('limits')} (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
-      </div>
-      <div class="col">
-        <q-input
-          v-model="searchQuery"
-          outlined
-          dense
-          :class="searchClasses"
-          :placeholder="t('searchExpenses')"
-          class="q-mb-sm"
-        />
-      </div>
-    </q-form>
+    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary justify-between" :class="formClasses" style="margin-left: -1px;">
+        <div class="row items-center q-pr-md">
+          <q-btn icon="add" :label="t('newExpense')" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
+          <q-btn icon="add_box" :label="t('newCategory')" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="category" :label="`${t('categories')} (${expenseCategoriesCount})`" color="white" flat @click="isCategoriesListDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="assignment_turned_in" :label="t('assignCategories')" color="white" flat @click="isConfirmDialogOpened = true;" class="q-mr-sm" />
+          <q-btn icon="filter_list" :label="t('setExpenseLimit')" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
+          <q-btn icon="list" :label="`${t('limits')} (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
+        </div>
+        <div class="row items-center justify-end col-auto">
+          <q-input 
+            v-model="searchQuery" 
+            outlined 
+            dense 
+            :class="searchClasses"
+            style="width: 400px;" 
+            :placeholder="t('searchExpenses')"
+            class="q-mb-sm"
+          />
+        </div>
+      </q-form>
   </q-footer>
   </q-page>
   <ConfirmDialog v-model="isConfirmDialogOpened" @confirm="assignCategories" />

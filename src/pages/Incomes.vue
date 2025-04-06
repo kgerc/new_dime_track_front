@@ -139,21 +139,22 @@
         </div>
       </div>
 
-      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary" :class="formClasses" style="margin-left: -1px;">
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary justify-between" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" :label="t('newIncome')" color="white" flat class="q-mr-sm" @click="openNewIncomeDialog"/>
           <q-btn icon="add_box" :label="t('newCategory')" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
           <q-btn icon="category" :label="`${t('categories')} (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
-        <div class="col">
+        <div class="row items-center justify-end col-auto">
           <q-input 
             v-model="searchQuery" 
             outlined 
             dense 
             :class="searchClasses"
+            style="width: 400px;" 
             :placeholder="t('searchIncomes')" 
-            class="q-mb-sm">
-          </q-input>
+            class="q-mb-sm"
+          />
         </div>
       </q-form>
     </q-footer>

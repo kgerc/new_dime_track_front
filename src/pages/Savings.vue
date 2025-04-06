@@ -137,20 +137,21 @@
         </div>
       </div>
 
-      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary" :class="formClasses" style="margin-left: -1px;">
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary justify-between" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
-          <q-btn icon="add" label="New Contribution" color="white" flat  class="q-mr-sm" @click="openNewSavingContributionDialog"/>
-          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog"/>
+          <q-btn icon="add" label="New Contribution" color="white" flat class="q-mr-sm" @click="openNewSavingContributionDialog" />
+          <q-btn icon="savings" label="New Saving Goal" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog" />
         </div>
-        <div class="col">
+        <div class="row items-center justify-end col-auto">
           <q-input 
             v-model="searchQuery" 
             outlined 
             dense 
             :class="searchClasses"
-            placeholder="Search savings" 
-            class="q-mb-sm">
-          </q-input>
+            style="width: 400px;" 
+            placeholder="Search savings"
+            class="q-mb-sm"
+          />
         </div>
       </q-form>
     </q-footer>
