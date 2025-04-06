@@ -480,7 +480,11 @@ function checkAndNotifyExceededLimits() {
   if (newlyExceeded.length > 0) {
     newlyExceeded.forEach(limit => {
       $q.notify({
-        message: `You have exceeded your limit for ${limit.expenseCategory.title} in ${currentMonthName.value} ${selectedYear.value} !`,
+        message: t('expenseLimitExceeded', {
+          category: limit.expenseCategory.title,
+          month: currentMonthName.value,
+          year: selectedYear.value
+        }),
         color: 'negative',
         icon: 'warning',
         position: 'top-right',
@@ -500,14 +504,17 @@ function checkAndNotifyUpcomingUnpaidExpenses() {
   );
 
   if (newlyExceeded.length > 0) {
-    let expenseList = ""
+    const titles = newlyExceeded.map(expense => expense.title);
+    const expenseList = titles.join(', ');
+
+    // Update the list of previously exceeded limits
     newlyExceeded.forEach(expense => {
-      expenseList += expense.title + ", "
-      // Update the list of previously exceeded limits
       previousIncomingExpenses.value.push(expense.id);
     });
     $q.notify({
-        message: `Following expenses are due in 3 days: <br/> ${expenseList}`,
+        message: t('dueExpenses', {
+          expenseList: expenseList
+        }),
         html: true,
         color: 'negative',
         icon: 'warning',

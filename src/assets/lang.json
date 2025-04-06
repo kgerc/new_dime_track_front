@@ -1,178 +1,278 @@
 {
-    "welcome": {
-      "en": "Welcome",
-      "pl": "Witaj"
-    },
-    "settings": {
-      "en": "Settings",
-      "pl": "Ustawienia"
-    },
-    "expenses": {
-      "en": "Expenses",
-      "pl": "Wydatki"
-    },
-    "savings": {
-      "en": "Savings",
-      "pl": "Oszczędności"
-    },
-    "incomes": {
-        "en": "Incomes",
-        "pl": "Przychody"
-    },
-    "balance": {
-        "en": "Balance",
-        "pl": "Saldo"
-    },
-    "loadingExpenses": {
-        "en": "Loading expenses...",
-        "pl": "Ładowanie wydatków..."
-    },
-    "loadingIncomes": {
-        "en": "Loading incomes...",
-        "pl": "Ładowanie przychodów..."
-    },
-    "loadingSavings": {
-        "en": "Loading savings...",
-        "pl": "Ładowanie oszczędności..."
-    },
-    "noGoal": {
-        "en": "No goal",
-        "pl": "Ogólne"
-    },
-    "january": {
-        "en": "January",
-        "pl": "Styczeń"
-    },
-    "february": {
-        "en": "February",
-        "pl": "Luty"
-    },
-    "march": {
-        "en": "March",
-        "pl": "Marzec"
-    },
-    "april": {
-        "en": "April",
-        "pl": "Kwiecień"
-    },
-    "may": {
-        "en": "May",
-        "pl": "Maj"
-    },
-    "june": {
-        "en": "June",
-        "pl": "Czerwiec"
-    },
-    "july": {
-        "en": "July",
-        "pl": "Lipiec"
-    },
-    "august": {
-        "en": "August",
-        "pl": "Sierpień"
-    },
-    "september": {
-        "en": "September",
-        "pl": "Wrzesień"
-    },
-    "october": {
-        "en": "October",
-        "pl": "Październik"
-    },
-    "november": {
-        "en": "November",
-        "pl": "Listopad"
-    },
-    "december": {
-        "en": "December",
-        "pl": "Grudzień"
-    },
-    "switchToYearlyMode": {
-        "en": "Switch to Yearly View",
-        "pl": "Przełącz na widok roczny"
-    },
-    "switchToMonthlyMode": {
-        "en": "Switch to Monthly View",
-        "pl": "Przełącz na widok miesięczny"
-    },
-    "wholeMonth": {
-        "en": "Whole month",
-        "pl": "Cały miesiąc"
-      },
-      "close": {
-        "en": "Close",
-        "pl": "Zamknij"
-      },
-      "paid": {
-        "en": "Paid",
-        "pl": "Opłacony"
-      },
-      "unpaid": {
-        "en": "Unpaid",
-        "pl": "Nieopłacony"
-      },
-      "noCategory": {
-        "en": "No Category",
-        "pl": "Brak kategorii"
-      },
-      "noExpensesThisMonth": {
-        "en": "No expenses this month",
-        "pl": "Brak wydatków w tym miesiącu"
-      },
-      "expensesSum": {
-        "en": "Expenses sum",
-        "pl": "Suma wydatków"
-      },
-      "newExpense": {
-        "en": "New Expense",
-        "pl": "Nowy wydatek"
-      },
-      "newCategory": {
-        "en": "New Category",
-        "pl": "Nowa kategoria"
-      },
-      "categories": {
-        "en": "Categories",
-        "pl": "Kategorie"
-      },
-      "assignCategories": {
-        "en": "Assign categories",
-        "pl": "Przypisz kategorie"
-      },
-      "setExpenseLimit": {
-        "en": "Set Expense Limit",
-        "pl": "Ustaw limit wydatków"
-      },
-      "limits": {
-        "en": "Limits",
-        "pl": "Limity"
-      },
-      "searchExpenses": {
-        "en": "Search expenses",
-        "pl": "Szukaj wydatków"
-      },
-      "expenseDeleted": {
-        "en": "Expense deleted successfully!",
-        "pl": "Wydatek został usunięty!"
-      },
-      "expenseAdded": {
-        "en": "Expense added successfully!",
-        "pl": "Wydatek został dodany!"
-      },
-      "expenseLimitAdded": {
-        "en": "Expense limit added successfully!",
-        "pl": "Limit wydatków został dodany!"
-      },
-      "expenseCategoryAdded": {
-        "en": "Expense category added successfully!",
-        "pl": "Kategoria wydatków została dodana!"
-      },
-      "expenseMovedToSavings": {
-        "en": "Expense moved to savings successfully!",
-        "pl": "Wydatek został przeniesiony do oszczędności!"
-      },
-      "expenseCategoriesAssigned": {
-        "en": "Expense categories assigned successfully!",
-        "pl": "Kategorie wydatków zostały przypisane!"
-      }
+  "welcome": {
+    "en": "Welcome",
+    "pl": "Witaj"
+  },
+  "settings": {
+    "en": "Settings",
+    "pl": "Ustawienia"
+  },
+  "expenses": {
+    "en": "Expenses",
+    "pl": "Wydatki"
+  },
+  "savings": {
+    "en": "Savings",
+    "pl": "Oszczędności"
+  },
+  "incomes": {
+    "en": "Incomes",
+    "pl": "Przychody"
+  },
+  "balance": {
+    "en": "Balance",
+    "pl": "Saldo"
+  },
+  "loadingExpenses": {
+    "en": "Loading expenses...",
+    "pl": "Ładowanie wydatków..."
+  },
+  "loadingIncomes": {
+    "en": "Loading incomes...",
+    "pl": "Ładowanie przychodów..."
+  },
+  "loadingSavings": {
+    "en": "Loading savings...",
+    "pl": "Ładowanie oszczędności..."
+  },
+  "noGoal": {
+    "en": "No goal",
+    "pl": "Ogólne"
+  },
+  "january": {
+    "en": "January",
+    "pl": "Styczeń"
+  },
+  "february": {
+    "en": "February",
+    "pl": "Luty"
+  },
+  "march": {
+    "en": "March",
+    "pl": "Marzec"
+  },
+  "april": {
+    "en": "April",
+    "pl": "Kwiecień"
+  },
+  "may": {
+    "en": "May",
+    "pl": "Maj"
+  },
+  "june": {
+    "en": "June",
+    "pl": "Czerwiec"
+  },
+  "july": {
+    "en": "July",
+    "pl": "Lipiec"
+  },
+  "august": {
+    "en": "August",
+    "pl": "Sierpień"
+  },
+  "september": {
+    "en": "September",
+    "pl": "Wrzesień"
+  },
+  "october": {
+    "en": "October",
+    "pl": "Październik"
+  },
+  "november": {
+    "en": "November",
+    "pl": "Listopad"
+  },
+  "december": {
+    "en": "December",
+    "pl": "Grudzień"
+  },
+  "switchToYearlyMode": {
+    "en": "Switch to Yearly View",
+    "pl": "Przełącz na widok roczny"
+  },
+  "switchToMonthlyMode": {
+    "en": "Switch to Monthly View",
+    "pl": "Przełącz na widok miesięczny"
+  },
+  "wholeMonth": {
+    "en": "Whole month",
+    "pl": "Cały miesiąc"
+  },
+  "close": {
+    "en": "Close",
+    "pl": "Zamknij"
+  },
+  "paid": {
+    "en": "Paid",
+    "pl": "Opłacony"
+  },
+  "unpaid": {
+    "en": "Unpaid",
+    "pl": "Nieopłacony"
+  },
+  "noCategory": {
+    "en": "No Category",
+    "pl": "Brak kategorii"
+  },
+  "noExpensesThisMonth": {
+    "en": "No expenses this month",
+    "pl": "Brak wydatków w tym miesiącu"
+  },
+  "expensesSum": {
+    "en": "Expenses sum",
+    "pl": "Suma wydatków"
+  },
+  "newExpense": {
+    "en": "New Expense",
+    "pl": "Nowy wydatek"
+  },
+  "editExpense": {
+    "en": "Edit Expense",
+    "pl": "Edytuj wydatek"
+  },
+  "newCategory": {
+    "en": "New Category",
+    "pl": "Nowa kategoria"
+  },
+  "categories": {
+    "en": "Categories",
+    "pl": "Kategorie"
+  },
+  "assignCategories": {
+    "en": "Assign categories",
+    "pl": "Przypisz kategorie"
+  },
+  "setExpenseLimit": {
+    "en": "Set Expense Limit",
+    "pl": "Ustaw limit wydatków"
+  },
+  "limits": {
+    "en": "Limits",
+    "pl": "Limity"
+  },
+  "searchExpenses": {
+    "en": "Search expenses",
+    "pl": "Szukaj wydatków"
+  },
+  "expenseDeleted": {
+    "en": "Expense deleted successfully!",
+    "pl": "Wydatek został usunięty!"
+  },
+  "expenseAdded": {
+    "en": "Expense added successfully!",
+    "pl": "Wydatek został dodany!"
+  },
+  "expenseLimitAdded": {
+    "en": "Expense limit added successfully!",
+    "pl": "Limit wydatków został dodany!"
+  },
+  "expenseCategoryAdded": {
+    "en": "Expense category added successfully!",
+    "pl": "Kategoria wydatków została dodana!"
+  },
+  "expenseMovedToSavings": {
+    "en": "Expense moved to savings successfully!",
+    "pl": "Wydatek został przeniesiony do oszczędności!"
+  },
+  "expenseCategoriesAssigned": {
+    "en": "Expense categories assigned successfully!",
+    "pl": "Kategorie wydatków zostały przypisane!"
+  },
+  "expenseLimitExceeded": {
+    "en": "You have exceeded your limit for {category} in {month} {year}!",
+    "pl": "Przekroczyłeś limit w kategorii {category} w miesiącu {month} {year}!"
+  },
+  "dueExpenses": {
+    "en": "Following expenses are due in 3 days: <br/> {expenseList}",
+    "pl": "Następujące wydatki są do zapłaty za 3 dni: <br/> {expenseList}"
+  },
+  "title": {
+    "en": "Title",
+    "pl": "Tytuł"
+  },
+  "notes": {
+    "en": "Notes",
+    "pl": "Notatki"
+  },
+  "amount": {
+    "en": "Amount",
+    "pl": "Kwota"
+  },
+  "recurrence": {
+    "en": "Recurrence",
+    "pl": "Powtarzanie"
+  },
+  "repeatCount": {
+    "en": "Repeat Count",
+    "pl": "Liczba powtórzeń"
+  },
+  "paymentDate": {
+    "en": "Payment Date",
+    "pl": "Data płatności"
+  },
+  "isPaid": {
+    "en": "Paid?",
+    "pl": "Opłacone?"
+  },
+  "category": {
+    "en": "Category",
+    "pl": "Kategoria"
+  },
+  "cancel": {
+    "en": "Cancel",
+    "pl": "Anuluj"
+  },
+  "moveToSavings": {
+    "en": "Move to savings",
+    "pl": "Przenieś do oszczędności"
+  },
+  "save": {
+    "en": "Save",
+    "pl": "Zapisz"
+  },
+  "newExpenseCategory": {
+    "en": "New Expense Category",
+    "pl": "Nowa kategoria wydatków"
+  },
+  "editExpenseCategory": {
+    "en": "Edit Expense Category",
+    "pl": "Edytuj kategorię wydatków"
+  },
+  "categoryName": {
+    "en": "Category Name",
+    "pl": "Nazwa kategorii"
+  },
+  "categoryColor": {
+    "en": "Category Color",
+    "pl": "Kolor kategorii"
+  },
+  "addTag": {
+    "en": "Add tag",
+    "pl": "Dodaj tag"
+  },
+  "exampleTag": {
+    "en": "Example tag",
+    "pl": "Przykładowy tag"
+  },
+  "delete": {
+    "en": "Delete",
+    "pl": "Usuń"
+  },
+  "none": {
+    "en": "None",
+    "pl": "Brak"
+  },
+  "monthly": {
+    "en": "Monthly",
+    "pl": "Miesięcznie"
+  },
+  "quarterly": {
+    "en": "Quarterly",
+    "pl": "Kwartalnie"
+  },
+  "yearly": {
+    "en": "Yearly",
+    "pl": "Rocznie"
   }
+}

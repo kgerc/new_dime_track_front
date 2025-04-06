@@ -2,7 +2,7 @@
 <q-dialog v-model="isOpen">
   <q-card style="width: 400px">
     <q-card-section class="row justify-between items-center">
-      <div class="text-h6">{{ isNewExpense ? 'New Expense' : 'Edit Expense' }}</div>
+      <div class="text-h6">{{ isNewExpense ? t('newExpense') : t('editExpense') }}</div>
       
       <!-- Currency Dropdown -->
       <q-select
@@ -15,54 +15,50 @@
     </q-card-section>
 
     <q-card-section class="q-gutter-md">
-      <q-input v-model="localExpense.title" label="Title" outlined dense />
-      <q-input v-model="localExpense.notes" label="Notes" outlined dense />
+      <q-input v-model="localExpense.title" :label="t('title')" outlined dense />
+      <q-input v-model="localExpense.notes" :label="t('notes')" outlined dense />
       <q-input 
         v-model.number="localExpense.amount" 
-        label="Amount" 
+        :label="t('amount')" 
         type="number" 
         outlined 
         dense 
         :prefix="getCurrencySymbol(localExpense.currency)" 
       />
-
-      <!-- Recurrence Frequency Dropdown -->
       <q-select
         v-if="isNewExpense"
         v-model="localExpense.recurrenceFrequency"
         :options="recurrenceOptions"
-        label="Recurrence"
+        :label="t('recurrence')"
         outlined
         dense
       />
-
-      <!-- Repeat Count Input (only visible if a recurrence is selected) -->
       <q-input
         v-if="localExpense.recurrenceFrequency !== 'None'"
         v-model.number="localExpense.recurrence"
-        label="Repeat Count"
+        :label="t('repeatCount')"
         type="number"
         outlined
         dense
       />
-      <q-input v-model="localExpense.paymentDate" label="Payment Date" type="date" outlined dense />
+      <q-input :label="t('paymentDate')" v-model="localExpense.paymentDate" type="date" outlined dense />
 
-      <q-toggle v-model="localExpense.isPaid" label="Paid?" />
+      <q-toggle v-model="localExpense.isPaid" :label="t('isPaid')" />
 
       <q-select
         v-model="categoryTitle"
         :options="categoryTitles"
-        label="Category"
+        :label="t('category')"
         outlined
         dense
       />
     </q-card-section>
 
     <q-card-actions align="right">
-      <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
+      <q-btn flat :label="t('cancel')" color="grey" @click="closeDialog" />
       <q-space />  <!-- This pushes the next buttons to the right -->
-      <q-btn flat label="Move to savings" color="primary" @click="moveExpenseToSavings" />
-      <q-btn flat label="Save" color="primary" @click="saveChanges" />
+      <q-btn v-if="!isNewExpense" flat :label="t('moveToSavings')" color="primary" @click="moveExpenseToSavings" />
+      <q-btn flat :label="t('save')" color="primary" @click="saveChanges" />
     </q-card-actions>
   </q-card>
 </q-dialog>
@@ -74,11 +70,13 @@ import { defineProps, defineEmits, ref, computed, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 import { useExpensesStore } from 'src/stores/expensesStore';
+import { useLangStore } from "src/stores/langStore"
 import { getCurrencySymbol } from 'src/helpers/formatCurrency.js'
 import { storeToRefs } from 'pinia';
 
 const expensesStore = useExpensesStore();
 const { categories } = storeToRefs(expensesStore);  // Using Pinia store for categories
+const { t } = useLangStore();
 
 const props = defineProps({
   modelValue: Boolean,  // Controls dialog visibility
