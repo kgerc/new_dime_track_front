@@ -142,7 +142,8 @@ const navLinks = ref([
   { title: t('savings'), to: '/savings', icon: 'savings' },
   { title: t('expenses'), to: '/expenses', icon: 'credit_card' },
   { title: t('incomes'), to: '/incomes', icon: 'attach_money' },
-  { title: t('uploadTansactions'), to: '/import_transactions', icon: 'upload' },
+  { title: t('statistics'), to: '/statistics', icon: 'insert_chart' },
+  { title: t('uploadTansactions'), to: '/import_transactions', icon: 'upload' }
 ]);
 
 // Methods

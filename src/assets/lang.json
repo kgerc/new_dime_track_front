@@ -414,5 +414,9 @@
   "noSavingsThisMonth": {
     "en": "No savings this month",
     "pl": "Brak oszczędności w tym miesiącu"
+  },
+  "statistics": {
+    "en": "Statistics",
+    "pl": "Statystyki"
   }
 }
