@@ -1,8 +1,8 @@
 <template>
-  <q-page :class="isDarkMode ? 'black' : 'bg-grey-1'" style="margin-left: 20px;">
+  <q-page style="margin-left: 20px;background-color: black;">
     <!-- Month/Year Filter & View Toggle -->
     <div class="row justify-between items-center q-my-md q-px-md">
-      <div class="row items-center justify-center col" :style="{ 'margin-right': viewMode === 'monthly' ? '70px' : '-180px' }">
+      <div class="row items-center justify-center col" style="margin-right: -180px;">
         <q-btn icon="arrow_back" flat @click="prevPeriod" />
         <div class="q-mx-md text-h6">
           {{ viewMode === 'monthly' ? `${currentMonthName} ${selectedYear}` : selectedYear }}
@@ -14,72 +14,161 @@
       </q-btn>
     </div>
 
-    <!-- Compact Monthly Summary -->
-    <div class="row q-col-gutter-md q-px-md q-mb-md">
-      <!-- Income -->
-      <q-card class="col-12 col-sm-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05);">
-        <q-card-section>
-          <div class="text-caption text-grey-6">{{ t('totalIncome') }}</div>
-          <div class="text-h6 text-positive">{{ summary[0].value }}</div>
-        </q-card-section>
-      </q-card>
+    <div class="row q-col-gutter-sm">
+  <div class="col-12 col-sm-4 q-px-xs q-mb-sm">
+    <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); height: 100%;">
+      <q-card-section>
+        <div class="text-caption text-grey-6">{{ t('totalIncome') }}</div>
+        <div class="text-h6 text-positive font-weight-bold">{{ summary[0].value }}</div>
+        <div class="q-mt-sm text-body2 text-grey-8" style="font-size: 14px;">
+          {{ t('projectedIncome') }}: <span class="text-positive">5,500 zł</span>
+        </div>
+        <div class="text-body2 text-grey-6" style="font-size: 14px;">
+          {{ t('incomeGrowth') }}: <span class="text-positive">+5% from last month</span>
+        </div>
+      </q-card-section>
+    </q-card>
+  </div>
 
-      <!-- Expenses -->
-      <q-card class="col-12 col-sm-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05);">
-        <q-card-section>
-          <div class="text-caption text-grey-6">{{ t('totalExpenses') }}</div>
-          <div class="text-h6 text-negative">{{ summary[1].value }}</div>
-        </q-card-section>
-      </q-card>
+  <div class="col-12 col-sm-4 q-px-xs q-mb-sm">
+    <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); height: 100%;">
+      <q-card-section>
+        <div class="text-caption text-grey-6">{{ t('totalExpenses') }}</div>
+        <div class="text-h6 text-negative font-weight-bold">{{ summary[1].value }}</div>
+        <div class="q-mt-sm text-body2 text-negative" style="font-size: 14px;">
+          {{ t('overBudget') }}: <span class="text-negative">200 zł over budget</span>
+        </div>
+        <div class="text-body2 text-grey-6" style="font-size: 14px;">
+          {{ t('expenseGrowth') }}: <span class="text-positive">+3% from last month</span>
+        </div>
+      </q-card-section>
+    </q-card>
+  </div>
 
-      <!-- Savings with progress -->
-      <q-card class="col-12 col-sm-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05);">
+  <div class="col-12 col-sm-4 q-px-xs q-mb-sm">
+    <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); height: 100%;">
+      <q-card-section>
+        <div class="text-caption text-grey-6">{{ t('totalSavings') }}</div>
+        <div class="text-h6 font-weight-bold">{{ summary[2].value }}</div>
+        <q-linear-progress size="8px" class="q-mt-sm" color="primary" :value="savingsPercent" rounded />
+        <div class="text-body2 text-grey" style="font-size: 14px;">
+          {{ Math.round(savingsPercent * 100) }}% {{ t('ofIncomeSaved') }}
+        </div>
+        <div class="text-body2 text-grey-8 q-mt-sm" style="font-size: 12px;">
+          {{ t('remainingToGoals') }}: <span class="text-negative">1,000 zł left to save</span>
+        </div>
+      </q-card-section>
+    </q-card>
+  </div>
+</div>
+
+
+<!-- Tabbed Analytics Section -->
+<q-tabs v-model="activeTab" dense align="left" class="text-primary q-px-md">
+  <!-- New tab for displaying all charts -->
+  <q-tab name="all" label="All" />
+  <q-tab name="overview" label="Overview" />
+  <q-tab name="spending" label="Spending" />
+  <q-tab name="income" label="Income" />
+  <q-tab name="savings" label="Savings" />
+</q-tabs>
+
+<q-tab-panels v-model="activeTab" animated class="q-px-md q-mt-md" style="background-color: black;">
+  <q-tab-panel name="overview">
+    <div class="row justify-center">
+      <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         <q-card-section>
-          <div class="text-caption text-grey-6">{{ t('totalSavings') }}</div>
-          <div class="text-h6">{{ summary[2].value }}</div>
-          <q-linear-progress
-            size="8px"
-            class="q-mt-sm"
-            color="primary"
-            :value="savingsPercent"
-            rounded
-          />
-          <div class="text-caption q-mt-xs text-grey">
-            {{ Math.round(savingsPercent * 100) }}% {{ t('ofIncomeSaved') }}
-          </div>
+          <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
+          <apexchart type="bar" height="250" :options="barOptions" :series="barSeries" />
         </q-card-section>
       </q-card>
     </div>
+  </q-tab-panel>
 
-    <!-- Charts Section -->
-    <div class="row q-col-gutter-md q-px-md">
-      <!-- Spending Breakdown Pie Chart -->
-      <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <q-tab-panel name="spending">
+    <div class="row justify-center">
+      <q-card class="col-12 col-md-6 q-pa-sm q-mb-md" style="max-width: 500px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         <q-card-section>
           <div class="text-subtitle1 q-mb-sm">{{ t('spendingBreakdown') }}</div>
           <apexchart type="pie" height="250" :options="pieOptions" :series="pieSeries" />
         </q-card-section>
       </q-card>
 
-      <!-- Income vs Expenses Bar Chart -->
-      <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <q-card-section>
-          <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
-          <apexchart type="bar" height="250" :options="barOptions" :series="barSeries" />
-        </q-card-section>
-      </q-card>
-
-      <!-- Expense Limit Tracking -->
-      <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <q-card class="col-12 col-md-6 q-pa-sm q-mb-md" style="max-width: 500px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         <q-card-section>
           <div class="text-subtitle1 q-mb-sm">{{ t('expenseLimitTracking') }}</div>
           <apexchart type="bar" height="250" :options="limitOptions" :series="limitSeries" />
         </q-card-section>
       </q-card>
     </div>
+  </q-tab-panel>
+
+  <q-tab-panel name="income">
+    <div class="row justify-center">
+      <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('incomeCategories') }}</div>
+          <apexchart type="bar" height="250" :options="barOptions" :series="[barSeries[0]]" />
+        </q-card-section>
+      </q-card>
+    </div>
+  </q-tab-panel>
+
+  <q-tab-panel name="savings">
+    <div class="row justify-center">
+      <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('savingsOverTime') }}</div>
+          <apexchart type="line" height="250" :options="lineOptions" :series="lineSeries" />
+        </q-card-section>
+      </q-card>
+    </div>
+  </q-tab-panel>
+
+  <!-- New tab panel for 'All' charts -->
+  <q-tab-panel name="all">
+    <div class="row q-gutter-md justify-center">
+      <!-- Display all charts in a horizontal layout -->
+      <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
+          <apexchart type="bar" height="250" :options="barOptions" :series="barSeries" />
+        </q-card-section>
+      </q-card>
+
+      <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('spendingBreakdown') }}</div>
+          <apexchart type="pie" height="250" :options="pieOptions" :series="pieSeries" />
+        </q-card-section>
+      </q-card>
+
+      <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('expenseLimitTracking') }}</div>
+          <apexchart type="bar" height="250" :options="limitOptions" :series="limitSeries" />
+        </q-card-section>
+      </q-card>
+
+      <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('incomeCategories') }}</div>
+          <apexchart type="bar" height="250" :options="barOptions" :series="[barSeries[0]]" />
+        </q-card-section>
+      </q-card>
+
+      <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('savingsOverTime') }}</div>
+          <apexchart type="line" height="250" :options="lineOptions" :series="lineSeries" />
+        </q-card-section>
+      </q-card>
+    </div>
+  </q-tab-panel>
+</q-tab-panels>
+
   </q-page>
 </template>
-
 
 <script setup>
 import { ref, computed } from 'vue'
@@ -88,11 +177,12 @@ import { useLangStore } from "src/stores/langStore"
 
 const apexchart = ApexCharts
 const { t } = useLangStore()
-const isDarkMode = false // You can link this to your actual dark mode state
+const isDarkMode = false
 
 const viewMode = ref('monthly')
 const selectedYear = ref(new Date().getFullYear())
 const selectedMonth = ref(new Date().getMonth())
+const activeTab = ref('all')
 
 const monthNames = computed(() => [
   t('january'), t('february'), t('march'), t('april'), t('may'), t('june'),
@@ -131,23 +221,10 @@ const nextPeriod = () => {
   }
 }
 
-const summary = ref([
-  { label: t('totalIncome'), value: '$5,200' },
-  { label: t('totalExpenses'), value: '$3,400' },
-  { label: t('totalSavings'), value: '$1,800' }
-])
-
 const pieSeries = ref([1000, 900, 600, 400, 500])
 const pieOptions = computed(() => ({
   labels: ['Rent', 'Groceries', 'Transport', 'Utilities', 'Entertainment'],
-  title: {
-    text: '',
-    align: 'center',
-    style: { fontSize: '14px' }
-  },
-  legend: {
-    position: 'bottom'
-  },
+  legend: { position: 'bottom' },
   responsive: [{ breakpoint: 480, options: { chart: { width: 300 } } }]
 }))
 
@@ -161,6 +238,7 @@ const barSeries = ref([
     data: viewMode.value === 'monthly' ? [3400] : [3200, 3500, 3400, 3600]
   }
 ])
+
 const barOptions = computed(() => ({
   chart: { stacked: false },
   xaxis: {
@@ -175,11 +253,9 @@ const barOptions = computed(() => ({
 }))
 
 const lineSeries = ref([
-  {
-    name: 'Savings',
-    data: viewMode.value === 'monthly' ? [1800] : [1300, 1500, 1800, 1900]
-  }
+  { name: 'Savings', data: viewMode.value === 'monthly' ? [1800] : [1300, 1500, 1800, 1900] }
 ])
+
 const lineOptions = computed(() => ({
   xaxis: {
     categories: viewMode.value === 'monthly'
@@ -190,32 +266,22 @@ const lineOptions = computed(() => ({
   colors: ['#007BFF']
 }))
 
-// Limit Tracking Data
 const limitSeries = ref([
-  {
-    name: 'Actual',
-    data: [400, 250, 180]
-  }
+  { name: 'Actual', data: [400, 250, 180] }
 ])
 
 const limitOptions = ref({
-  chart: {
-    type: 'bar',
-    stacked: false,
-    toolbar: { show: false }
-  },
+  chart: { type: 'bar', stacked: false, toolbar: { show: false } },
   plotOptions: {
     bar: {
       horizontal: true,
       barHeight: '60%',
-      dataLabels: {
-        position: 'top'
-      }
+      dataLabels: { position: 'top' }
     }
   },
   xaxis: {
     categories: ['Food', 'Transport', 'Entertainment'],
-    max: 500 // Set this to the highest limit for consistent scale
+    max: 500
   },
   annotations: {
     xaxis: [
@@ -227,7 +293,7 @@ const limitOptions = ref({
   colors: ['#007BFF'],
   dataLabels: {
     enabled: true,
-    formatter: (val) => `$${val}`
+    formatter: val => `$${val}`
   },
   grid: {
     xaxis: { lines: { show: false } },
@@ -235,9 +301,22 @@ const limitOptions = ref({
   }
 })
 
-const savingsPercent = computed(() => {
-  const income = parseFloat(summary.value[0].value.replace(/[^0-9.-]+/g,""))
-  const savings = parseFloat(summary.value[2].value.replace(/[^0-9.-]+/g,""))
-  return income ? savings / income : 0
-})
+const summary = [
+  {
+    value: '5,200 zł',
+    count: 6,
+    average: '866.67 zł'
+  },
+  {
+    value: '3,800 zł',
+    count: 12,
+    average: '316.67 zł'
+  },
+  {
+    value: '1,400 zł',
+    diff: '+200 zł' // compared to previous period
+  }
+];
+
+const savingsPercent = 0.269; // 26.9%
 </script>
