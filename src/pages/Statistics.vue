@@ -14,53 +14,72 @@
       </q-btn>
     </div>
 
-    <!-- Statistics Content -->
-    <div class="q-pa-md q-gutter-md">
-      <!-- Summary Cards -->
-      <div class="row q-col-gutter-md">
-        <q-card
-          v-for="item in summary"
-          :key="item.label"
-          class="col-12 col-sm-4 q-pa-sm"
-          style="min-height: 100px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"
-        >
-          <q-card-section class="q-pa-sm">
-            <div class="text-caption text-grey-6">{{ item.label }}</div>
-            <div class="text-h6">{{ item.value }}</div>
-          </q-card-section>
-        </q-card>
-      </div>
+    <!-- Compact Monthly Summary -->
+    <div class="row q-col-gutter-md q-px-md q-mb-md">
+      <!-- Income -->
+      <q-card class="col-12 col-sm-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-caption text-grey-6">{{ t('totalIncome') }}</div>
+          <div class="text-h6 text-positive">{{ summary[0].value }}</div>
+        </q-card-section>
+      </q-card>
 
-        <!-- All Charts Side by Side -->
-        <div class="row q-col-gutter-md">
-        <!-- Spending Breakdown Pie Chart -->
-        <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-            <q-card-section>
-            <div class="text-subtitle1 q-mb-sm">{{ t('spendingBreakdown') }}</div>
-            <apexchart type="pie" height="250" :options="pieOptions" :series="pieSeries" />
-            </q-card-section>
-        </q-card>
+      <!-- Expenses -->
+      <q-card class="col-12 col-sm-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-caption text-grey-6">{{ t('totalExpenses') }}</div>
+          <div class="text-h6 text-negative">{{ summary[1].value }}</div>
+        </q-card-section>
+      </q-card>
 
-        <!-- Income vs Expenses Bar Chart -->
-        <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-            <q-card-section>
-            <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
-            <apexchart type="bar" height="250" :options="barOptions" :series="barSeries" />
-            </q-card-section>
-        </q-card>
+      <!-- Savings with progress -->
+      <q-card class="col-12 col-sm-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-caption text-grey-6">{{ t('totalSavings') }}</div>
+          <div class="text-h6">{{ summary[2].value }}</div>
+          <q-linear-progress
+            size="8px"
+            class="q-mt-sm"
+            color="primary"
+            :value="savingsPercent"
+            rounded
+          />
+          <div class="text-caption q-mt-xs text-grey">
+            {{ Math.round(savingsPercent * 100) }}% {{ t('ofIncomeSaved') }}
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
 
-        <!-- Savings Over Time Line Chart -->
-        <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-            <q-card-section>
-            <div class="text-subtitle1 q-mb-sm">{{ t('savingsOverTime') }}</div>
-            <apexchart type="line" height="250" :options="lineOptions" :series="lineSeries" />
-            </q-card-section>
-        </q-card>
-        </div>
+    <!-- Charts Section -->
+    <div class="row q-col-gutter-md q-px-md">
+      <!-- Spending Breakdown Pie Chart -->
+      <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('spendingBreakdown') }}</div>
+          <apexchart type="pie" height="250" :options="pieOptions" :series="pieSeries" />
+        </q-card-section>
+      </q-card>
 
+      <!-- Income vs Expenses Bar Chart -->
+      <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
+          <apexchart type="bar" height="250" :options="barOptions" :series="barSeries" />
+        </q-card-section>
+      </q-card>
+
+      <!-- Expense Limit Tracking -->
+      <q-card class="col-12 col-md-4 q-pa-sm" style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-sm">{{ t('expenseLimitTracking') }}</div>
+          <apexchart type="bar" height="250" :options="limitOptions" :series="limitSeries" />
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
+
 
 <script setup>
 import { ref, computed } from 'vue'
@@ -170,4 +189,55 @@ const lineOptions = computed(() => ({
   stroke: { curve: 'smooth' },
   colors: ['#007BFF']
 }))
+
+// Limit Tracking Data
+const limitSeries = ref([
+  {
+    name: 'Actual',
+    data: [400, 250, 180]
+  }
+])
+
+const limitOptions = ref({
+  chart: {
+    type: 'bar',
+    stacked: false,
+    toolbar: { show: false }
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+      barHeight: '60%',
+      dataLabels: {
+        position: 'top'
+      }
+    }
+  },
+  xaxis: {
+    categories: ['Food', 'Transport', 'Entertainment'],
+    max: 500 // Set this to the highest limit for consistent scale
+  },
+  annotations: {
+    xaxis: [
+      { x: 500, borderColor: '#FF0000', label: { text: 'Limit', style: { color: '#fff', background: '#FF0000' } } },
+      { x: 300, borderColor: '#FFA500', label: { text: 'Limit', style: { color: '#fff', background: '#FFA500' } } },
+      { x: 200, borderColor: '#0088FE', label: { text: 'Limit', style: { color: '#fff', background: '#0088FE' } } }
+    ]
+  },
+  colors: ['#007BFF'],
+  dataLabels: {
+    enabled: true,
+    formatter: (val) => `$${val}`
+  },
+  grid: {
+    xaxis: { lines: { show: false } },
+    yaxis: { lines: { show: false } }
+  }
+})
+
+const savingsPercent = computed(() => {
+  const income = parseFloat(summary.value[0].value.replace(/[^0-9.-]+/g,""))
+  const savings = parseFloat(summary.value[2].value.replace(/[^0-9.-]+/g,""))
+  return income ? savings / income : 0
+})
 </script>
