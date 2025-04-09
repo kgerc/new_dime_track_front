@@ -234,7 +234,9 @@ const nextPeriod = () => {
 const pieSeries = ref([1000, 900, 600, 400, 500])
 const pieOptions = computed(() => ({
   labels: ['Rent', 'Groceries', 'Transport', 'Utilities', 'Entertainment'],
-  legend: { position: 'bottom' },
+  legend: { position: 'bottom', labels: {
+      colors: '#999'
+    } },
   responsive: [{ breakpoint: 480, options: { chart: { width: 300 } } }]
 }))
 
@@ -250,11 +252,23 @@ const barSeries = ref([
 ])
 
 const barOptions = computed(() => ({
-  chart: { stacked: false },
+  chart: { stacked: false , foreColor: '#999' },
   xaxis: {
     categories: viewMode.value === 'monthly'
       ? [monthNames.value[selectedMonth.value]]
-      : ['Jan', 'Feb', 'Mar', 'Apr']
+      : ['Jan', 'Feb', 'Mar', 'Apr'],
+    labels: {
+      style: {
+        colors: '#999'
+    }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
   },
   plotOptions: {
     bar: { horizontal: false, columnWidth: '50%' }
@@ -267,10 +281,23 @@ const lineSeries = ref([
 ])
 
 const lineOptions = computed(() => ({
+  chart: { stacked: false , foreColor: '#999' },
   xaxis: {
     categories: viewMode.value === 'monthly'
       ? [monthNames.value[selectedMonth.value]]
-      : ['Jan', 'Feb', 'Mar', 'Apr']
+      : ['Jan', 'Feb', 'Mar', 'Apr'],
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
   },
   stroke: { curve: 'smooth' },
   colors: ['#007BFF']
@@ -291,7 +318,19 @@ const limitOptions = ref({
   },
   xaxis: {
     categories: ['Food', 'Transport', 'Entertainment'],
-    max: 500
+    max: 500,
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
   },
   annotations: {
     xaxis: [
