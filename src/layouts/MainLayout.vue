@@ -73,10 +73,13 @@
 
     <!-- Left Drawer -->
     <q-drawer
-      v-if="leftDrawerOpen"
       v-model="leftDrawerOpen"
       :class="footerClasses"
       show-if-above
+      :mini="miniState"
+      @mouseenter="miniState = false"
+      @mouseleave="miniState = true"
+      mini-to-overlay
       bordered
       :width="250"
       :breakpoint="767"
@@ -85,30 +88,13 @@
       <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
           <q-item-section avatar>
-            <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
+            <q-icon :name="link.icon" style="margin-bottom: 2px;" :color="isDarkMode ? 'lightgray' : 'white'"/>
           </q-item-section>
-          <q-item-section>{{ link.title }}</q-item-section>
+          <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'">{{ link.title }}</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
-
-    <q-drawer
-      v-if="!leftDrawerOpen"
-      v-model="leftDrawerOpenTest"
-      :class="footerClasses"
-      show-if-above
-      bordered
-      :width="60"
-      :breakpoint="767"
-    >
-      <q-list style="margin-top: 5px;">
-        <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
-          <q-item-section avatar style="min-width: 15px;">
-            <q-icon :name="link.icon" style="margin-bottom: 2px;"/>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
+    
 
     <!-- Main content container -->
     <q-page-container>
@@ -135,7 +121,7 @@ const router = useRouter();
 
 // Reactive state variables
 const leftDrawerOpen = ref(false);
-const leftDrawerOpenTest = ref(false);
+const miniState = ref(true);
 const languageMenu = ref(false);
 const navLinks = ref([
   { title: t('overview'), to: '/', icon: 'home' },
@@ -149,7 +135,6 @@ const navLinks = ref([
 // Methods
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
-  leftDrawerOpenTest.value = !leftDrawerOpen.value;
 };
 
 const toggleLanguage = (lang) => {

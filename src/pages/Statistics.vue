@@ -1,5 +1,5 @@
 <template>
-  <q-page style="margin-left: 20px;background-color: black;">
+  <q-page style="margin-left: 20px;" :style="isDarkMode ? 'background-color: black;' : 'background-color: white;'">
     <!-- Month/Year Filter & View Toggle -->
     <div class="row justify-between items-center q-my-md q-px-md">
       <div class="row items-center justify-center col" style="margin-right: -180px;">
@@ -17,7 +17,7 @@
     <!-- Summary Cards -->
     <div class="row q-col-gutter-sm" style="margin-left: 26px;">
       <div class="col-12 col-sm-4 q-px-xs q-mb-sm" style="width: 595px;">
-        <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); height: 100%;">
+        <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px;height: 100%;">
           <q-card-section>
             <div class="text-caption text-grey-6">{{ t('totalIncome') }}</div>
             <div class="text-h6 text-positive font-weight-bold">{{ summary[0].value }}</div>
@@ -32,7 +32,7 @@
       </div>
 
       <div class="col-12 col-sm-4 q-px-xs q-mb-sm" style="width: 595px;">
-        <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); height: 100%;">
+        <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px;height: 100%;">
           <q-card-section>
             <div class="text-caption text-grey-6">{{ t('totalExpenses') }}</div>
             <div class="text-h6 text-negative font-weight-bold">{{ summary[1].value }}</div>
@@ -47,7 +47,7 @@
       </div>
 
       <div class="col-12 col-sm-4 q-px-xs q-mb-sm" style="width: 595px;">
-        <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); height: 100%;">
+        <q-card class="q-pa-sm full-height column justify-between" style="border-radius: 16px;height: 100%;">
           <q-card-section>
             <div class="text-caption text-grey-6">{{ t('totalSavings') }}</div>
             <div class="text-h6 font-weight-bold">{{ summary[2].value }}</div>
@@ -72,10 +72,10 @@
       <q-tab name="savings" label="Savings" />
     </q-tabs>
 
-    <q-tab-panels v-model="activeTab" animated class="q-px-md q-mt-md" style="background-color: black;">
+    <q-tab-panels v-model="activeTab" animated class="q-px-md q-mt-md" :style="isDarkMode ? 'background-color: black;' : 'background-color: white;'">
       <q-tab-panel name="overview">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
               <apexchart :key="chartKey" type="bar" height="250" :options="barOptions" :series="barSeries" />
@@ -86,14 +86,14 @@
 
       <q-tab-panel name="spending">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-6 q-pa-sm q-mb-md" style="max-width: 500px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <q-card class="col-12 col-md-6 q-pa-sm q-mb-md" style="max-width: 500px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('spendingBreakdown') }}</div>
               <apexchart :key="chartKey" type="pie" height="250" :options="pieOptions" :series="pieSeries" />
             </q-card-section>
           </q-card>
 
-          <q-card class="col-12 col-md-6 q-pa-sm q-mb-md" style="max-width: 500px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <q-card class="col-12 col-md-6 q-pa-sm q-mb-md" style="max-width: 500px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('expenseLimitTracking') }}</div>
               <apexchart :key="chartKey" type="bar" height="250" :options="limitOptions" :series="limitSeries" />
@@ -104,7 +104,7 @@
 
       <q-tab-panel name="income">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('incomeCategories') }}</div>
               <apexchart :key="chartKey" type="bar" height="250" :options="barOptions" :series="[barSeries[0]]" />
@@ -115,7 +115,7 @@
 
       <q-tab-panel name="savings">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md" style="max-width: 600px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('savingsOverTime') }}</div>
               <apexchart :key="chartKey" type="line" height="250" :options="lineOptions" :series="lineSeries" />
@@ -126,7 +126,7 @@
 
       <q-tab-panel name="all">
         <div class="row q-gutter-md justify-center">
-          <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <q-card class="col-12 col-md-3 q-pa-sm q-mb-md" style="max-width: 342px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
               <apexchart :key="chartKey" type="bar" height="250" :options="barOptions" :series="barSeries" />
@@ -168,11 +168,15 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import ApexCharts from 'vue3-apexcharts'
 import { useLangStore } from 'src/stores/langStore'
+import { useThemeStore } from 'src/stores/themeStore';
 
 const { t } = useLangStore()
 const apexchart = ApexCharts
+const themeStore = useThemeStore();
+const { isDarkMode } = storeToRefs(themeStore);
 
 const viewMode = ref('monthly')
 const selectedYear = ref(new Date().getFullYear())
