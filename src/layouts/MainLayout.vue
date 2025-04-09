@@ -93,6 +93,13 @@
           <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'">{{ link.title }}</q-item-section>
         </q-item>
       </q-list>
+      <!-- Icon at the bottom -->
+      <q-item clickable class="absolute-bottom">
+        <q-item-section avatar>
+          <q-icon name="logout" :color="isDarkMode ? 'lightgray' : 'white'"/>
+        </q-item-section>
+        <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'">Logout</q-item-section>
+      </q-item>
     </q-drawer>
     
 
