@@ -43,15 +43,72 @@
       </div>
 
       <!-- Right-aligned filter icon -->
-      <q-icon name="sort" size="md" style="margin-right:10px;" color="primary"/>
-      <q-icon name="filter_alt" size="md" style="margin-right:25px;" color="primary"/>
+      <q-btn icon="sort" color="primary" flat>
+        <q-menu fit>
+          <q-list style="min-width: 200px">
+            <q-item>
+              <q-item-section>
+                <div class="text-caption text-grey">Sort By</div>
+                <q-btn-toggle
+                  v-model="sortKey"
+                  spread
+                  dense
+                  toggle-color="primary"
+                  :options="[
+                    { label: 'Date', value: 'date' },
+                    { label: 'Amount', value: 'amount' }
+                  ]"
+                  class="q-mt-xs"
+                />
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <div class="text-caption text-grey">Direction</div>
+                <q-btn-toggle
+                  v-model="sortDirection"
+                  spread
+                  dense
+                  toggle-color="primary"
+                  :options="[
+                    { label: 'Asc', value: 'asc' },
+                    { label: 'Desc', value: 'desc' }
+                  ]"
+                  class="q-mt-xs"
+                />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      <q-btn icon="filter_alt" color="primary" flat style="margin-right:20px;">
+        <q-menu fit>
+          <q-list style="min-width: 200px">
+            <q-item>
+              <q-item-section>
+                <q-select
+                  dense
+                  v-model="selectedCategory"
+                  :options="categoryTitles"
+                  :label="t('category')"
+                  clearable
+                  emit-value
+                  map-options
+                  filled
+                />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
     </div>
 
     <!-- Expenses List -->
     <div class="q-pa-md z-0" style="margin-top: -20px;">
         <q-list bordered separator>
           <q-slide-item
-            v-for="entry in filteredEntries"
+            v-for="entry in filteredAndSortedExpenses"
             :key="entry.id"
             @right="removeEntry(entry.id)"
             right-color="negative"
@@ -118,7 +175,7 @@
       <span class="q-mt-xs">{{ t('loadingExpenses') }}</span>
     </div>
     <!-- No Expenses Message -->
-    <div v-if="filteredEntries.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
+    <div v-if="filteredAndSortedExpenses.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="shopping_cart" size="4em" color="grey-6" />
       <div class="text-h6 text-grey-6 q-mt-md">{{ t('noExpensesThisMonth') }}</div>
     </div>
@@ -139,7 +196,7 @@
     <q-footer :class="footerClasses">
     <div :class="isDarkMode ? 'q-pa-xs flex flex-center pagination-dark' : 'q-pa-xs flex flex-center'">
       <q-pagination
-        v-if="filteredEntries.length > 0"
+        v-if="filteredAndSortedExpenses.length > 0"
         v-model="currentPage"
         :max="maxPage"
         input
@@ -288,6 +345,23 @@ const filteredEntries = computed(() => {
   const startIndex = (currentPage.value - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   return currentMonthEntries.value.slice(startIndex, endIndex)
+})
+
+const filteredAndSortedExpenses = computed(() => {
+  const filteredAndSortedExpenses = currentMonthEntries.value
+    .filter(expense => {
+      return !selectedCategory.value || expense.expenseCategory?.title === selectedCategory.value
+    })
+    .sort((a, b) => {
+      const key = sortKey.value
+      const direction = sortDirection.value === 'asc' ? 1 : -1
+      const aVal = key === 'date' ? new Date(a.paymentDate) : a.amount
+      const bVal = key === 'date' ? new Date(b.paymentDate) : b.amount
+      return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * direction
+    })
+    const startIndex = (currentPage.value - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    return filteredAndSortedExpenses.slice(startIndex, endIndex)
 })
 
 const currentMonthLimits = computed(() => {
@@ -561,4 +635,11 @@ const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary'
 
 const searchClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-white');
 
+const selectedCategory = ref(null)
+const sortKey = ref('date') // 'date' or 'amount'
+const sortDirection = ref('desc') // 'asc' or 'desc'
+
+const categoryTitles = computed(() => {
+  return categories.value.map(cat => cat.title);
+});
 </script>

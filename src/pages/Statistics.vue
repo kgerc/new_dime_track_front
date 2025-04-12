@@ -70,6 +70,7 @@
       <q-tab name="spending" label="Spending" />
       <q-tab name="income" label="Income" />
       <q-tab name="savings" label="Savings" />
+      <q-tab name="balance" label="Balance" />
     </q-tabs>
 
     <q-tab-panels v-model="activeTab" animated class="q-px-md q-mt-md" :style="isDarkMode ? 'background-color: black;' : 'background-color: white;'">
@@ -119,6 +120,18 @@
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('savingsOverTime') }}</div>
               <apexchart :key="chartKey" type="line" height="250" :options="lineOptions" :series="lineSeries" />
+            </q-card-section>
+          </q-card>
+        </div>
+      </q-tab-panel>
+
+      <q-tab-panel name="balance">
+        <!-- Balance Chart -->
+        <div class="row justify-center">
+          <q-card class="col-12 col-md-9 q-pa-sm" style="max-width: 900px; border-radius: 16px;">
+            <q-card-section>
+              <div class="text-subtitle1 q-mb-sm">{{ t('balanceOverTime') }}</div>
+              <apexchart :key="chartKey" type="line" height="300" :options="balanceOptions" :series="balanceSeries" />
             </q-card-section>
           </q-card>
         </div>
@@ -357,4 +370,47 @@ const summary = [
 ]
 
 const savingsPercent = 0.269
+
+const balanceSeries = computed(() => [
+  {
+    name: 'Balance',
+    data: viewMode.value === 'monthly'
+      ? [3000, 3100, 3200, 2950, 3100, 3300, 3400, 3250, 3350, 3450, 3500, 3600, 3700, 3650, 3750]  // Example: 15 days
+      : [3000, 3200, 3100, 3300, 3400, 3500, 3600, 3700, 3550, 3650, 3750, 3800]  // Example: 12 months
+  }
+])
+
+const balanceOptions = computed(() => ({
+  chart: {
+    type: 'line',
+    height: 300,
+    foreColor: '#999'
+  },
+  stroke: {
+    curve: 'smooth'
+  },
+  xaxis: {
+    categories: viewMode.value === 'monthly'
+      ? Array.from({ length: 15 }, (_, i) => `Day ${i + 1}`)
+      : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: {
+        colors: '#999'
+      }
+    }
+  },
+  colors: ['#00C853'],
+  tooltip: {
+    y: {
+      formatter: val => `${val} zł`
+    }
+  }
+}))
 </script>
