@@ -5,7 +5,7 @@
       <div style="width: 24px;"></div>
 
       <!-- Centered month navigation -->
-      <div class="row justify-center items-center col" style="margin-left: 60px;">
+      <div class="row justify-center items-center col" style="margin-left: 200px;">
         <q-btn icon="arrow_back" flat @click="prevMonth" />
 
         <q-btn flat @click="toggleCalendar" class="q-mx-md">
@@ -41,7 +41,17 @@
 
         <q-btn icon="arrow_forward" flat @click="nextMonth" />
       </div>
-
+      <q-btn
+        flat
+        icon="account_balance"
+        color="primary" 
+        @click="toggleCountUnpaidExpenses"
+        :class="countUnpaidExpenses ? 'bg-grey-9' : ''"
+      >
+      <q-tooltip class="text-body2">
+        {{ t('show balance after all expenses are paid') }}
+      </q-tooltip>
+      </q-btn>
       <!-- Right-aligned filter icon -->
       <q-btn icon="sort" color="primary" flat>
         <q-menu fit>
@@ -348,17 +358,17 @@ const filteredEntries = computed(() => {
 })
 
 const filteredAndSortedExpenses = computed(() => {
-  const filteredAndSortedExpenses = currentMonthEntries.value
-    .filter(expense => {
-      return !selectedCategory.value || expense.expenseCategory?.title === selectedCategory.value
-    })
-    .sort((a, b) => {
-      const key = sortKey.value
-      const direction = sortDirection.value === 'asc' ? 1 : -1
-      const aVal = key === 'date' ? new Date(a.paymentDate) : a.amount
-      const bVal = key === 'date' ? new Date(b.paymentDate) : b.amount
-      return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * direction
-    })
+    const filteredAndSortedExpenses = currentMonthEntries.value
+      .filter(expense => {
+        return !selectedCategory.value || expense.expenseCategory?.title === selectedCategory.value
+      })
+      .sort((a, b) => {
+        const key = sortKey.value
+        const direction = sortDirection.value === 'asc' ? 1 : -1
+        const aVal = key === 'date' ? new Date(a.paymentDate) : a.amount
+        const bVal = key === 'date' ? new Date(b.paymentDate) : b.amount
+        return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * direction
+      })
     const startIndex = (currentPage.value - 1) * itemsPerPage
     const endIndex = startIndex + itemsPerPage
     return filteredAndSortedExpenses.slice(startIndex, endIndex)
@@ -398,8 +408,14 @@ const currentMonthLimits = computed(() => {
     });
   });
 
+const countUnpaidExpenses = ref(false);
+function toggleCountUnpaidExpenses() {
+  countUnpaidExpenses.value = !countUnpaidExpenses.value
+}
 const totalBalance = computed(() => {
-  return currentMonthEntries.value.reduce((acc, { amount }) => acc + amount, 0)
+  return currentMonthEntries.value
+    .filter(expense => countUnpaidExpenses.value || expense.isPaid)
+    .reduce((acc, { amount }) => acc + amount, 0)
 })
 
 // Month navigation
