@@ -250,6 +250,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useExpensesStore } from 'src/stores/expensesStore'
 import { useThemeStore } from 'src/stores/themeStore';
 import { useSavingsStore } from 'src/stores/savingsStore'
+import { useBalancesStore } from 'src/stores/balancesStore'
 import { useLangStore } from "src/stores/langStore"
 import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
@@ -274,6 +275,8 @@ const { entries, categories, limits } = storeToRefs(expensesStore)
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
 const { t, currentLanguage } = useLangStore();
+const balancesStore = useBalancesStore()
+const { reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
 
 /* 🗓️ Date and Calendar Handling */
 const months = computed(() => [
@@ -500,6 +503,8 @@ async function handleExpenseSave(expense) {
   await expensesStore.fetchExpenseLimits()
   sumExpensesByCategory();
   checkAndNotifyExceededLimits();  // Check whenever expense is edited
+  reloadSavingsDictionary.value = true
+  reloadIncomeExpensesDictionary.value = true
 }
 
 async function handleMoveExpenseToSavings(id) {
