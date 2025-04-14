@@ -31,10 +31,23 @@
         </div>
         <q-btn icon="arrow_forward" flat @click="nextPeriod" />
       </div>
-
+      <q-btn
+        flat
+        icon="account_balance"
+        color="primary" 
+        @click="toggleCountUnpaidExpenses"
+        :class="countUnpaidExpenses ? 'bg-grey-9' : ''"
+        style="margin-left:65px;"
+      >
+      <q-tooltip class="text-body2">
+        {{ t('show balance after all expenses are paid') }}
+      </q-tooltip>
+      </q-btn>
       <!-- Toggle View Mode Button -->
-      <q-btn flat dense @click="toggleViewMode">
-        {{ viewMode === 'monthly' ? t('switchToYearlyMode') : t('switchToMonthlyMode') }}
+      <q-btn flat @click="toggleViewMode" icon="sync_alt" color="primary">
+        <q-tooltip class="text-body2">
+          {{ viewMode === 'monthly' ? t('switchToYearlyMode') : t('switchToMonthlyMode') }}
+        </q-tooltip>
       </q-btn>
     </div>
 
