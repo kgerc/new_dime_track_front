@@ -49,7 +49,7 @@ export const useBalancesStore = defineStore('balances', () => {
     }
   }
 
-  function createIncomeExpensesBalanceDictionary(expenses, incomes, savings) {
+  function createIncomeExpensesBalanceDictionary(expenses, incomes, savings, countUnpaidExpenses) {
     if (reloadIncomeExpensesDictionary.value) {
       balanceDict.value = {}
     }
@@ -78,14 +78,14 @@ export const useBalancesStore = defineStore('balances', () => {
             const entryDate = new Date(entry.paymentDate)
             const isYearMatch = entryDate.getFullYear() == year
           
-            return isYearMatch;
+            return isYearMatch && (countUnpaidExpenses || entry.isPaid);
           })
         const yearlyIncomes = incomes
           .filter(entry => {
             const entryDate = new Date(entry.incomeDate)
             const isYearMatch = entryDate.getFullYear() == year
           
-            return isYearMatch;
+            return isYearMatch && (countUnpaidExpenses || entry.isReceived);
           })
         const yearlyContributions = contributionsToDeductFromBalance
           .filter(entry => {

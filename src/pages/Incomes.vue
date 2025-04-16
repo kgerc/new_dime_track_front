@@ -28,9 +28,19 @@
         </q-btn>
         <q-btn icon="arrow_forward" flat @click="nextMonth" />
       </div>
-
-      <q-icon name="sort" size="md" style="margin-right:10px;" color="primary"/>
-      <q-icon name="filter_alt" size="md" style="margin-right:25px;" color="primary"/>
+      <q-btn
+        flat
+        icon="account_balance"
+        color="primary" 
+        @click="toggleCountNotReceivedIncomes"
+        :class="countNotReceivedIncomes ? 'bg-grey-9' : ''"
+      >
+      <q-tooltip class="text-body2">
+        {{ t('show balance after all incomes are received') }}
+      </q-tooltip>
+      </q-btn>
+      <q-icon name="sort" size="sm" style="margin-right:10px;" color="primary"/>
+      <q-icon name="filter_alt" size="sm" style="margin-right:25px;" color="primary"/>
     </div>
 
     <div class="q-pa-md" style="margin-top: -20px;">
@@ -251,8 +261,14 @@ const currentMonthEntries = computed(() => {
   })
 })
 
+const countNotReceivedIncomes = ref(false);
+function toggleCountNotReceivedIncomes() {
+  countNotReceivedIncomes.value = !countNotReceivedIncomes.value
+}
 const totalBalance = computed(() => {
-  return currentMonthEntries.value.reduce((acc, { amount }) => acc + amount, 0)
+  return currentMonthEntries.value
+    .filter(expense => countNotReceivedIncomes.value || expense.isReceived)
+    .reduce((acc, { amount }) => acc + amount, 0)
 })
 
 const recurringEntriesFromPrecedingPageCount = computed(() => {

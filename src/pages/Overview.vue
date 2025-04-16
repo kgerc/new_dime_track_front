@@ -291,14 +291,14 @@ onMounted(async () => {
     await expensesStore.fetchExpenses()
     await incomesStore.fetchIncomes()
     await savingsStore.fetchSavingGoals()
-    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
+    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
     balancesStore.createSavingsBalanceDictionary(savings.value)
     extendSavingGoalModel()
     loadingExpenses.value = false
     loadingIncomes.value = false
     loadingSavings.value = false
   } else if (reloadIncomeExpensesDictionary.value) {
-    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value)
+    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
     balancesStore.createSavingsBalanceDictionary(savings.value)
   }
 })
@@ -308,7 +308,12 @@ const currentMonthName = computed(() => monthNames.value[selectedMonth.value])
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString()
 }
-
+const countUnpaidExpenses = ref(false);
+function toggleCountUnpaidExpenses() {
+  countUnpaidExpenses.value = !countUnpaidExpenses.value
+  reloadIncomeExpensesDictionary.value = true;
+  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
+}
 // Yearly View Computation
 const yearlyExpenseSummary = (data) => {
   const summary = Array(12).fill(0)
@@ -317,7 +322,7 @@ const yearlyExpenseSummary = (data) => {
         const entryDate = new Date(entry.paymentDate)
         const isYearMatch = entryDate.getFullYear() === selectedYear.value
       
-        return isYearMatch;
+        return isYearMatch && (countUnpaidExpenses.value || entry.isPaid);
       })
     .forEach(entry => {
       const month = new Date(entry.paymentDate).getMonth()
@@ -333,7 +338,7 @@ const yearlyIncomesSummary = (data) => {
       const entryDate = new Date(entry.incomeDate)
       const isYearMatch = entryDate.getFullYear() === selectedYear.value
     
-      return isYearMatch;
+      return isYearMatch && (countUnpaidExpenses.value || entry.isReceived);
     })
     .forEach(entry => {
       const month = new Date(entry.incomeDate).getMonth()
