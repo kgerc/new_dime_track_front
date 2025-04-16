@@ -115,7 +115,7 @@
     </div>
 
     <!-- Expenses List -->
-    <div class="row q-col-gutter-lg" style="margin-top: -20px;">
+    <div class="row q-col-gutter-lg" style="margin-top: -20px;margin-left: 2px;">
       <div class="col">
         <q-list bordered separator>
           <q-slide-item
