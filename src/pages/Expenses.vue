@@ -115,7 +115,8 @@
     </div>
 
     <!-- Expenses List -->
-    <div class="q-pa-md z-0" style="margin-top: -20px;">
+    <div class="row q-col-gutter-lg" style="margin-top: -20px;">
+      <div class="col">
         <q-list bordered separator>
           <q-slide-item
             v-for="entry in filteredAndSortedExpenses"
@@ -175,6 +176,13 @@
             </q-item>
           </q-slide-item>
         </q-list>
+      </div>
+      <div class="col-shrink">
+        <ExpenseLimitsPanel
+          :limits="currentMonthLimits" :month-name="`${currentMonthName} ${selectedYear}`"
+        />
+      </div>
+        
     </div>
     <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses">
       <q-spinner
@@ -265,6 +273,7 @@ import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog
 import ExpenseCategoriesDialog from 'src/components/Expenses/ExpenseCategoriesDialog.vue'
 import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue'
 import ExpenseLimitsDialog from 'src/components/Expenses/ExpenseLimitsDialog.vue'
+import ExpenseLimitsPanel from 'src/components/Expenses/ExpenseLimitsPanel.vue'
 import ConfirmDialog from 'src/components/Base/ConfirmDialog.vue'
 
 /* 🗄️ State Management */
