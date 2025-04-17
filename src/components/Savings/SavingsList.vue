@@ -81,7 +81,7 @@
   </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, toRefs } from 'vue';
 import { useQuasar } from 'quasar'
 import { format } from 'date-fns';
 import { storeToRefs } from 'pinia'
@@ -110,8 +110,6 @@ const currentMonth = currentDate.getMonth()
 const currentYear = currentDate.getFullYear()
 const selectedDay = ref(null)    // For day filtering
 const selectedDate = ref(null);
-const selectedYear = ref(currentYear);
-const selectedMonth = ref(currentMonth);
 const searchQuery = ref('')
 const isCalendarOpen = ref(false)
 // Expense Editing
@@ -124,10 +122,13 @@ const isNewSavingGoal = ref(false)
 const isNewSavingContribution = ref(false)
 const isContributionDialogOpen = ref(false)
 const expandedSavingId = ref(null)
-
-const currentMonthName = computed(() =>
-  format(new Date(selectedYear.value, selectedMonth.value), 'MMMM')
-);
+const props = defineProps({
+  entries: Array,
+  loadingSavings: Boolean,
+  selectedYear: Number,
+  selectedMonth: Number
+})
+const { selectedYear, selectedMonth } = toRefs(props)
 
 // Max page calculation
 const maxPage = computed(() => {
@@ -234,31 +235,6 @@ function setCurrentProgressStatus(currentAmount, goalAmount) {
     }
 }
 
-function prevMonth() {
-  if (selectedMonth.value === 0) {
-    selectedMonth.value = 11;
-    selectedYear.value--;
-  } else {
-    selectedMonth.value--;
-  }
-}
-
-function nextMonth() {
-  if (selectedMonth.value === 11) {
-    selectedMonth.value = 0;
-    selectedYear.value++;
-  } else {
-    selectedMonth.value++;
-  }
-}
-
-function updateMonthYear(date) {
-  const newDate = new Date(date);
-  selectedYear.value = newDate.getFullYear();
-  selectedMonth.value = newDate.getMonth();
-  selectedDay.value = newDate.getDate();
-  isCalendarOpen.value = false;
-}
 
 function removeSavingGoal(id) {
   savingsStore.removeSavingGoal(id)

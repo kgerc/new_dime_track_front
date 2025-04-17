@@ -129,7 +129,7 @@
         </q-list>
       </div>
       <div class="col-shrink" style="width:500px;">
-        <SavingsList />
+        <SavingsList :selectedYear="selectedYear" :selectedMonth="selectedMonth"/>
       </div>
     </div>
     <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
