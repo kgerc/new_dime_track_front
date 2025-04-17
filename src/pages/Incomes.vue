@@ -43,91 +43,95 @@
       <q-icon name="filter_alt" size="sm" style="margin-right:25px;" color="primary"/>
     </div>
 
-    <div class="q-pa-md" style="margin-top: -20px;">
-      <q-list bordered separator v-if="!loadingIncomes">
-        <q-item-label header v-if="filteredRecurrentEntries.length > 0">{{ t('recurringIncomes') }}</q-item-label>
-        <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
-          <template v-slot:right>
-            <q-icon name="delete" />
-          </template>
-          <q-item clickable @click="openDialog(income)">
-            <q-item-section>
-              <div class="row items-center">
-                <q-icon 
-                  :name="getIncomeIcon(income)"
-                  class="q-mr-sm" 
-                  size="sm" 
-                  :color="getIncomeColor(income)" 
-                  style="margin-top: -5px;"/>
-                <div>
-                  <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption style="margin-top: -5px;">
-                    {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
-                    <q-chip 
-                      :label="t('noCategory')" 
-                      text-color="white"
-                      style="{ backgroundColor: '#fffff'}" 
-                      size="sm"
-                    />
-                  </q-item-label>
+    <div class="row q-col-gutter-lg" style="margin-top: -20px;margin-left: 2px;">
+      <div class="col">
+        <q-list bordered separator v-if="!loadingIncomes">
+          <q-item-label header v-if="filteredRecurrentEntries.length > 0">{{ t('recurringIncomes') }}</q-item-label>
+          <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
+            <template v-slot:right>
+              <q-icon name="delete" />
+            </template>
+            <q-item clickable @click="openDialog(income)">
+              <q-item-section>
+                <div class="row items-center">
+                  <q-icon 
+                    :name="getIncomeIcon(income)"
+                    class="q-mr-sm" 
+                    size="sm" 
+                    :color="getIncomeColor(income)" 
+                    style="margin-top: -5px;"/>
+                  <div>
+                    <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
+                    <q-item-label caption style="margin-top: -5px;">
+                      {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
+                      <q-chip 
+                        :label="t('noCategory')" 
+                        text-color="white"
+                        style="{ backgroundColor: '#fffff'}" 
+                        size="sm"
+                      />
+                    </q-item-label>
+                  </div>
                 </div>
-              </div>
-            </q-item-section>
-            <q-item-section side class="text-weight-bold text-positive">
-              {{ formatCurrency(income.amount, income.currency) }}
-            </q-item-section>
-          </q-item>
-        </q-slide-item>
+              </q-item-section>
+              <q-item-section side class="text-weight-bold text-positive">
+                {{ formatCurrency(income.amount, income.currency) }}
+              </q-item-section>
+            </q-item>
+          </q-slide-item>
 
-        <q-item-label header v-if="filteredNonRecurrentEntries.length > 0">{{ t('nonRecurringIncomes') }}</q-item-label>
-        <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
-          <template v-slot:right>
-            <q-icon name="delete" />
-          </template>
-          <q-item clickable @click="openDialog(income)">
-            <q-item-section>
-              <div class="row items-center">
-                <q-icon 
-                  :name="getIncomeIcon(income)"
-                  class="q-mr-sm" 
-                  size="sm" 
-                  :color="getIncomeColor(income)" 
-                  style="margin-top: -5px;"/>
-                <div>
-                  <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
-                  <q-item-label caption style="margin-top: -5px;">
-                    {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
-                    <q-chip 
-                      :label="t('noCategory')" 
-                      text-color="white"
-                      style="{ backgroundColor: '#fffff'}" 
-                      size="sm"
-                    />
-                  </q-item-label>
+          <q-item-label header v-if="filteredNonRecurrentEntries.length > 0">{{ t('nonRecurringIncomes') }}</q-item-label>
+          <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
+            <template v-slot:right>
+              <q-icon name="delete" />
+            </template>
+            <q-item clickable @click="openDialog(income)">
+              <q-item-section>
+                <div class="row items-center">
+                  <q-icon 
+                    :name="getIncomeIcon(income)"
+                    class="q-mr-sm" 
+                    size="sm" 
+                    :color="getIncomeColor(income)" 
+                    style="margin-top: -5px;"/>
+                  <div>
+                    <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
+                    <q-item-label caption style="margin-top: -5px;">
+                      {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
+                      <q-chip 
+                        :label="t('noCategory')" 
+                        text-color="white"
+                        style="{ backgroundColor: '#fffff'}" 
+                        size="sm"
+                      />
+                    </q-item-label>
+                  </div>
                 </div>
-              </div>
-            </q-item-section>
-            <q-item-section side class="q-mr-xs">
-              <q-icon
-                v-if="income.notes"
-                name="description"
-                size="sm"
-                class="cursor-pointer"
-                color="grey-6"
-              >
-                <q-tooltip v-if="income.notes" anchor="top middle" self="bottom middle">
-                  <div class="text-caption">{{ income.notes }}</div>
-                </q-tooltip>
-              </q-icon>
-            </q-item-section>
-            <q-item-section side class="text-weight-bold text-positive fixed-width">
-              {{ formatCurrency(income.amount, income.currency) }}
-            </q-item-section>
-          </q-item>
-        </q-slide-item>
-      </q-list>
+              </q-item-section>
+              <q-item-section side class="q-mr-xs">
+                <q-icon
+                  v-if="income.notes"
+                  name="description"
+                  size="sm"
+                  class="cursor-pointer"
+                  color="grey-6"
+                >
+                  <q-tooltip v-if="income.notes" anchor="top middle" self="bottom middle">
+                    <div class="text-caption">{{ income.notes }}</div>
+                  </q-tooltip>
+                </q-icon>
+              </q-item-section>
+              <q-item-section side class="text-weight-bold text-positive fixed-width">
+                {{ formatCurrency(income.amount, income.currency) }}
+              </q-item-section>
+            </q-item>
+          </q-slide-item>
+        </q-list>
+      </div>
+      <div class="col-shrink" style="width:500px;">
+        <SavingsList />
+      </div>
     </div>
-
     <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
       <q-icon name="account_balance_wallet" size="4em" color="grey-6" />
       <div class="text-h6 text-grey-6 q-mt-md">{{ t('noIncomes') }}</div>
@@ -208,6 +212,7 @@ import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue'
 import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialog.vue'
+import SavingsList from 'src/components/Savings/SavingsList.vue'
 
 const $q = useQuasar()
 const currentPage = ref(1)
