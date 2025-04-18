@@ -83,7 +83,7 @@ const loading = ref(false);
 
 const columnMapping = {
   "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
-  "date": ["Date", "TransactionDate", "Data", "Data waluty"],
+  "date": ["Date", "TransactionDate", "Data", "Data operacji"],
   "amount": ["Amount", "Kwota", "Betrag"],
   "currency": ["Currency", "Waluta"],
   "balanceAfterTransaction": ["Saldo po transakcji"]
