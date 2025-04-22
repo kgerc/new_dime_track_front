@@ -127,7 +127,7 @@ export const useBalancesStore = defineStore('balances', () => {
             return isMonthMatch;
           }).reduce((acc, { amount }) => acc + amount, 0)
           balanceDict.value[year][month] -= monthlyContributionsSum
-          if (currentYearLimits)  {
+          if (currentYearLimits && countUnpaidExpenses)  {
             const monthlyLimitsSum = currentYearLimits
               .filter(l => {
                 const isMonthYearMatch = l.month - 1 === month && l.year == year
