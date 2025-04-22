@@ -249,7 +249,7 @@ import { useThemeStore } from 'src/stores/themeStore';
 import { useLangStore } from "src/stores/langStore"
 import { storeToRefs } from 'pinia'
 const expensesStore = useExpensesStore()
-const { entries: expenses } = storeToRefs(expensesStore)
+const { entries: expenses, limits } = storeToRefs(expensesStore)
 
 const incomesStore = useIncomesStore()
 const { entries: incomes } = storeToRefs(incomesStore)
@@ -289,6 +289,7 @@ onMounted(async () => {
     loadingSavings.value = true
     await balancesStore.fetchBalances()
     await expensesStore.fetchExpenses()
+    await expensesStore.fetchExpenseLimits()
     await incomesStore.fetchIncomes()
     await savingsStore.fetchSavingGoals()
     balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
@@ -312,22 +313,42 @@ const countUnpaidExpenses = ref(false);
 function toggleCountUnpaidExpenses() {
   countUnpaidExpenses.value = !countUnpaidExpenses.value
   reloadIncomeExpensesDictionary.value = true;
-  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
+  balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value, currentYearLimits.value)
 }
-// Yearly View Computation
+// Yearly View Computation with Limits as Virtual Expenses for Future Months Only
 const yearlyExpenseSummary = (data) => {
   const summary = Array(12).fill(0)
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  // Actual expenses
   data.value
     .filter(entry => {
-        const entryDate = new Date(entry.paymentDate)
-        const isYearMatch = entryDate.getFullYear() === selectedYear.value
-      
-        return isYearMatch && (countUnpaidExpenses.value || entry.isPaid);
-      })
+      const entryDate = new Date(entry.paymentDate)
+      const isYearMatch = entryDate.getFullYear() === selectedYear.value
+
+      return isYearMatch && (countUnpaidExpenses.value || entry.isPaid)
+    })
     .forEach(entry => {
       const month = new Date(entry.paymentDate).getMonth()
       summary[month] += entry.amount
     })
+
+  // Add virtual expenses from limits only for future months in the current year
+  if (countUnpaidExpenses.value) {
+    currentYearLimits.value.forEach(limit => {
+      if (
+        limit.month != null &&
+        limit.month >= 0 &&
+        limit.month <= 11 &&
+        (selectedYear.value > currentYear || (selectedYear.value === currentYear && limit.month > currentMonth))
+      ) {
+        summary[limit.month] -= limit.limit
+      }
+    })
+  }
+
   return summary
 }
 
@@ -522,4 +543,19 @@ function setCurrentProgressStatus(currentAmount, goalAmount) {
 watch([selectedMonth, selectedYear], () => {
   extendSavingGoalModel()
 });
+
+const currentYearLimits = computed(() => {
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  return limits.value.filter(limit => {
+    const isSameYear = limit.year === selectedYear.value
+    const isFutureMonth =
+      selectedYear.value > currentYear ||
+      (selectedYear.value === currentYear && limit.month > currentMonth)
+
+    return isSameYear && isFutureMonth
+  })
+})
 </script>
