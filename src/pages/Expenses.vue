@@ -645,6 +645,9 @@ async function refetchExpenses(isCategoryEdited) {
 async function assignCategories() {
   await expensesStore.assignExpenseCategories()
   await expensesStore.fetchExpenses()
+  await expensesStore.fetchExpenseLimits()
+  sumExpensesByCategory();
+  checkAndNotifyExceededLimits();  // Check whenever expense is edited
   currentPage.value = 1
   $q.notify({
     message: t('expenseCategoriesAssigned'),

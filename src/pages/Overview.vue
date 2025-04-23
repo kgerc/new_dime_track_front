@@ -553,7 +553,7 @@ const currentYearLimits = computed(() => {
     const isSameYear = limit.year === selectedYear.value
     const isFutureMonth =
       selectedYear.value > currentYear ||
-      (selectedYear.value === currentYear && limit.month > currentMonth)
+      (selectedYear.value === currentYear && limit.month - 1 > currentMonth)
 
     return isSameYear && isFutureMonth
   })
