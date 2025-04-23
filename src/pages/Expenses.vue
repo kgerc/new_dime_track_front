@@ -405,7 +405,6 @@ const currentMonthLimits = computed(() => {
 
   // Computed property for filtered entries
   const currentMonthEntries = computed(() => {
-    currentPage.value = 1
     return entries.value.filter(entry => {
       const matchesSearch = entry.title.toLowerCase().includes(debouncedSearchQuery.value.toLowerCase());
 
@@ -648,7 +647,6 @@ async function assignCategories() {
   await expensesStore.fetchExpenseLimits()
   sumExpensesByCategory();
   checkAndNotifyExceededLimits();  // Check whenever expense is edited
-  currentPage.value = 1
   $q.notify({
     message: t('expenseCategoriesAssigned'),
     color: 'positive',
