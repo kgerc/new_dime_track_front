@@ -6,8 +6,8 @@
           Wydane: PLN {{ totalSpent }} / Limit: {{ totalLimit }} PLN
         </div>
         <q-linear-progress
-          :value="totalSpent / totalLimit"
-          :color="totalSpent > totalLimit ? 'red' : 'primary'"
+          :value="getProgressValue"
+          :color="getProgressColor"
           size="10px"
           rounded
           stripe
@@ -98,13 +98,23 @@
   
   // Computed properties for totals based on the store data
   const totalSpent = computed(() => {
-    return props.limits.reduce((sum, limit) => sum + limit.spent, 0).toFixed(2);
+    return props.limits.reduce((sum, limit) => sum + (limit?.spent ?? 0), 0).toFixed(2);
   });
   
   const totalLimit = computed(() => {
     return props.limits.reduce((sum, limit) => sum + limit.limit, 0).toFixed(2);
   });
-  
+
+  const getProgressValue = computed(() => {
+    var progressValue = totalSpent.value / totalLimit.value;
+    if (!progressValue) return 0;
+    return progressValue;
+  })
+
+  const getProgressColor = computed(() => {
+    return getProgressValue.value > 1 ? 'red' : 'primary'
+  })
+
   // Helper methods
   const getLimitCategory = (limit) => limit.expenseCategory?.title;
   

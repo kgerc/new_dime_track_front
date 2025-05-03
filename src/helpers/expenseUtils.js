@@ -37,7 +37,7 @@
     return expenses
       .filter(expense => {
         const dueDate = new Date(expense.paymentDate);
-        return dueDate.toDateString() <= targetDate.toDateString() && !expense.isPaid;
+        return dueDate <= targetDate && !expense.isPaid;
       })
       .map(expense => ({ id: expense.id, title: expense.title }));
   }
