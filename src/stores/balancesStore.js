@@ -49,7 +49,11 @@ export const useBalancesStore = defineStore('balances', () => {
     }
   }
 
-  function createIncomeExpensesBalanceDictionary(expenses, incomes, savings, countUnpaidExpenses, currentYearLimits) {
+  function createIncomeExpensesBalanceDictionary(expenses, incomes, savings,
+     countUnpaidExpenses, currentYearLimits) {
+    const now = new Date()
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
     if (reloadIncomeExpensesDictionary.value) {
       balanceDict.value = {}
     }
@@ -105,7 +109,11 @@ export const useBalancesStore = defineStore('balances', () => {
               .filter(entry => {
                 const entryDate = new Date(entry.paymentDate)
                 const isMonthMatch = entryDate.getMonth() == month
-              
+                if (countUnpaidExpenses && entry.expenseCategory && 
+                  entryDate.getFullYear() == currentYear &&
+                  entryDate.getMonth() > currentMonth) {
+                  return
+                }
                 return isMonthMatch;
               }).reduce((acc, { amount }) => acc + amount, 0)
             balanceDict.value[year][month] += monthlyExpensesSum
