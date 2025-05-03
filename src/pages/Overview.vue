@@ -332,6 +332,9 @@ const yearlyExpenseSummary = (data) => {
     })
     .forEach(entry => {
       const month = new Date(entry.paymentDate).getMonth()
+      if (countUnpaidExpenses.value && entry.expenseCategory && month > currentMonth) {
+        return
+      }
       summary[month] += entry.amount
     })
 
@@ -553,7 +556,7 @@ const currentYearLimits = computed(() => {
     const isSameYear = limit.year === selectedYear.value
     const isFutureMonth =
       selectedYear.value > currentYear ||
-      (selectedYear.value === currentYear && limit.month - 1 > currentMonth)
+      (selectedYear.value === currentYear && limit.month > currentMonth)
 
     return isSameYear && isFutureMonth
   })
