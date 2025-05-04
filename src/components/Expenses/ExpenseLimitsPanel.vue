@@ -69,31 +69,30 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, watch } from 'vue';
   import { useQuasar } from 'quasar';
   import ExpenseLimitDialog from 'src/components/Expenses/ExpenseLimitDialog.vue';
   import { useExpensesStore } from 'src/stores/expensesStore';
+  import { useBalancesStore } from 'src/stores/balancesStore'
   import { formatCurrency } from 'src/helpers/formatCurrency.js'
-  
+  import { storeToRefs } from 'pinia'
+
   const $q = useQuasar();
   const expensesStore = useExpensesStore();
-  
+
+  const balancesStore = useBalancesStore()
+  const { currentMonthRemainingLimit } = storeToRefs(balancesStore)
+
   const props = defineProps({
     limits: Array,
     modelValue: Boolean,
     monthName: String,
+    currentMonth: Number,
+    selectedMonth: Number
   });
   
   const emit = defineEmits(['update:modelValue']);
   
-  const closeDialog = () => {
-    emit('update:modelValue', false);
-  };
-  
-  const isOpen = computed({
-    get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
-  });
   const isLimitDialogOpen = ref(false);
   
   // Computed properties for totals based on the store data
@@ -114,6 +113,16 @@
   const getProgressColor = computed(() => {
     return getProgressValue.value > 1 ? 'red' : 'primary'
   })
+
+  watch(
+    [() => props.currentMonth, () => props.selectedMonth, getProgressValue, totalLimit, totalSpent],
+    () => {
+      if (props.currentMonth === props.selectedMonth && getProgressValue.value < 1) {
+        currentMonthRemainingLimit.value = totalLimit.value - totalSpent.value;
+      }
+    },
+    { immediate: true }
+  );
 
   // Helper methods
   const getLimitCategory = (limit) => limit.expenseCategory?.title;

@@ -180,6 +180,7 @@
       <div class="col-shrink">
         <ExpenseLimitsPanel
           :limits="currentMonthLimits" :month-name="`${currentMonthName} ${selectedYear}`"
+          :current-month="currentMonth" :selected-month="selectedMonth"
         />
       </div>
         

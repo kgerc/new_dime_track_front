@@ -9,6 +9,7 @@ export const useBalancesStore = defineStore('balances', () => {
   const hasInitialized = ref(false)
   const reloadIncomeExpensesDictionary = ref(false)
   const reloadSavingsDictionary = ref(false)
+  const currentMonthRemainingLimit = ref(0)
 
   async function fetchBalances() {
     try {
@@ -104,6 +105,7 @@ export const useBalancesStore = defineStore('balances', () => {
               balanceDict.value[year][month] = balanceDict.value
               [month === 0 && isPrecedingYear ? year -1 : year][month === 0 && isPrecedingYear ? 11 : month === 0 ? month : month - 1];
             }
+
             // apply expenses
             const monthlyExpensesSum = yearlyExpenses
               .filter(entry => {
@@ -117,6 +119,7 @@ export const useBalancesStore = defineStore('balances', () => {
                 return isMonthMatch;
               }).reduce((acc, { amount }) => acc + amount, 0)
             balanceDict.value[year][month] += monthlyExpensesSum
+
             // apply incomes
             const monthlyIncomesSum = yearlyIncomes
             .filter(entry => {
@@ -126,6 +129,7 @@ export const useBalancesStore = defineStore('balances', () => {
               return isMonthMatch;
             }).reduce((acc, { amount }) => acc + amount, 0)
           balanceDict.value[year][month] += monthlyIncomesSum
+
           // apply contributions to deduct from incomes balance
           const monthlyContributionsSum = yearlyContributions
           .filter(entry => {
@@ -135,6 +139,7 @@ export const useBalancesStore = defineStore('balances', () => {
             return isMonthMatch;
           }).reduce((acc, { amount }) => acc + amount, 0)
           balanceDict.value[year][month] -= monthlyContributionsSum
+
           if (currentYearLimits && countUnpaidExpenses)  {
             const monthlyLimitsSum = currentYearLimits
               .filter(l => {
@@ -142,6 +147,11 @@ export const useBalancesStore = defineStore('balances', () => {
                 return isMonthYearMatch
               }).reduce((acc, { limit }) => acc + limit, 0)
             balanceDict.value[year][month] -= monthlyLimitsSum
+          }
+
+          // apply remaining limits for the current month
+          if (countUnpaidExpenses && currentMonth === month && currentYear == year) {
+            balanceDict.value[year][month] -= currentMonthRemainingLimit.value
           }
         }
     });
@@ -202,5 +212,5 @@ export const useBalancesStore = defineStore('balances', () => {
   return { 
     entries, balanceDict, createIncomeExpensesBalanceDictionary, savingsBalanceDict,
     createSavingsBalanceDictionary, fetchBalances, addBalance, updateBalance, hasInitialized,
-    reloadSavingsDictionary, reloadIncomeExpensesDictionary }
+    reloadSavingsDictionary, reloadIncomeExpensesDictionary, currentMonthRemainingLimit }
 })

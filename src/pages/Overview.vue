@@ -258,7 +258,8 @@ const savingsStore = useSavingsStore()
 const { entries: savings } = storeToRefs(savingsStore)
 
 const balancesStore = useBalancesStore()
-const { balanceDict, savingsBalanceDict, hasInitialized, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
+const { balanceDict, savingsBalanceDict, hasInitialized,
+   reloadIncomeExpensesDictionary, currentMonthRemainingLimit } = storeToRefs(balancesStore)
 
 const { t } = useLangStore();
 
@@ -350,6 +351,10 @@ const yearlyExpenseSummary = (data) => {
         summary[limit.month] -= limit.limit
       }
     })
+    // apply remaining limits for the current month
+    if (selectedYear.value == currentYear) {
+      summary[currentMonth] -= currentMonthRemainingLimit.value
+    }
   }
 
   return summary
