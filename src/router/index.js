@@ -26,5 +26,9 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+    // Router.beforeEach((to, from, next) => {
+    //   debugger;
+    // })
+
   return Router
 })
