@@ -1,6 +1,7 @@
 import { defineRouter } from '#q-app/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
+import { useAuthStore } from 'src/stores/authStore'
 
 /*
  * If not building with SSR mode, you can
@@ -26,9 +27,16 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
-    // Router.beforeEach((to, from, next) => {
-    //   debugger;
-    // })
+  Router.beforeEach((to, from, next) => {
+    const auth = useAuthStore()
+    if (to.path === '/' && auth.isLoggedIn) {
+      next('/overview')
+    } else if (to.path === '/overview' && !auth.isLoggedIn) {
+      next('/')
+    } else {
+      next()
+    }
+  })
 
   return Router
 })

@@ -83,7 +83,7 @@
       bordered
       :width="250"
       :breakpoint="767"
-      
+
     >
       <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
@@ -98,10 +98,10 @@
         <q-item-section avatar>
           <q-icon name="logout" :color="isDarkMode ? 'lightgray' : 'white'"/>
         </q-item-section>
-        <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'">Logout</q-item-section>
+        <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'" @click="logout">Logout</q-item-section>
       </q-item>
     </q-drawer>
-    
+
 
     <!-- Main content container -->
     <q-page-container>
@@ -116,6 +116,7 @@ import { storeToRefs } from 'pinia';
 import { useLangStore } from 'src/stores/langStore';
 import { useThemeStore } from 'src/stores/themeStore';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/authStore'
 
 // Using the lang store
 const langStore = useLangStore();
@@ -125,6 +126,7 @@ const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
 const { toggleDarkMode } = themeStore;
 const router = useRouter();
+const authStore = useAuthStore()
 
 // Reactive state variables
 const leftDrawerOpen = ref(false);
@@ -157,6 +159,10 @@ const headerClasses = computed(() =>  isDarkMode.value ? 'bg-grey-9' : 'bg-prima
 const navigate = (link) => {
   router.push(link.to);
 };
+
+function logout() {
+   authStore.logout();
+}
 
 </script>
 
