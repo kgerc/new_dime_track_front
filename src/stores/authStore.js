@@ -1,45 +1,76 @@
-// src/stores/auth.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import api from 'src/api/axiosInstance' // Import the configured Axios instance
+import { useCommonStore } from './commonStore'  // <-- import commonStore
 
 export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false)
   const user = ref(null)
 
   const router = useRouter()
+  const commonStore = useCommonStore() // <-- use commonStore
 
-  function login(email, password) {
-    // 👉 Here you would normally call your backend API
-    // For now, just fake login
-    if (email && password) {
+  async function register(displayName, username, email, password) {
+    try {
+      const response = await api.post('account/register', {
+        displayName,
+        username,
+        email,
+        password
+      })
+
+      user.value = {
+        username: response.data.username,
+        displayName: response.data.displayName
+      }
+
+      // set token via commonStore
+      commonStore.setToken(response.data.token)
       isLoggedIn.value = true
-      user.value = { email }
-      router.push('/overview') // redirect after login
+
+      router.push('/overview')
+    } catch (err) {
+      console.error('Registration failed:', err.response?.data || err.message)
+      throw err.response?.data || err
     }
   }
 
-  function register(email, password) {
-    // 👉 Normally call backend to create user
-    if (email && password) {
-      // auto-login after register
+  async function login(email, password) {
+    try {
+      const response = await api.post('account/login', {
+        email,
+        password
+      })
+
+      user.value = {
+        username: response.data.username,
+        displayName: response.data.displayName
+      }
+
+      // set token via commonStore
+      commonStore.setToken(response.data.token)
       isLoggedIn.value = true
-      user.value = { email }
+
       router.push('/overview')
+    } catch (err) {
+      console.error('Login failed:', err.response?.data || err.message)
+      throw err.response?.data || err
     }
   }
 
   function logout() {
     isLoggedIn.value = false
     user.value = null
-    router.push('/auth') // back to login page
+    commonStore.clearToken()  // <-- clear token in commonStore
+    router.push('/')
   }
 
   return {
     isLoggedIn,
     user,
-    login,
     register,
+    login,
     logout
   }
 })

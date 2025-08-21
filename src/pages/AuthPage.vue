@@ -55,7 +55,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from 'src/stores/authStore'
 
-const auth = useAuthStore()
+const authStore = useAuthStore()
 const mode = ref('login') // 'login' or 'register'
 
 const form = ref({
@@ -72,9 +72,10 @@ function toggleMode() {
 
 function handleSubmit() {
   if (mode.value === 'login') {
-    auth.login(form.value.email, form.value.password)
+    authStore.login(form.value.email, form.value.password)
   } else {
-    auth.register(form.value.email, form.value.password)
+    authStore.register(form.value.name, form.value.username,
+    form.value.email, form.value.password)
   }
 }
 </script>
