@@ -5,11 +5,11 @@
     <!-- Balance Display with Edit Option (Left-aligned) -->
     <div class="row q-mt-md q-px-md q-py-sm shadow-2 rounded-borders" :class="isDarkMode ? 'bg-grey-10' : 'bg-white'" v-if="viewMode === 'monthly'">
       <div class="text-h6 q-mr-sm">
-        <q-icon name="account_balance" size="md" color="grey" style="margin-top: -5px;">                
+        <q-icon name="account_balance" size="md" color="grey" style="margin-top: -5px;">
           <q-tooltip anchor="top middle" self="bottom middle">
             <div class="text-caption">{{t('balance')}}</div>
           </q-tooltip>
-        </q-icon> 
+        </q-icon>
         <span :class="amountColor(balance)" style="margin-left: 5px;">{{ !isEditingBalance ? formatCurrency(balance, 'PLN') : '' }}</span>
       </div>
       <q-input
@@ -34,7 +34,7 @@
       <q-btn
         flat
         icon="account_balance"
-        color="primary" 
+        color="primary"
         @click="toggleCountUnpaidExpenses"
         :class="countUnpaidExpenses ? 'bg-grey-9' : ''"
         style="margin-left:65px;"
@@ -72,7 +72,7 @@
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-negative">
                   <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
-                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/> 
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/>
                     {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }}
                   </q-item-label>
                 </q-item-section>
@@ -109,8 +109,8 @@
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
                   <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
-                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/> 
-                      {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }} 
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>
+                      {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -138,9 +138,9 @@
                 <q-item clickable @click="toggleExpand(entry.id)">
                   <q-item-section>
                     <div class="row items-center">
-                      <q-icon 
-                        :name="getSavingStatusIcon(entry)" 
-                        :color="getSavingStatusColor(entry)" 
+                      <q-icon
+                        :name="getSavingStatusIcon(entry)"
+                        :color="getSavingStatusColor(entry)"
                         class="q-mr-sm" size="sm"
                       />
                       <div>
@@ -162,12 +162,12 @@
                           rounded
                         />
                       </div>
-                      <q-icon 
+                      <q-icon
                         v-if="expandedSavingId === entry.id"
-                        name="edit" 
-                        size="sm" 
-                        color="primary" 
-                        style="margin-left: 12px;" 
+                        name="edit"
+                        size="sm"
+                        color="primary"
+                        style="margin-left: 12px;"
                         clickable
                       />
                     </div>
@@ -190,11 +190,11 @@
                       </q-item-section>
                     </q-item>
                     <q-list dense>
-                      <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id" 
-                        style="margin-left: 35px;"> 
+                      <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id"
+                        style="margin-left: 35px;">
                         <q-item-section>
                           <q-item-label>
-                            {{ formatCurrency(contribution.amount, contribution.currency) }} 
+                            {{ formatCurrency(contribution.amount, contribution.currency) }}
                             <span class="text-grey-7">({{ formatDate(contribution.contributionDate) }})</span>
                           </q-item-label>
                         </q-item-section>
@@ -366,7 +366,7 @@ const yearlyIncomesSummary = (data) => {
     .filter(entry => {
       const entryDate = new Date(entry.incomeDate)
       const isYearMatch = entryDate.getFullYear() === selectedYear.value
-    
+
       return isYearMatch && (countUnpaidExpenses.value || entry.isReceived);
     })
     .forEach(entry => {
@@ -384,7 +384,7 @@ const yearlySavingsSummary = (data) => {
     .filter(entry => {
       const entryDate = new Date(entry.contributionDate)
       const isYearMatch = entryDate.getFullYear() === selectedYear.value
-    
+
       return isYearMatch;
     })
     .forEach(entry => {
@@ -466,12 +466,12 @@ function toggleExpand(savingId) {
 }
 
 function getSavingStatusIcon(saving) {
-  return saving.status === "completed" ? "check_circle" 
+  return saving.status === "completed" ? "check_circle"
         : saving.status === "behind" ? "error"
         : "hourglass_top";
 }
 function getSavingStatusColor(saving) {
-  return saving.status === "completed" ? "green-6" 
+  return saving.status === "completed" ? "green-6"
         : saving.status === "behind" ? "red-6"
         : "orange-6";
 }
@@ -499,7 +499,7 @@ const currentMonthContributions = computed(() => {
   return contributions.filter(entry => {
     const entryDate = new Date(entry.contributionDate)
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
-  
+
     return isMonthYearMatch;
   })
 })
@@ -510,7 +510,7 @@ const previousMonthContributions = computed(() => {
 
   return contributions.filter(entry => {
     const entryDate = new Date(entry.contributionDate);
-    
+
     const isBeforeSelectedMonth =
       entryDate.getFullYear() < selectedYear.value ||
       (entryDate.getFullYear() === selectedYear.value && entryDate.getMonth() < selectedMonth.value);

@@ -111,12 +111,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useLangStore } from 'src/stores/langStore';
 import { useThemeStore } from 'src/stores/themeStore';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/authStore'
+import { useBalancesStore } from 'src/stores/balancesStore'
 
 // Using the lang store
 const langStore = useLangStore();
@@ -127,6 +128,9 @@ const { isDarkMode } = storeToRefs(themeStore);
 const { toggleDarkMode } = themeStore;
 const router = useRouter();
 const authStore = useAuthStore()
+const balancesStore = useBalancesStore()
+const { hasInitialized } = storeToRefs(balancesStore)
+
 
 // Reactive state variables
 const leftDrawerOpen = ref(false);
@@ -161,6 +165,7 @@ const navigate = (link) => {
 };
 
 function logout() {
+   hasInitialized.value = false;
    authStore.logout();
 }
 
