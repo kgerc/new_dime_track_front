@@ -11,14 +11,14 @@
 
               <!-- Left Panel (Form) -->
               <div class="panel panel-left">
-                <div v-if="mode === 'login'" class="form-container testClass">
+                <div v-if="mode === 'login'" class="form-container">
                   <h2>Sign In</h2>
                   <q-input v-model="form.email" type="email" label="Email" outlined dense />
                   <q-input v-model="form.password" type="password" label="Password" outlined dense />
                   <q-btn label="SIGN IN" color="orange-7" unelevated class="full-width" @click="handleSubmit" />
                 </div>
 
-                <div v-if="mode === 'register'" class="form-container testClass">
+                <div v-if="mode === 'register'" class="form-container">
                   <h2>Create Account</h2>
                   <q-input v-model="form.name" label="Name" outlined dense />
                   <q-input v-model="form.username" label="Username" outlined dense />
@@ -55,12 +55,8 @@
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from 'src/stores/authStore'
 import { Dark } from 'quasar';
-import { storeToRefs } from 'pinia'
-import { useThemeStore } from 'src/stores/themeStore';
 
 const authStore = useAuthStore()
-const themeStore = useThemeStore()
-const { isDarkMode } = storeToRefs(themeStore);
 const mode = ref('login') // 'login' or 'register'
 
 const form = ref({
@@ -79,7 +75,6 @@ function toggleMode() {
 }
 
 function handleSubmit() {
-  Dark.set(isDarkMode.value);
   if (mode.value === 'login') {
     authStore.login(form.value.email, form.value.password)
   } else {
@@ -158,15 +153,5 @@ function handleSubmit() {
 /* Optional: smooth fade of right panel text */
 .switch-panel {
   transition: opacity 0.6s ease-in-out;
-}
-
-.testClass {
-  color: black !important;
-}
-
-.q-input {
-  background-color: white !important;
-  color: black !important;
-  border-color: black !important;
 }
 </style>

@@ -118,6 +118,7 @@ import { useThemeStore } from 'src/stores/themeStore';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/authStore'
 import { useBalancesStore } from 'src/stores/balancesStore'
+import { Dark } from 'quasar';
 
 // Using the lang store
 const langStore = useLangStore();
@@ -144,6 +145,11 @@ const navLinks = ref([
   { title: t('statistics'), to: '/statistics', icon: 'insert_chart' },
   { title: t('uploadTansactions'), to: '/import_transactions', icon: 'upload' }
 ]);
+
+onMounted(async () => {
+  debugger;
+    Dark.set(isDarkMode.value);
+})
 
 // Methods
 const toggleLeftDrawer = () => {
