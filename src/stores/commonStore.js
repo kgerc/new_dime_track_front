@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 export const useCommonStore = defineStore('common', () => {
   const token = ref(null)   // no more hardcoded value
+  const refreshToken = ref(null)
 
   function setToken(newToken) {
     token.value = newToken
@@ -11,8 +12,13 @@ export const useCommonStore = defineStore('common', () => {
     localStorage.setItem('authToken', newToken)
   }
 
+  function setRefreshToken(newRefreshToken) {
+    refreshToken.value = newRefreshToken
+  }
+
   function clearToken() {
     token.value = null
+    refreshToken.value = null
     localStorage.removeItem('authToken')
   }
 
@@ -24,5 +30,9 @@ export const useCommonStore = defineStore('common', () => {
     }
   }
 
-  return { token, setToken, clearToken, initToken }
+  function getToken() {
+    return localStorage.getItem('authToken')
+  }
+
+  return { token, setToken, clearToken, initToken, setRefreshToken, getToken }
 })

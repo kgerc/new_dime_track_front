@@ -147,8 +147,7 @@ const navLinks = ref([
 ]);
 
 onMounted(async () => {
-  debugger;
-    Dark.set(isDarkMode.value);
+  Dark.set(isDarkMode.value);
 })
 
 // Methods

@@ -27,6 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // set token via commonStore
       commonStore.setToken(response.data.token)
+      commonStore.setRefreshToken(response.data.refreshToken)
       isLoggedIn.value = true
 
       router.push('/overview')
@@ -50,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // set token via commonStore
       commonStore.setToken(response.data.token)
+      commonStore.setRefreshToken(response.data.refreshToken)
       isLoggedIn.value = true
 
       router.push('/overview')
@@ -66,11 +68,19 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/')
   }
 
+  function init() {
+    const token = commonStore.getToken()
+    if (token) {
+      isLoggedIn.value = true
+    }
+  }
+
   return {
     isLoggedIn,
     user,
     register,
     login,
-    logout
+    logout,
+    init
   }
 })
