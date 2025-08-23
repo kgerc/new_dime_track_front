@@ -130,7 +130,7 @@ const { toggleDarkMode } = themeStore;
 const router = useRouter();
 const authStore = useAuthStore()
 const balancesStore = useBalancesStore()
-const { hasInitialized } = storeToRefs(balancesStore)
+const { hasInitialized, balanceDict, savingsBalanceDict } = storeToRefs(balancesStore)
 
 
 // Reactive state variables
@@ -170,8 +170,10 @@ const navigate = (link) => {
 };
 
 function logout() {
-   hasInitialized.value = false;
-   authStore.logout();
+  hasInitialized.value = false;
+  balanceDict.value = {};
+  savingsBalanceDict.value = {};
+  authStore.logout();
 }
 
 </script>
