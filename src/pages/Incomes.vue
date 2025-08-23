@@ -10,14 +10,14 @@
             {{ currentMonthName }} {{ selectedYear }}
           </div>
           <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle" :offset="[0, 10]">
-            <q-date 
-              v-model="selectedDate" 
-              mask="YYYY-MM-DD" 
-              :default-year="selectedYear" 
+            <q-date
+              v-model="selectedDate"
+              mask="YYYY-MM-DD"
+              :default-year="selectedYear"
               :default-month="selectedMonth + 1"
-              @update:model-value="updateMonthYear" 
-              bordered 
-              minimal 
+              @update:model-value="updateMonthYear"
+              bordered
+              minimal
               class="shadow-2 rounded-borders">
                 <div class="row items-center justify-between">
                   <q-btn v-close-popup :label="t('wholeMonth')" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
@@ -31,7 +31,7 @@
       <q-btn
         flat
         icon="account_balance"
-        color="primary" 
+        color="primary"
         @click="toggleCountNotReceivedIncomes"
         :class="countNotReceivedIncomes ? 'bg-grey-9' : ''"
       >
@@ -54,20 +54,20 @@
             <q-item clickable @click="openDialog(income)">
               <q-item-section>
                 <div class="row items-center">
-                  <q-icon 
+                  <q-icon
                     :name="getIncomeIcon(income)"
-                    class="q-mr-sm" 
-                    size="sm" 
-                    :color="getIncomeColor(income)" 
+                    class="q-mr-sm"
+                    size="sm"
+                    :color="getIncomeColor(income)"
                     style="margin-top: -5px;"/>
                   <div>
                     <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
                     <q-item-label caption style="margin-top: -5px;">
                       {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
-                      <q-chip 
-                        :label="t('noCategory')" 
+                      <q-chip
+                        :label="t('noCategory')"
                         text-color="white"
-                        style="{ backgroundColor: '#fffff'}" 
+                        style="{ backgroundColor: '#fffff'}"
                         size="sm"
                       />
                     </q-item-label>
@@ -88,20 +88,20 @@
             <q-item clickable @click="openDialog(income)">
               <q-item-section>
                 <div class="row items-center">
-                  <q-icon 
+                  <q-icon
                     :name="getIncomeIcon(income)"
-                    class="q-mr-sm" 
-                    size="sm" 
-                    :color="getIncomeColor(income)" 
+                    class="q-mr-sm"
+                    size="sm"
+                    :color="getIncomeColor(income)"
                     style="margin-top: -5px;"/>
                   <div>
                     <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
                     <q-item-label caption style="margin-top: -5px;">
                       {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
-                      <q-chip 
-                        :label="t('noCategory')" 
+                      <q-chip
+                        :label="t('noCategory')"
                         text-color="white"
-                        style="{ backgroundColor: '#fffff'}" 
+                        style="{ backgroundColor: '#fffff'}"
                         size="sm"
                       />
                     </q-item-label>
@@ -132,7 +132,7 @@
         <SavingsList :selectedYear="selectedYear" :selectedMonth="selectedMonth"/>
       </div>
     </div>
-    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
+    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 80px;">
       <q-icon name="account_balance_wallet" size="4em" color="grey-6" />
       <div class="text-h6 text-grey-6 q-mt-md">{{ t('noIncomes') }}</div>
     </div>
@@ -160,13 +160,13 @@
           <q-btn icon="category" :label="`${t('categories')} (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
         <div class="row items-center justify-end col-auto" style="margin-bottom: -5px;">
-          <q-input 
-            v-model="searchQuery" 
-            outlined 
-            dense 
+          <q-input
+            v-model="searchQuery"
+            outlined
+            dense
             :class="searchClasses"
-            style="width: 400px;" 
-            :placeholder="t('searchIncomes')" 
+            style="width: 400px;"
+            :placeholder="t('searchIncomes')"
             class="q-mb-sm"
           />
         </div>
@@ -184,14 +184,14 @@
       :isNewIncome="isNewIncome"
       @save="handleIncomeSave"
     />
-    <IncomeCategoryDialog 
-      v-model="isCategoryDialogOpen" 
-      @save="addCategory" 
+    <IncomeCategoryDialog
+      v-model="isCategoryDialogOpen"
+      @save="addCategory"
       :isNewCategory="true"
     />
-    <IncomeCategoriesDialog 
-      v-model="isCategoriesListDialogOpen" 
-      @isCategoryEdited="refetchIncomes" 
+    <IncomeCategoriesDialog
+      v-model="isCategoriesListDialogOpen"
+      @isCategoryEdited="refetchIncomes"
     />
   </q-page>
 </template>
@@ -257,8 +257,8 @@ const currentMonthEntries = computed(() => {
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value &&
      entryDate.getFullYear() === selectedYear.value
 
-    const isDayMatch = selectedDay.value == null || 
-      (entryDate.getMonth() === selectedMonth.value && 
+    const isDayMatch = selectedDay.value == null ||
+      (entryDate.getMonth() === selectedMonth.value &&
       entryDate.getFullYear() === selectedYear.value &&
       entryDate.getDate() === selectedDay.value)
 
@@ -418,7 +418,7 @@ async function addCategory(newCategory) {
 }
 
 async function refetchIncomes(isCategoryEdited) {
-  if (isCategoryEdited) await incomesStore.fetchIncomes() 
+  if (isCategoryEdited) await incomesStore.fetchIncomes()
 }
 
 const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-white text-dark');

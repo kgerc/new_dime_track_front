@@ -44,7 +44,7 @@
       <q-btn
         flat
         icon="account_balance"
-        color="primary" 
+        color="primary"
         @click="toggleCountUnpaidExpenses"
         :class="countUnpaidExpenses ? 'bg-grey-9' : ''"
       >
@@ -119,7 +119,7 @@
       <div class="col">
         <q-list bordered separator>
           <q-slide-item
-            v-for="entry in filteredAndSortedExpenses"
+            v-for="entry in pagedExpenses"
             :key="entry.id"
             @right="removeEntry(entry.id)"
             right-color="negative"
@@ -144,10 +144,10 @@
                     <div class="text-weight-bold">{{ entry.title }}</div>
                     <div class="text-grey-5 text-caption">
                       {{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}
-                      <q-chip 
-                      :label="entry.expenseCategory?.title ?? t('noCategory')" 
+                      <q-chip
+                      :label="entry.expenseCategory?.title ?? t('noCategory')"
                       :text-color="entry.expenseCategory?.title || isDarkMode ? 'white' : 'black'"
-                      :style="{ backgroundColor: entry.expenseCategory?.color ?? (isDarkMode ? '#424242' : 'lightgrey')}" 
+                      :style="{ backgroundColor: entry.expenseCategory?.color ?? (isDarkMode ? '#424242' : 'lightgrey')}"
                       size='sm'
                     >
                     </q-chip>
@@ -155,7 +155,7 @@
                   </div>
                 </div>
               </q-item-section>
-              
+
               <!-- Notes Icon with Tooltip -->
               <q-item-section side class="q-mr-xs">
                 <q-icon
@@ -176,6 +176,11 @@
             </q-item>
           </q-slide-item>
         </q-list>
+        <!-- No Expenses Message -->
+        <div v-if="filteredAndSortedExpenses.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-left: 350px;margin-top: 100px;">
+          <q-icon name="shopping_cart" size="4em" color="grey-6" />
+          <div class="text-h6 text-grey-6 q-mt-md">{{ t('noExpensesThisMonth') }}</div>
+        </div>
       </div>
       <div class="col-shrink">
         <ExpenseLimitsPanel
@@ -183,7 +188,7 @@
           :current-month="currentMonth" :selected-month="selectedMonth"
         />
       </div>
-        
+
     </div>
     <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses">
       <q-spinner
@@ -192,11 +197,6 @@
         :thickness="2"
       />
       <span class="q-mt-xs">{{ t('loadingExpenses') }}</span>
-    </div>
-    <!-- No Expenses Message -->
-    <div v-if="filteredAndSortedExpenses.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
-      <q-icon name="shopping_cart" size="4em" color="grey-6" />
-      <div class="text-h6 text-grey-6 q-mt-md">{{ t('noExpensesThisMonth') }}</div>
     </div>
     <!-- Expense Dialog -->
     <ExpenseDialog
@@ -215,7 +215,7 @@
     <q-footer :class="footerClasses">
     <div :class="isDarkMode ? 'q-pa-xs flex flex-center pagination-dark' : 'q-pa-xs flex flex-center'">
       <q-pagination
-        v-if="filteredAndSortedExpenses.length > 0"
+        v-if="pagedExpenses.length > 0"
         v-model="currentPage"
         :max="maxPage"
         input
@@ -238,12 +238,12 @@
           <q-btn icon="list" :label="`${t('limits')} (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
         <div class="row items-center justify-end col-auto" style="margin-bottom: -5px;">
-          <q-input 
-            v-model="searchQuery" 
-            outlined 
-            dense 
+          <q-input
+            v-model="searchQuery"
+            outlined
+            dense
             :class="searchClasses"
-            style="width: 400px;" 
+            style="width: 400px;"
             :placeholder="t('searchExpenses')"
             class="q-mb-sm"
           />
@@ -335,7 +335,7 @@ onMounted(async () => {
   await expensesStore.fetchExpenseCategories()
   await expensesStore.fetchExpenseLimits()
   sumExpensesByCategory();
-  checkAndNotifyExceededLimits(); 
+  checkAndNotifyExceededLimits();
   checkAndNotifyUpcomingUnpaidExpenses();
 })
 
@@ -371,20 +371,29 @@ const filteredEntries = computed(() => {
 })
 
 const filteredAndSortedExpenses = computed(() => {
-    const filteredAndSortedExpenses = currentMonthEntries.value
-      .filter(expense => {
-        return !selectedCategory.value || expense.expenseCategory?.title === selectedCategory.value
-      })
-      .sort((a, b) => {
-        const key = sortKey.value
-        const direction = sortDirection.value === 'asc' ? 1 : -1
-        const aVal = key === 'date' ? new Date(a.paymentDate) : a.amount
-        const bVal = key === 'date' ? new Date(b.paymentDate) : b.amount
-        return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * direction
-      })
-    const startIndex = (currentPage.value - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
-    return filteredAndSortedExpenses.slice(startIndex, endIndex)
+  if (selectedCategory.value) {
+    currentPage.value = 1;
+  }
+  return currentMonthEntries.value
+    .filter(expense => {
+      return (
+        !selectedCategory.value ||
+        expense.expenseCategory?.title === selectedCategory.value
+      )
+    })
+    .sort((a, b) => {
+      const key = sortKey.value
+      const direction = sortDirection.value === 'asc' ? 1 : -1
+      const aVal = key === 'date' ? new Date(a.paymentDate) : a.amount
+      const bVal = key === 'date' ? new Date(b.paymentDate) : b.amount
+      return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * direction
+    })
+})
+
+const pagedExpenses = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  return filteredAndSortedExpenses.value.slice(startIndex, endIndex)
 })
 
 const currentMonthLimits = computed(() => {
@@ -406,12 +415,15 @@ const currentMonthLimits = computed(() => {
 
   // Computed property for filtered entries
   const currentMonthEntries = computed(() => {
+    if (debouncedSearchQuery.value != '') {
+      currentPage.value = 1;
+    }
     return entries.value.filter(entry => {
       const matchesSearch = entry.title.toLowerCase().includes(debouncedSearchQuery.value.toLowerCase());
 
       const entryDate = new Date(entry.paymentDate);
       const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value;
-      const isDayMatch = selectedDay.value == null || 
+      const isDayMatch = selectedDay.value == null ||
         (entryDate.getMonth() === selectedMonth.value &&
         entryDate.getFullYear() === selectedYear.value &&
         entryDate.getDate() === selectedDay.value);
@@ -635,11 +647,11 @@ const itemsPerPage = 10  // Number of entries per page
 
 // Max page calculation
 const maxPage = computed(() => {
-  return Math.ceil(currentMonthEntries.value.length / itemsPerPage)
+  return Math.ceil(filteredAndSortedExpenses.value.length  / itemsPerPage)
 })
 
 async function refetchExpenses(isCategoryEdited) {
-  if (isCategoryEdited) await expensesStore.fetchExpenses() 
+  if (isCategoryEdited) await expensesStore.fetchExpenses()
 }
 
 async function assignCategories() {
