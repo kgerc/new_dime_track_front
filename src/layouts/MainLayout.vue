@@ -64,7 +64,7 @@
 
           <!-- User Avatar with initials -->
           <q-avatar size="40px" color="grey-8" text-color="white">
-            KG
+            CS
           </q-avatar>
 
         </div>
