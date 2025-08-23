@@ -2,8 +2,16 @@
   <q-layout view="hHh lpR fFf">
     <q-page-container>
       <q-page class="flex flex-center auth-page">
-        <div class="auth-wrapper">
 
+        <!-- App Title in top-left corner of page -->
+        <div class="app-title">
+          <q-avatar>
+            <q-icon name="track_changes" size="md" />
+          </q-avatar>
+          <span class="title-text">Dime Track</span>
+        </div>
+
+        <div class="auth-wrapper">
           <div class="auth-card" :class="{ 'sign-up-mode': mode === 'register' }">
 
             <!-- Panels Container -->
@@ -50,6 +58,7 @@
     </q-page-container>
   </q-layout>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -154,4 +163,26 @@ function handleSubmit() {
 .switch-panel {
   transition: opacity 0.6s ease-in-out;
 }
+
+.app-title {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: rgb(58, 55, 55);
+}
+
+.app-title .q-avatar {
+  margin-right: 8px;
+  background-color: #f57c00; /* orange accent */
+  color: white;
+}
+
+.title-text {
+  font-family: "Roboto", sans-serif;
+}
+
 </style>
