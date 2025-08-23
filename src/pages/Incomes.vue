@@ -149,7 +149,7 @@
       <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
         <div class="col" :class="titleClasses">{{ t('incomesSum') }}</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
-          {{ formatCurrency(totalBalance, 'PLN') }}
+          {{ formatCurrency(totalBalance, 'USD') }}
         </div>
       </div>
 

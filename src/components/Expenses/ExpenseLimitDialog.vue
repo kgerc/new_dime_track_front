@@ -3,7 +3,7 @@
     <q-card style="width: 400px">
       <q-card-section class="row justify-between items-center">
         <div class="text-h6">{{ isNewLimit ? t('newExpenseLimit') : t('editExpenseLimit') }}</div>
-        
+
         <!-- Currency Dropdown -->
         <q-select
           v-model="localLimit.currency"
@@ -16,11 +16,11 @@
 
       <q-card-section class="q-gutter-md">
         <q-input v-model="localLimit.title" :label="t('title')" outlined dense />
-        <q-input 
-          v-model.number="localLimit.limit" 
-          :label="t('limitAmount')" 
-          type="number" 
-          outlined 
+        <q-input
+          v-model.number="localLimit.limit"
+          :label="t('limitAmount')"
+          type="number"
+          outlined
           dense
           :prefix="getCurrencySymbol(localLimit.currency)" />
 
@@ -117,7 +117,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newLimit = props.isNewLimit
-      ? { id: uuidv4(), title: '', limit: 0, currency: 'PLN', month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
+      ? { id: uuidv4(), title: '', limit: 0, currency: 'USD', month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
       : { ...props.limit }
 
     localLimit.value = newLimit
@@ -140,7 +140,7 @@ const recurrenceOptions = ['None', 'Monthly', 'Quarterly', 'Yearly'];
 
 const isWarningDialogOpened = ref(false)
 async function deleteLimit() {
-    emit('save', null) 
+    emit('save', null)
     await expensesStore.removeExpenseLimit(localLimit.value.id)
 };
 </script>

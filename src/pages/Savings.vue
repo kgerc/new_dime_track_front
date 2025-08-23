@@ -10,14 +10,14 @@
             {{ currentMonthName }} {{ selectedYear }}
           </div>
           <q-popup-proxy cover transition-show="scale" transition-hide="scale" anchor="top middle" :offset="[0, 10]">
-            <q-date 
-              v-model="selectedDate" 
-              mask="YYYY-MM-DD" 
-              :default-year="selectedYear" 
+            <q-date
+              v-model="selectedDate"
+              mask="YYYY-MM-DD"
+              :default-year="selectedYear"
               :default-month="selectedMonth + 1"
-              @update:model-value="updateMonthYear" 
-              bordered 
-              minimal 
+              @update:model-value="updateMonthYear"
+              bordered
+              minimal
               class="shadow-2 rounded-borders">
                 <div class="row items-center justify-between">
                   <q-btn v-close-popup :label="t('wholeMonth')" color="primary" flat :class="{'bg-primary text-white': !selectedDay}" @click="resetToWholeMonth" />
@@ -46,9 +46,9 @@
             <q-item clickable @click="toggleExpand(entry.id)">
               <q-item-section>
                 <div class="row items-center">
-                  <q-icon 
-                    :name="getSavingStatusIcon(entry)" 
-                    :color="getSavingStatusColor(entry)" 
+                  <q-icon
+                    :name="getSavingStatusIcon(entry)"
+                    :color="getSavingStatusColor(entry)"
                     class="q-mr-sm" size="sm"
                   />
                   <div>
@@ -67,12 +67,12 @@
                       rounded
                     />
                   </div>
-                  <q-icon 
+                  <q-icon
                     v-if="expandedSavingId === entry.id"
-                    name="edit" 
-                    size="sm" 
-                    color="primary" 
-                    style="margin-left: 12px;" 
+                    name="edit"
+                    size="sm"
+                    color="primary"
+                    style="margin-left: 12px;"
                     @click.stop="openDialog(entry)"
                     clickable
                   />
@@ -96,11 +96,11 @@
                 </q-item-section>
               </q-item>
               <q-list dense>
-                <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id" 
-                  style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)"> 
+                <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id"
+                  style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)">
                   <q-item-section>
                     <q-item-label>
-                      {{ formatCurrency(contribution.amount, contribution.currency) }} 
+                      {{ formatCurrency(contribution.amount, contribution.currency) }}
                       <span class="text-grey-7">({{ formatDate(contribution.contributionDate) }})</span>
                     </q-item-label>
                   </q-item-section>
@@ -127,7 +127,7 @@
       <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
         <div class="col" :class="titleClasses">{{ t("savingsSum") }}</div>
         <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
-          {{ formatCurrency(totalBalance, 'PLN') }}
+          {{ formatCurrency(totalBalance, 'USD') }}
         </div>
       </div>
 
@@ -137,12 +137,12 @@
           <q-btn icon="savings" :label="t('newSavingGoal')" color="white" flat class="q-mr-sm" @click="openNewSavingGoalDialog" />
         </div>
         <div class="row items-center justify-end col-auto"  style="margin-bottom: -5px;">
-          <q-input 
-            v-model="searchQuery" 
-            outlined 
-            dense 
+          <q-input
+            v-model="searchQuery"
+            outlined
+            dense
             :class="searchClasses"
-            style="width: 400px;" 
+            style="width: 400px;"
             :placeholder="t('searchSavings')"
             class="q-mb-sm"
           />
@@ -166,9 +166,9 @@
       :isNewSavingGoal="isNewSavingGoal"
       @save="handleSavingGoalSave"
     />
-    <SavingContributionDialog 
-      v-model="isContributionDialogOpen" 
-      @save="handleSavingContributionSave" 
+    <SavingContributionDialog
+      v-model="isContributionDialogOpen"
+      @save="handleSavingContributionSave"
       :isNewSavingContribution="isNewSavingContribution"
       :savingContribution="selectedSavingContribution"
     />
@@ -254,12 +254,12 @@ const currentMonthContributions = computed(() => {
   return contributions.filter(entry => {
     const entryDate = new Date(entry.contributionDate)
     const isMonthYearMatch = entryDate.getMonth() === selectedMonth.value && entryDate.getFullYear() === selectedYear.value
-    
-    const isDayMatch = selectedDay.value == null || 
-    (entryDate.getMonth() === selectedMonth.value && 
+
+    const isDayMatch = selectedDay.value == null ||
+    (entryDate.getMonth() === selectedMonth.value &&
     entryDate.getFullYear() === selectedYear.value &&
     entryDate.getDate() === selectedDay.value)
-    
+
     return isMonthYearMatch && isDayMatch;
   })
 })
@@ -270,7 +270,7 @@ const previousMonthContributions = computed(() => {
 
   return contributions.filter(entry => {
     const entryDate = new Date(entry.contributionDate);
-    
+
     const isBeforeSelectedMonth =
       entryDate.getFullYear() < selectedYear.value ||
       (entryDate.getFullYear() === selectedYear.value && entryDate.getMonth() < selectedMonth.value);
@@ -401,12 +401,12 @@ function resetToWholeMonth() {
   isCalendarOpen.value = false
 }
 function getSavingStatusIcon(saving) {
-  return saving.status === "completed" ? "check_circle" 
+  return saving.status === "completed" ? "check_circle"
         : saving.status === "behind" ? "error"
         : "hourglass_top";
 }
 function getSavingStatusColor(saving) {
-  return saving.status === "completed" ? "green-6" 
+  return saving.status === "completed" ? "green-6"
         : saving.status === "behind" ? "red-6"
         : "orange-6";
 }
@@ -460,7 +460,7 @@ async function handleSavingContributionSave(savingContribution) {
   } else if (savingContribution){
     await handleUpdateSavingContribution(savingContribution)
   } else {
-    isContributionDialogOpen.value = false; 
+    isContributionDialogOpen.value = false;
     extendSavingGoalModel()
     $q.notify({
       message: 'Saving contribution deleted successfully!',

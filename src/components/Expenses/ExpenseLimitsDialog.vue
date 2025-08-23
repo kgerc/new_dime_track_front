@@ -3,9 +3,9 @@
     <q-card style="width: 400px">
       <!-- Summary Section -->
       <q-card-section class="text-center q-py-sm">
-        <div class="text-h6">Limity wydatków</div>
+        <div class="text-h6">Expense Limits</div>
         <div class="text-body2">
-          Wydane: PLN {{ totalSpent }} / Limit: {{ totalLimit }} PLN
+          Spent: {{ totalSpent }} USD / Limit: {{ totalLimit }} USD
         </div>
         <q-linear-progress
           :value="totalSpent / totalLimit"
@@ -30,7 +30,7 @@
           <q-item>
             <q-item-section>
               <q-chip>
-                Wydane: PLN {{ formatCurrency(limit.spent, 'PLN', true) }} / Limit: {{ limit.limit }} PLN
+                Spent: {{ formatCurrency(limit.spent, 'USD', true) }} / Limit: {{ limit.limit }} USD
               </q-chip>
               <div
                 :class="isLimitExceeded(limit) ? 'text-red' : 'text-green'"
@@ -45,10 +45,10 @@
                     class="q-mr-xs"
                   />
                   <span v-if="isLimitExceeded(limit)">
-                    Przekroczone o {{ getExceededAmount(limit) }} PLN
+                    Exceeded by {{ getExceededAmount(limit) }} USD
                   </span>
                   <span v-else>
-                    W limice
+                    Within limit
                   </span>
                 </div>
                 <q-btn
@@ -61,8 +61,8 @@
               </div>
             </q-item-section>
           </q-item>
-          <ExpenseLimitDialog 
-            v-model="isLimitDialogOpen" 
+          <ExpenseLimitDialog
+            v-model="isLimitDialogOpen"
             :limit="limit"
             :isNewLimit="false"
             @save="handleExpenseLimitSave"/>
@@ -126,7 +126,7 @@ const getExceededAmount = (limit) => {
 // Save function to update the store directly
 async function handleExpenseLimitSave(expenseLimit) {
   if (!expenseLimit) {
-    isLimitDialogOpen.value = false;  
+    isLimitDialogOpen.value = false;
     $q.notify({
       message: 'Expense limit deleted successfully!',
       color: 'positive',

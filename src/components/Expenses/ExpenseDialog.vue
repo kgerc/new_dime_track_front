@@ -3,7 +3,7 @@
   <q-card style="width: 400px">
     <q-card-section class="row justify-between items-center">
       <div class="text-h6">{{ isNewExpense ? t('newExpense') : t('editExpense') }}</div>
-      
+
       <!-- Currency Dropdown -->
       <q-select
         v-model="localExpense.currency"
@@ -17,13 +17,13 @@
     <q-card-section class="q-gutter-md">
       <q-input v-model="localExpense.title" :label="t('title')" outlined dense />
       <q-input v-model="localExpense.notes" :label="t('notes')" outlined dense />
-      <q-input 
-        v-model.number="localExpense.amount" 
-        :label="t('amount')" 
-        type="number" 
-        outlined 
-        dense 
-        :prefix="getCurrencySymbol(localExpense.currency)" 
+      <q-input
+        v-model.number="localExpense.amount"
+        :label="t('amount')"
+        type="number"
+        outlined
+        dense
+        :prefix="getCurrencySymbol(localExpense.currency)"
       />
       <q-select
         v-if="isNewExpense"
@@ -114,7 +114,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newExpense = props.isNewExpense
-      ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
+      ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'USD', recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
       : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), "yyyy-MM-dd'T00:00:00'") };
 
     localExpense.value = newExpense;

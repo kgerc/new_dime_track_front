@@ -2,21 +2,21 @@
   <q-page>
     <div class="q-pa-md">
       <q-list bordered separator>
-        <q-slide-item v-for="entry in entries" :key="entry.id" 
+        <q-slide-item v-for="entry in entries" :key="entry.id"
            @right="onEntrySlideRight" right-color="negative">
             <template v-slot:right>
               <q-icon name="delete" />
             </template>
           <q-item>
-            <q-item-section 
+            <q-item-section
               class="text-weight-bold"
               :class="amountColor(entry.amount)">
               {{entry.name}}
             </q-item-section>
 
-            <q-item-section 
+            <q-item-section
               class="text-weight-bold"
-              :class="amountColor(entry.amount)" 
+              :class="amountColor(entry.amount)"
               side>
               {{formatCurrency(entry.amount, entry.currency)}}
             </q-item-section>
@@ -32,26 +32,26 @@
           Balance
         </div>
         <div class="col text-h6 text-right" :class="amountColor(balance)">
-          {{ formatCurrency(balance, 'PLN') }}
+          {{ formatCurrency(balance, 'USD') }}
         </div>
       </div>
-      <q-form 
+      <q-form
         @submit="addEntry"
         class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="col">
-          <q-input 
+          <q-input
             v-model="addEntryForm.name"
             ref="nameForm"
-            outlined 
+            outlined
             dense
             bg-color="white"
             placeholder="Name" />
         </div>
         <div class="col">
-          <q-input 
+          <q-input
             v-model.number="addEntryForm.amount"
             input-class="text-right"
-            outlined 
+            outlined
             dense
             type="number"
             step="0.01"
@@ -59,10 +59,10 @@
             placeholder="Amount" />
         </div>
         <div class="col col-auto">
-          <q-btn 
-            round 
+          <q-btn
+            round
             color="primary"
-            type="submit" 
+            type="submit"
             icon="add" />
         </div>
       </q-form>
