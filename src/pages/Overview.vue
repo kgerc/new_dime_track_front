@@ -10,19 +10,8 @@
             <div class="text-caption">{{t('balance')}}</div>
           </q-tooltip>
         </q-icon>
-        <span :class="amountColor(balance)" style="margin-left: 5px;">{{ !isEditingBalance ? formatCurrency(balance, 'USD') : '' }}</span>
+        <span :class="amountColor(balance)" style="margin-left: 5px;">{{formatCurrency(getMonthBalance(selectedYear, selectedMonth), 'USD')}}</span>
       </div>
-      <q-input
-        v-if="isEditingBalance"
-        v-model="balance"
-        dense
-        bg-color="white"
-        type="number"
-        class="q-mr-sm q-pa-none"
-        style="font-size: 20px; width:132.8px;height:25px;margin-top: -3px;"
-      />
-      <q-icon v-if="!isEditingBalance" name="edit" size="sm" color="primary" class="cursor-pointer" @click="editBalance" style="margin-top: 3px;"/>
-      <q-icon v-else name="check_circle" size="sm" color="primary" class="cursor-pointer" @click="saveBalance" style="margin-top: 7px;"/>
     </div>
       <div class="row items-center justify-center col" :style="{ 'margin-right': viewMode === 'monthly' ? '70px' : '-180px' }">
         <q-btn icon="arrow_back" flat @click="prevPeriod" />
