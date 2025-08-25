@@ -111,10 +111,11 @@ const parseCSV = (file) => {
 
     // Apply manual fixes to correct any misinterpreted characters
     const fixedContent = manualFix(text);
-
+    debugger;
     // Parse the content using PapaParse
     Papa.parse(fixedContent, {
       header: true,
+      delimiter: ",",
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: (results) => {
@@ -175,10 +176,11 @@ const manualFix = (text) => {
 // Function to map column values based on possible names
 const mapColumnValue = (row, field) => {
   const possibleNames = columnMapping[field];
+  debugger;
   for (let name of possibleNames) {
     if (row[name]) {
-      return field === 'amount' || field === 'balanceAfterTransaction' 
-        ? parseFloat(row[name]) 
+      return field === 'amount' || field === 'balanceAfterTransaction'
+        ? parseFloat(row[name])
         : row[name];
     }
   }
@@ -195,8 +197,8 @@ const extractMerchant = (row) => {
     // Capture the address or URL after 'Adres:' until we encounter 'Miasto:', 'Kraj:', or end of string
     let expenseMatch = locationText.match(/Adres:\s+(.+?)(?=\s+(?:Miasto:|Kraj:|$))/i);
     let expenseMatch2 = locationText2.match(/Adres:\s+(.+?)(?=\s+(?:Miasto:|Kraj:|$))/i);
-    let expenseMatch3 = locationText2.match(/Adres:\s+(.+)/i); 
-    let expenseMatch4 = locationText.match(/Tytu:\s+(.+)/i); 
+    let expenseMatch3 = locationText2.match(/Adres:\s+(.+)/i);
+    let expenseMatch4 = locationText.match(/Tytu:\s+(.+)/i);
     let incomeMatch = locationText.match(/Nazwa (?:nadawcy|odbiorcy):\s+(.+)/i); // Capture full name
 
     let extractedText = "";
@@ -214,7 +216,7 @@ const extractMerchant = (row) => {
       let splataMatch = expenseMatch4[1].match(/^SPLATA\s+([^\s]+)/i);
       if (splataMatch) {
         extractedText = `splata place pozniej`;  // Extracts just the part after "SPLATA"
-      } 
+      }
     } else {
       extractedText = row['Typ transakcji'] || 'Unknown';
     }

@@ -5,8 +5,8 @@ import api from 'src/api/axiosInstance' // Import the configured Axios instance
 export const useImportTransactionsStore = defineStore('importTransactions', () => {
   const file = ref(null)
   const parsedData = ref([])
-  const columns = ref([]) 
-  const savingsKeywords = ref(["OBLIGACJE SKARBOWE"]); // Default savings indicators
+  const columns = ref([])
+  const savingsKeywords = ref(["BIKE", "CAR", "WEDDING"]); // Default savings indicators
 
   async function uploadTransactions() {
     try {

@@ -3,7 +3,7 @@
         <q-card class="q-pa-sm">
         <!-- Explanation Section -->
         <q-card-section>
-            <div class="text-body2 text-grey-8 bg-grey-2 q-pa-sm q-rounded-borders text-center">
+            <div class="text-body2 text-grey-8 bg-grey-5 q-pa-sm q-rounded-borders text-center">
                 When you confirm, expenses will be adjusted based on tags added to the categories. <br />
                 (For example, tag 'Supermarket' will assign the related category to every expense that contains that keyword)
             </div>

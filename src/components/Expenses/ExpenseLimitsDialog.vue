@@ -9,7 +9,7 @@
         </div>
         <q-linear-progress
           :value="totalSpent / totalLimit"
-          :color="totalSpent > totalLimit ? 'red' : 'primary'"
+          :color="totalSpent > totalLimit ? 'red' : 'blue'"
           size="10px"
           rounded
           stripe

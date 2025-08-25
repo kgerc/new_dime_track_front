@@ -19,7 +19,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function addExpense(expense) {
     try {
       const response = await api.post('/expenses', expense)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         // Only push if response is successful
         entries.value.push(expense)
       } else {
@@ -33,7 +33,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function removeExpense(id) {
     try {
       const response = await api.delete(`/expenses/${id}`)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         entries.value = entries.value.filter(entry => entry.id !== id)
       } else {
         console.error('Failed to remove expense: Unexpected response status', response.status)
@@ -62,7 +62,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function addExpenseCategory(expenseCategory) {
     try {
       const response = await api.post('/expenses/category', expenseCategory)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         // Only push if response is successful
         categories.value.push(expenseCategory)
       } else {
@@ -75,7 +75,7 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   async function fetchExpenseCategories() {
     try {
-      const response = await api.get('/expenses/categories') 
+      const response = await api.get('/expenses/categories')
       categories.value = response.data
     } catch (error) {
       console.error('Error fetching expense categories:', error)
@@ -84,7 +84,7 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   async function fetchExpenseLimits() {
     try {
-      const response = await api.get('/expenses/limits') 
+      const response = await api.get('/expenses/limits')
       limits.value = response.data
     } catch (error) {
       console.error('Error fetching expenses:', error)
@@ -94,7 +94,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function addExpenseLimit(expenseLimit) {
     try {
       const response = await api.post('/expenses/limit', expenseLimit)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         // Only push if response is successful
         limits.value.push(expenseLimit)
       } else {
@@ -107,6 +107,10 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   async function updateExpenseLimit(updatedExpenseLimit) {
     try {
+      if (updatedExpenseLimit.expenseCategory && updatedExpenseLimit.expenseCategory.tags.length == 0) {
+        updatedExpenseLimit.expenseCategory.tags = "";
+        debugger;
+      }
       const response = await api.put(`/expenses/limit/${updatedExpenseLimit.id}`, updatedExpenseLimit)
       if (response.status === 200) {
         const index = limits.value.findIndex(exp => exp.id === updatedExpenseLimit.id)
@@ -124,7 +128,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function removeExpenseLimit(id) {
     try {
       const response = await api.delete(`/expenses/limit/${id}`)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         limits.value = limits.value.filter(entry => entry.id !== id)
       } else {
         console.error('Failed to remove expense limit: Unexpected response status', response.status)
@@ -153,7 +157,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function removeExpenseCategory(id) {
     try {
       const response = await api.delete(`/expenses/category/${id}`)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         categories.value = categories.value.filter(entry => entry.id !== id)
       } else {
         console.error('Failed to remove expense category: Unexpected response status', response.status)
@@ -166,7 +170,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function moveExpenseToSavings(id) {
     try {
       const response = await api.delete(`/expenses/moveExpenseToSavings/${id}`)
-      if (response.status === 201 || response.status === 200) { 
+      if (response.status === 201 || response.status === 200) {
         entries.value = entries.value.filter(entry => entry.id !== id)
       } else {
         console.error('Failed to move expense to savings: Unexpected response status', response.status)

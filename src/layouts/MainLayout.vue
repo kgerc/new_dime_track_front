@@ -28,7 +28,7 @@
           <div>
             <q-avatar
             size="40px"
-            :color="isDarkMode ? 'grey-8' : 'blue'"
+            :color="isDarkMode ? 'grey-8' : 'orange'"
             text-color="white"
             class="cursor-pointer"
             >
@@ -63,7 +63,7 @@
           </div>
 
           <!-- User Avatar with initials -->
-          <q-avatar size="40px" color="grey-8" text-color="white">
+          <q-avatar size="40px" :color="isDarkMode ? 'grey-8' : 'orange'" text-color="white">
             CS
           </q-avatar>
 

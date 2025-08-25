@@ -112,7 +112,7 @@
   })
 
   const getProgressColor = computed(() => {
-    return getProgressValue.value > 1 ? 'red' : 'primary'
+    return getProgressValue.value > 1 ? 'red' : 'blue'
   })
 
   watch(
