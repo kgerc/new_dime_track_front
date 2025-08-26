@@ -83,7 +83,7 @@ const $q = useQuasar();
 const { t } = useLangStore();
 const loading = ref(false);
 const balancesStore = useBalancesStore()
-const { hasInitialized } = storeToRefs(balancesStore)
+const { hasInitialized, reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
 
 const columnMapping = {
   "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
@@ -251,6 +251,8 @@ const uploadTransactions = async () => {
   try {
     await importTransactionsStore.uploadTransactions()
     hasInitialized.value = false;
+    reloadSavingsDictionary.value = true;
+    reloadIncomeExpensesDictionary.value = true;
     $q.notify({
         message: 'Transactions successfully uploaded!',
         color: 'positive',
