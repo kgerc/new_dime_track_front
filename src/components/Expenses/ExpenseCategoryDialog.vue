@@ -62,7 +62,7 @@
           color="negative"
           @click="isWarningDialogOpened = true;"
         />
-        <q-btn flat :label="t('save')" color="primary" @click="saveCategory" />
+        <q-btn flat :label="t('save')" color="blue" @click="saveCategory" />
       </q-card-actions>
     </q-card>
   </q-dialog>

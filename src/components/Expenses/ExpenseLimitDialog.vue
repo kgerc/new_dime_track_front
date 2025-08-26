@@ -60,7 +60,7 @@
         <q-btn flat :label="t('cancel')" color="grey" @click="closeDialog" />
         <q-space />  <!-- This pushes the next buttons to the right -->
         <q-btn v-if="!isNewLimit" flat :label="t('delete')" color="negative" @click="isWarningDialogOpened = true;"/>
-        <q-btn flat :label="t('save')" color="primary" @click="saveChanges" />
+        <q-btn flat :label="t('save')" color="blue" @click="saveChanges" />
       </q-card-actions>
     </q-card>
   </q-dialog>

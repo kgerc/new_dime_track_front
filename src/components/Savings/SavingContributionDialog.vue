@@ -36,7 +36,7 @@
           <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
           <q-space />  <!-- This pushes the next buttons to the right -->
           <q-btn v-if="!isNewSavingContribution" flat label="Delete" color="negative" @click="isWarningDialogOpened = true;"/>
-          <q-btn flat label="Save" color="primary" @click="saveChanges" />
+          <q-btn flat label="Save" color="blue" @click="saveChanges" />
         </q-card-actions>
       </q-card>
     </q-dialog>

@@ -58,7 +58,7 @@
       <q-btn flat :label="t('cancel')" color="grey" @click="closeDialog" />
       <q-space />  <!-- This pushes the next buttons to the right -->
       <q-btn v-if="!isNewExpense" flat :label="t('moveToSavings')" color="primary" @click="moveExpenseToSavings" />
-      <q-btn flat :label="t('save')" color="primary" @click="saveChanges" />
+      <q-btn flat :label="t('save')" color="blue" @click="saveChanges" />
     </q-card-actions>
   </q-card>
 </q-dialog>

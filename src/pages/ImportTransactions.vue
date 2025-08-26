@@ -73,6 +73,8 @@ import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
 import { useImportTransactionsStore } from 'src/stores/importTransactionsStore';
 import { useLangStore } from "src/stores/langStore"
+import { useBalancesStore } from 'src/stores/balancesStore'
+
 // Store setup
 const importTransactionsStore = useImportTransactionsStore();
 const { file, parsedData, columns, savingsKeywords } = storeToRefs(importTransactionsStore);
@@ -80,6 +82,8 @@ const newKeyword = ref("");
 const $q = useQuasar();
 const { t } = useLangStore();
 const loading = ref(false);
+const balancesStore = useBalancesStore()
+const { hasInitialized } = storeToRefs(balancesStore)
 
 const columnMapping = {
   "description": ["Description", "TransactionTitle", "Opis", "TransaktionBeschreibung"],
@@ -246,6 +250,7 @@ const uploadTransactions = async () => {
 
   try {
     await importTransactionsStore.uploadTransactions()
+    hasInitialized.value = false;
     $q.notify({
         message: 'Transactions successfully uploaded!',
         color: 'positive',

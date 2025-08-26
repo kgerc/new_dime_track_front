@@ -58,7 +58,7 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="grey" @click="closeDialog" />
-          <q-btn flat label="Save" color="primary" @click="saveChanges" />
+          <q-btn flat label="Save" color="blue" @click="saveChanges" />
         </q-card-actions>
       </q-card>
     </q-dialog>
