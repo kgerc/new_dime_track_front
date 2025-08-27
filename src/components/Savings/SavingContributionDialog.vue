@@ -22,7 +22,26 @@
             type="number"
             outlined
             dense />
-          <q-input v-model="localSavingContribution.contributionDate" label="Payment Date" type="date" outlined dense />
+          <q-input
+            outlined
+            dense
+            label="Payment Date"
+            v-model="localSavingContribution.contributionDate"
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date
+                    v-model="localSavingContribution.contributionDate"
+                    mask="YYYY-MM-DD"
+                    :locale="enLocale"
+                    bordered
+                    minimal
+                  />
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
           <q-select
             v-model="savingGoalTitle"
             :options="savingGoalTitles"
@@ -60,7 +79,12 @@
     savingContribution: Object,
     isNewSavingContribution: Boolean
   });
-
+  const enLocale = {
+    days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+    daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+    months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+    monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_')
+  }
   const emit = defineEmits(['update:modelValue', 'save']);
   const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
   const localSavingContribution = ref({ ...props.savingContribution });  // Local copy for editing

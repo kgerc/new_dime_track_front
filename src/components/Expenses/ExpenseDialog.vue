@@ -41,8 +41,26 @@
         outlined
         dense
       />
-      <q-input :label="t('paymentDate')" v-model="localExpense.paymentDate" type="date" outlined dense />
-
+      <q-input
+        outlined
+        dense
+        :label="t('paymentDate')"
+        v-model="localExpense.paymentDate"
+      >
+        <template v-slot:append>
+          <q-icon name="event" class="cursor-pointer">
+            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+              <q-date
+                v-model="localExpense.paymentDate"
+                mask="YYYY-MM-DD"
+                :locale="enLocale"
+                bordered
+                minimal
+              />
+            </q-popup-proxy>
+          </q-icon>
+        </template>
+      </q-input>
       <q-toggle v-model="localExpense.isPaid" :label="t('isPaid')" />
 
       <q-select
@@ -83,7 +101,12 @@ const props = defineProps({
   expense: Object,
   isNewExpense: Boolean, // Flag to distinguish between new and existing expense
 });
-
+const enLocale = {
+  days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+  daysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+  monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_')
+}
 const emit = defineEmits(['update:modelValue', 'save', 'moveExpenseToSavings']);
 const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const localExpense = ref({ ...props.expense });  // Local copy for editing
