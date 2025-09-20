@@ -109,6 +109,20 @@
                 />
               </q-item-section>
             </q-item>
+            <q-item>
+              <q-item-section>
+                <q-select
+                  dense
+                  v-model="selectedCurrency"
+                  :options="currencyOptions"
+                  :label="t('Currency')"
+                  clearable
+                  emit-value
+                  map-options
+                  filled
+                />
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-menu>
       </q-btn>
@@ -287,6 +301,8 @@ const { isDarkMode } = storeToRefs(themeStore);
 const { t, currentLanguage } = useLangStore();
 const balancesStore = useBalancesStore()
 const { reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
+const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+const selectedCurrency = ref(null)
 
 /* 🗓️ Date and Calendar Handling */
 const months = computed(() => [
@@ -371,7 +387,7 @@ const filteredEntries = computed(() => {
 })
 
 const filteredAndSortedExpenses = computed(() => {
-  if (selectedCategory.value) {
+  if (selectedCategory.value || selectedCurrency.value) {
     currentPage.value = 1;
   }
   return currentMonthEntries.value
@@ -379,6 +395,12 @@ const filteredAndSortedExpenses = computed(() => {
       return (
         !selectedCategory.value ||
         expense.expenseCategory?.title === selectedCategory.value
+      )
+    })
+    .filter(expense => {
+      return (
+        !selectedCurrency.value ||
+        expense.currency === selectedCurrency.value
       )
     })
     .sort((a, b) => {
