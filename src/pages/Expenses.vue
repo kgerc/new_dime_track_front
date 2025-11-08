@@ -466,6 +466,7 @@ const totalBalance = computed(() => {
 
 // Month navigation
 function prevMonth() {
+  currentPage.value = 1;
   selectedMonth.value--
   if (selectedMonth.value < 0) {
     selectedMonth.value = 11
@@ -474,6 +475,7 @@ function prevMonth() {
 }
 
 function nextMonth() {
+  currentPage.value = 1;
   selectedMonth.value++
   if (selectedMonth.value > 11) {
     selectedMonth.value = 0

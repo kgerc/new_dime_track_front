@@ -234,9 +234,10 @@ import { useExpensesStore } from 'src/stores/expensesStore'
 import { useIncomesStore } from 'src/stores/incomesStore'
 import { useSavingsStore } from 'src/stores/savingsStore'
 import { useBalancesStore } from 'src/stores/balancesStore'
-import { useThemeStore } from 'src/stores/themeStore';
+import { useThemeStore } from 'src/stores/themeStore'
 import { useLangStore } from "src/stores/langStore"
 import { storeToRefs } from 'pinia'
+
 const expensesStore = useExpensesStore()
 const { entries: expenses, limits } = storeToRefs(expensesStore)
 
@@ -247,49 +248,56 @@ const savingsStore = useSavingsStore()
 const { entries: savings } = storeToRefs(savingsStore)
 
 const balancesStore = useBalancesStore()
-const { balanceDict, savingsBalanceDict, hasInitialized,
-   reloadIncomeExpensesDictionary, currentMonthRemainingLimit } = storeToRefs(balancesStore)
+const { balanceDict, savingsBalanceDict, hasInitialized, reloadIncomeExpensesDictionary, currentMonthRemainingLimit } = storeToRefs(balancesStore)
 
-const { t } = useLangStore();
-
-const themeStore = useThemeStore();
-const { isDarkMode } = storeToRefs(themeStore);
+const { t } = useLangStore()
+const themeStore = useThemeStore()
+const { isDarkMode } = storeToRefs(themeStore)
 
 const viewMode = ref("yearly")
-
 const selectedMonth = ref(new Date().getMonth())
 const selectedYear = ref(new Date().getFullYear())
 
 const monthNames = computed(() => [
   t('january'), t('february'), t('march'), t('april'), t('may'), t('june'),
   t('july'), t('august'), t('september'), t('october'), t('november'), t('december')
-]);
+])
 
-const getTitle = computed(() => (entry) => {
-  return entry.title === "No goal" ? t('noGoal') : entry.title;
-});
+const getTitle = computed(() => (entry) => entry.title === "No goal" ? t('noGoal') : entry.title)
 
-let loadingExpenses = ref(false)
-let loadingIncomes = ref(false)
-let loadingSavings = ref(false)
+const loadingExpenses = ref(false)
+const loadingIncomes = ref(false)
+const loadingSavings = ref(false)
+
 onMounted(async () => {
   if (!hasInitialized.value) {
     loadingExpenses.value = true
     loadingIncomes.value = true
     loadingSavings.value = true
-    await balancesStore.fetchBalances()
-    await expensesStore.fetchExpenses()
-    await expensesStore.fetchExpenseLimits()
-    await incomesStore.fetchIncomes()
-    await savingsStore.fetchSavingGoals()
-    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
+
+    // ✅ Run all fetches in parallel
+    await Promise.all([
+      balancesStore.fetchBalances(),
+      expensesStore.fetchExpenses(),
+      expensesStore.fetchExpenseLimits(),
+      incomesStore.fetchIncomes(),
+      savingsStore.fetchSavingGoals()
+    ])
+
+    // ✅ Create balance dictionaries after all data is loaded
+    balancesStore.createIncomeExpensesBalanceDictionary(
+      expenses.value, incomes.value, savings.value, countUnpaidExpenses.value
+    )
     balancesStore.createSavingsBalanceDictionary(savings.value)
     extendSavingGoalModel()
+
     loadingExpenses.value = false
     loadingIncomes.value = false
     loadingSavings.value = false
   } else if (reloadIncomeExpensesDictionary.value) {
-    balancesStore.createIncomeExpensesBalanceDictionary(expenses.value, incomes.value, savings.value, countUnpaidExpenses.value)
+    balancesStore.createIncomeExpensesBalanceDictionary(
+      expenses.value, incomes.value, savings.value, countUnpaidExpenses.value
+    )
     balancesStore.createSavingsBalanceDictionary(savings.value)
   }
 })
