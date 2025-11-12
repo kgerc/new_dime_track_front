@@ -139,10 +139,10 @@
     <q-tab-panels v-model="activeTab" animated class="q-px-md q-mt-md" :style="isDarkMode ? 'background-color: black;' : 'background-color: #f5f5f5;'">
       <q-tab-panel name="overview">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md summary-card" style="max-width: 600px; border-radius: 16px;">
+          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md summary-card" style="max-width: 1000px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('incomeVsExpenses') }}</div>
-              <apexchart :key="chartKey" type="bar" height="250" :options="barOptions" :series="barSeries" />
+              <apexchart :key="chartKey" type="bar" height="450" width="900" :options="barOptions" :series="barSeries" />
             </q-card-section>
           </q-card>
         </div>
@@ -150,17 +150,29 @@
 
       <q-tab-panel name="spending">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-6 q-pa-sm q-mb-md summary-card" style="max-width: 500px; border-radius: 16px;">
+          <q-card
+            class="col-12 col-md-6 q-pa-sm q-mb-md summary-card"
+            :style="{
+              maxWidth: viewMode === 'yearly' ? '900px' : '500px',
+              borderRadius: '16px'
+            }"
+          >
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('spendingBreakdown') }}</div>
-              <apexchart :key="chartKey" type="pie" height="250" :options="pieOptions" :series="pieSeries" />
+              <apexchart
+                :key="chartKey"
+                type="pie"
+                height="450"
+                :width="viewMode === 'yearly' ? 800 : 450"
+                :options="pieOptions"
+                :series="pieSeries"
+              />
             </q-card-section>
           </q-card>
-
-          <q-card class="col-12 col-md-6 q-pa-sm q-mb-md summary-card" style="max-width: 500px; border-radius: 16px;">
+          <q-card v-if="viewMode === 'monthly'" class="col-12 col-md-6 q-pa-sm q-mb-md summary-card" style="max-width: 500px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('expenseLimitTracking') }}</div>
-              <apexchart :key="chartKey" type="bar" height="250" :options="limitOptions" :series="limitSeries" />
+              <apexchart :key="chartKey" type="bar" height="450" width="450" :options="limitOptions" :series="limitSeries" />
             </q-card-section>
           </q-card>
         </div>
@@ -168,10 +180,10 @@
 
       <q-tab-panel name="income">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md summary-card" style="max-width: 600px; border-radius: 16px;">
+          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md summary-card" style="max-width: 1000px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('incomeCategories') }}</div>
-              <apexchart :key="chartKey" type="bar" height="250" :options="barOptions" :series="[barSeries[0]]" />
+              <apexchart :key="chartKey" type="bar" height="450" width="900" :options="barOptions" :series="[barSeries[0]]" />
             </q-card-section>
           </q-card>
         </div>
@@ -179,10 +191,10 @@
 
       <q-tab-panel name="savings">
         <div class="row justify-center">
-          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md summary-card" style="max-width: 600px; border-radius: 16px;">
+          <q-card class="col-12 col-md-7 q-pa-sm q-mb-md summary-card" style="max-width: 1000px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('savingsOverTime') }}</div>
-              <apexchart :key="chartKey" type="line" height="250" :options="lineOptions" :series="lineSeries" />
+              <apexchart :key="chartKey" type="line" height="450" width="900" :options="lineOptions" :series="lineSeries" />
             </q-card-section>
           </q-card>
         </div>
@@ -191,10 +203,10 @@
       <q-tab-panel name="balance">
         <!-- Balance Chart -->
         <div class="row justify-center">
-          <q-card class="col-12 col-md-9 q-pa-sm summary-card" style="max-width: 900px; border-radius: 16px;">
+          <q-card class="col-12 col-md-9 q-pa-sm summary-card" style="max-width: 1000px; border-radius: 16px;">
             <q-card-section>
               <div class="text-subtitle1 q-mb-sm">{{ t('balanceOverTime') }}</div>
-              <apexchart :key="chartKey" type="line" height="300" :options="balanceOptions" :series="balanceSeries" />
+              <apexchart :key="chartKey" type="line" height="450" width="900" :options="balanceOptions" :series="balanceSeries" />
             </q-card-section>
           </q-card>
         </div>
@@ -328,64 +340,71 @@ function yearlyExpenseSummary(dataRef) {
   dataRef.value.forEach(entry => {
     const d = new Date(entry.paymentDate)
     if (d.getFullYear() === selectedYear.value && (entry.isPaid || true)) {
-      summary[d.getMonth()] += entry.amount
+      summary[d.getMonth()] += roundToTwo(entry.amount)
     }
   })
-  return summary
+  return summary.map(roundToTwo)
 }
+
 function yearlyIncomesSummary(dataRef) {
   const summary = Array(12).fill(0)
   dataRef.value.forEach(entry => {
     const d = new Date(entry.incomeDate)
     if (d.getFullYear() === selectedYear.value && (entry.isReceived || true)) {
-      summary[d.getMonth()] += entry.amount
+      summary[d.getMonth()] += roundToTwo(entry.amount)
     }
   })
-  return summary
+  return summary.map(roundToTwo)
 }
+
 function yearlySavingsSummary(dataRef) {
   const contributions = dataRef.value.reduce((acc, goal) => acc.concat(goal.savingContributions || []), [])
   const summary = Array(12).fill(0)
   contributions.forEach(entry => {
     const d = new Date(entry.contributionDate)
     if (d.getFullYear() === selectedYear.value) {
-      summary[d.getMonth()] += entry.amount
+      summary[d.getMonth()] += roundToTwo(entry.amount)
     }
   })
-  return summary
+  return summary.map(roundToTwo)
 }
 
 // Monthly totals
 const totalIncomeForSelectedMonth = computed(() => {
-  if (viewMode.value === 'yearly') return yearlyIncomesSummary(incomes).reduce((a,b)=>a+b,0)
-  return incomes.value
-    .filter(i => {
-      const d = new Date(i.incomeDate)
-      return d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value
-    })
-    .reduce((acc, i) => acc + i.amount, 0)
+  if (viewMode.value === 'yearly') return roundToTwo(yearlyIncomesSummary(incomes).reduce((a,b)=>a+b,0))
+  return roundToTwo(
+    incomes.value
+      .filter(i => {
+        const d = new Date(i.incomeDate)
+        return d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value
+      })
+      .reduce((acc, i) => acc + roundToTwo(i.amount), 0)
+  )
 })
 
 const totalExpensesForSelectedMonth = computed(() => {
-  if (viewMode.value === 'yearly') return yearlyExpenseSummary(expenses).reduce((a,b)=>a+b,0)
-  return expenses.value
-    .filter(e => {
-      const d = new Date(e.paymentDate)
-      return d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value && (e.isPaid || true)
-    })
-    .reduce((acc, e) => acc + e.amount, 0)
+  if (viewMode.value === 'yearly') return roundToTwo(yearlyExpenseSummary(expenses).reduce((a,b)=>a+b,0))
+  return roundToTwo(
+    expenses.value
+      .filter(e => {
+        const d = new Date(e.paymentDate)
+        return d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value && (e.isPaid || true)
+      })
+      .reduce((acc, e) => acc + roundToTwo(e.amount), 0)
+  )
 })
 
 const totalSavingsForSelectedMonth = computed(() => {
-  if (viewMode.value === 'yearly') return yearlySavingsSummary(savings).reduce((a,b)=>a+b,0)
-  // monthly savings = contributions in selected month
+  if (viewMode.value === 'yearly') return roundToTwo(yearlySavingsSummary(savings).reduce((a,b)=>a+b,0))
   const contributions = savings.value.reduce((acc, goal) => acc.concat(goal.savingContributions || []), [])
-  return contributions
-    .filter(c => {
-      const d = new Date(c.contributionDate)
-      return d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value
-    })
-    .reduce((acc, c) => acc + c.amount, 0)
+  return roundToTwo(
+    contributions
+      .filter(c => {
+        const d = new Date(c.contributionDate)
+        return d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value
+      })
+      .reduce((acc, c) => acc + roundToTwo(c.amount), 0)
+  )
 })
 
 // formatted summary strings (keeps UI similar to original)
@@ -429,15 +448,16 @@ const incomeStabilityIndex = computed(() => {
   const total = totalIncomeForSelectedMonth.value
   const avg = averageRegularIncomePerMonth.value
   if (avg === 0) return 0
-  const ratio = total / avg
-  return Math.min(Math.round(ratio * 100), 100)
+  return total / avg;
 })
 
 // Display label as chip
 const incomeStabilityLabel = computed(() => {
   const total = totalIncomeForSelectedMonth.value
-  if (total === 0) return 0
-  return `${Math.round((averageRegularIncomePerMonth.value / total) * 100)}%`;
+  if (total === 0) return 0;
+  let ratio = total / averageRegularIncomePerMonth.value;
+  if (ratio > 1) ratio = 1;
+  return `${Math.round(ratio * 100)}%`;
 })
 
 // --- Growth Labels ---
@@ -501,19 +521,17 @@ const savingsPercent = computed(() => {
 const remainingToGoalsLabel = computed(() => {
   const goals = savings.value || []
   const remaining = goals.reduce((acc, g) => {
-    const goalAmount = g.amount || 0
-    // compute current amount from contributions
-    const contributed = (g.savingContributions || []).reduce((s,a)=>s + (a.amount || 0), 0)
+    const goalAmount = roundToTwo(g.amount || 0)
+    const contributed = (g.savingContributions || []).reduce((s,a)=>s + roundToTwo(a.amount || 0), 0)
     return acc + Math.max(0, goalAmount - contributed)
   }, 0)
-  return formatCurrency(remaining, 'PLN')
+  return formatCurrency(roundToTwo(remaining), 'PLN')
 })
 
 // --- Chart data ---
 
 // PIE: expense distribution by category
 const pieDataByCategoryMonthly = computed(() => {
-  // returns { labels: [...], series: [...] }
   const map = new Map()
   expenses.value.forEach(e => {
     const d = new Date(e.paymentDate)
@@ -522,14 +540,11 @@ const pieDataByCategoryMonthly = computed(() => {
       : (d.getFullYear() === selectedYear.value && d.getMonth() === selectedMonth.value)
     if (!isMatch) return
     const categoryName = (e.expenseCategory && e.expenseCategory.title) ? e.expenseCategory.title : t('other')
-    map.set(categoryName, (map.get(categoryName) || 0) + e.amount)
+    map.set(categoryName, roundToTwo((map.get(categoryName) || 0) + (roundToTwo(e.amount) * -1)))
   })
   const labels = Array.from(map.keys())
   const series = Array.from(map.values())
-  // ensure there's at least something to show
-  if (labels.length === 0) {
-    return { labels: [t('noData')], series: [0] }
-  }
+  if (labels.length === 0) return { labels: [t('noData')], series: [0] }
   return { labels, series }
 })
 
@@ -562,6 +577,12 @@ const barSeries = computed(() => {
 
 const barOptions = computed(() => ({
   chart: { stacked: false , foreColor: '#999' },
+    dataLabels: {
+    enabled: false // ❌ hides numbers directly on the pie slices
+  },
+  tooltip: {
+    enabled: true // ✅ keeps hover tooltips with numbers
+  },
   xaxis: {
     categories: viewMode.value === 'monthly'
       ? [monthNames.value[selectedMonth.value]]
@@ -640,13 +661,14 @@ const limitSeries = computed(() => {
         const categoryName = (e.expenseCategory && e.expenseCategory.title) ? e.expenseCategory.title : t('other')
         return categoryName === cat
       })
-      .reduce((acc, e) => acc + e.amount, 0)
-    return sum
+      .reduce((acc, e) => roundToTwo(acc) + roundToTwo(e.amount), 0)
+    debugger;
+    return roundToTwo(sum * -1);
   })
 
   // limits values (align with categories)
   const limitsVals = limitCategories.value.map(cat => {
-    const found = (currentYearLimits.value || []).find(l => (l.categoryName || l.category) === cat)
+    const found = (currentYearLimits.value || []).find(l => l.expenseCategory.title === cat)
     return found ? (found.limit || 0) : 0
   })
 
@@ -743,6 +765,11 @@ const nextPeriod = () => {
   } else {
     selectedYear.value++
   }
+}
+
+function roundToTwo(num) {
+  if (isNaN(num)) return 0
+  return Math.round((num + Number.EPSILON) * 100) / 100
 }
 
 </script>
