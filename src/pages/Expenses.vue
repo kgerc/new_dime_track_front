@@ -58,7 +58,7 @@
           <q-list style="min-width: 200px">
             <q-item>
               <q-item-section>
-                <div class="text-caption text-grey">Sort By</div>
+                <div class="text-caption" :class="isDarkMode ? 'text-grey-6' : 'text-grey-7'">Sort By</div>
                 <q-btn-toggle
                   v-model="sortKey"
                   spread
@@ -75,7 +75,7 @@
 
             <q-item>
               <q-item-section>
-                <div class="text-caption text-grey">Direction</div>
+                <div class="text-caption" :class="isDarkMode ? 'text-grey-6' : 'text-grey-7'">Direction</div>
                 <q-btn-toggle
                   v-model="sortDirection"
                   spread
@@ -129,80 +129,91 @@
     </div>
 
     <!-- Expenses List -->
-    <div class="row q-col-gutter-lg" style="margin-top: -20px;margin-left: 2px;">
+    <div class="row q-col-gutter-lg q-px-md" style="margin-top: -10px;">
       <div class="col">
-        <q-list bordered separator>
+        <div class="expenses-container">
           <q-slide-item
             v-for="entry in pagedExpenses"
             :key="entry.id"
             @right="removeEntry(entry.id)"
             right-color="negative"
+            class="expense-slide-item"
           >
             <template v-slot:right>
               <q-icon name="delete" />
             </template>
-            <q-item clickable @click="openDialog(entry)">
-              <q-item-section>
-                <div class="row items-center">
-                  <q-icon
-                    :name="getExpenseIcon(entry, currentDate, currentMonth, currentYear)"
-                    :color="getExpenseIconColor(entry, currentDate, currentMonth, currentYear)"
-                    class="q-mr-sm"
-                    size="sm"
+            <q-card class="expense-card" clickable @click="openDialog(entry)">
+              <q-item class="expense-item">
+                <!-- Status Dot -->
+                <q-item-section avatar style="min-width: 24px;">
+                  <div
+                    class="status-dot"
+                    :class="entry.isPaid ? 'paid' : 'unpaid'"
                   >
-                  <q-tooltip anchor="top middle" self="bottom middle">
-                    <div class="text-caption">{{ entry.isPaid ? t('paid') : t('unpaid') }}</div>
-                  </q-tooltip>
-                  </q-icon>
-                  <div>
-                    <div class="text-weight-bold">{{ entry.title }}</div>
-                    <div class="text-grey-5 text-caption">
-                      {{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}
-                      <q-chip
-                      :label="entry.expenseCategory?.title ?? t('noCategory')"
-                      :text-color="entry.expenseCategory?.title || isDarkMode ? 'white' : 'black'"
-                      :style="{ backgroundColor: entry.expenseCategory?.color ?? (isDarkMode ? '#424242' : 'lightgrey')}"
-                      size='sm'
-                    >
-                    </q-chip>
-                    </div>
+                    <q-tooltip anchor="top middle" self="bottom middle">
+                      <div class="text-caption">{{ entry.isPaid ? t('paid') : t('unpaid') }}</div>
+                    </q-tooltip>
                   </div>
-                </div>
-              </q-item-section>
+                </q-item-section>
 
-              <!-- Notes Icon with Tooltip -->
-              <q-item-section side class="q-mr-xs">
-                <q-icon
-                  v-if="entry.notes"
-                  name="description"
-                  size="sm"
-                  class="cursor-pointer"
-                  color="grey-6"
-                >
-                  <q-tooltip v-if="entry.notes" anchor="top middle" self="bottom middle">
-                    <div class="text-caption">{{ entry.notes }}</div>
-                  </q-tooltip>
-                </q-icon>
-              </q-item-section>
-              <q-item-section side class="text-weight-bold text-negative fixed-width">
-                {{ formatCurrency(entry.amount, entry.currency) }}
-              </q-item-section>
-            </q-item>
+                <q-item-section>
+                  <q-item-label class="expense-title">
+                    {{ entry.title }}
+                  </q-item-label>
+                  <q-item-label caption class="expense-meta">
+                    <span class="expense-date">{{ format(new Date(entry.paymentDate), 'dd.MM.yyyy') }}</span>
+                    <q-chip
+                      :label="entry.expenseCategory?.title ?? t('noCategory')"
+                      class="category-chip"
+                      :style="{
+                        background: entry.expenseCategory?.color
+                          ? `rgba(${hexToRgb(entry.expenseCategory.color)}, 0.15)`
+                          : (isDarkMode ? 'rgba(66, 66, 66, 0.3)' : 'rgba(189, 189, 189, 0.2)'),
+                        color: entry.expenseCategory?.color ?? (isDarkMode ? '#B0B0B0' : '#757575'),
+                        borderColor: entry.expenseCategory?.color ?? (isDarkMode ? '#424242' : '#BDBDBD')
+                      }"
+                    />
+                  </q-item-label>
+                </q-item-section>
+
+                <!-- Notes Icon -->
+                <q-item-section side class="q-mr-sm" v-if="entry.notes">
+                  <q-icon
+                    name="description"
+                    size="sm"
+                    class="cursor-pointer notes-icon"
+                    :color="isDarkMode ? 'grey-6' : 'grey-5'"
+                  >
+                    <q-tooltip anchor="top middle" self="bottom middle">
+                      <div class="text-caption">{{ entry.notes }}</div>
+                    </q-tooltip>
+                  </q-icon>
+                </q-item-section>
+
+                <!-- Amount -->
+                <q-item-section side class="expense-amount">
+                  {{ formatCurrency(entry.amount, entry.currency) }}
+                </q-item-section>
+              </q-item>
+            </q-card>
           </q-slide-item>
-        </q-list>
+        </div>
+
         <!-- No Expenses Message -->
-        <div v-if="filteredAndSortedExpenses.length === 0 && !loadingExpenses" class="q-pa-md flex flex-center column" style="margin-left: 350px;margin-top: 100px;">
-          <q-icon name="shopping_cart" size="4em" color="grey-6" />
-          <div class="text-h6 text-grey-6 q-mt-md">{{ t('noExpensesThisMonth') }}</div>
+        <div v-if="filteredAndSortedExpenses.length === 0 && !loadingExpenses" class="empty-state">
+          <q-icon name="shopping_cart" size="4em" :color="isDarkMode ? 'grey-7' : 'grey-5'" />
+          <div class="text-h6 q-mt-md" :class="isDarkMode ? 'text-grey-6' : 'text-grey-6'">
+            {{ t('noExpensesThisMonth') }}
+          </div>
         </div>
       </div>
+
       <div class="col-shrink">
         <ExpenseLimitsPanel
           :limits="currentMonthLimits" :month-name="`${currentMonthName} ${selectedYear}`"
           :current-month="currentMonth" :selected-month="selectedMonth"
         />
       </div>
-
     </div>
     <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses">
       <q-spinner
@@ -242,7 +253,7 @@
       </div>
     </div>
 
-    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary justify-between" :class="formClasses" style="margin-left: -1px;">
+    <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary items-center" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" :label="t('newExpense')" color="white" flat @click="openNewExpenseDialog" class="q-mr-sm" />
           <q-btn icon="add_box" :label="t('newCategory')" color="white" flat @click="isCategoryDialogOpen = true" class="q-mr-sm" />
@@ -251,17 +262,15 @@
           <q-btn icon="filter_list" :label="t('setExpenseLimit')" color="white" flat @click="isLimitDialogOpen = true" class="q-mr-sm" />
           <q-btn icon="list" :label="`${t('limits')} (${expenseLimitsCount})`" color="white" flat @click="isLimitsListDialogOpen = true"  class="q-mr-sm" />
         </div>
-        <div class="row items-center justify-end col-auto" style="margin-bottom: -5px;">
-          <q-input
-            v-model="searchQuery"
-            outlined
-            dense
-            :class="searchClasses"
-            style="width: 400px;"
-            :placeholder="t('searchExpenses')"
-            class="q-mb-sm"
-          />
-        </div>
+        <q-space />
+        <q-input
+          v-model="searchQuery"
+          outlined
+          dense
+          :class="searchClasses"
+          style="width: 200px;"
+          :placeholder="t('searchExpenses')"
+        />
       </q-form>
   </q-footer>
   </q-page>
@@ -279,9 +288,17 @@ import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
 import { amountColor } from 'src/helpers/amountColor.js'
-import { getExpenseIcon, getExpenseIconColor, getIncomingUnpaidExpenses } from 'src/helpers/expenseUtils.js'
+import { getIncomingUnpaidExpenses } from 'src/helpers/expenseUtils.js'
 import { format } from 'date-fns'
 import { debounce } from 'lodash';
+
+// Helper function to convert hex to RGB
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : '117, 117, 117';
+}
 
 import ExpenseDialog from 'src/components/Expenses/ExpenseDialog.vue'
 import ExpenseCategoryDialog from 'src/components/Expenses/ExpenseCategoryDialog.vue'
@@ -667,7 +684,7 @@ function checkAndNotifyUpcomingUnpaidExpenses() {
 
 // Pagination and page control
 const currentPage = ref(1)
-const itemsPerPage = 10  // Number of entries per page
+const itemsPerPage = 5  // Number of entries per page
 
 // Max page calculation
 const maxPage = computed(() => {
@@ -711,3 +728,179 @@ const categoryTitles = computed(() => {
   return categories.value.map(cat => cat.title);
 });
 </script>
+
+<style scoped lang="scss">
+/* Expenses Container */
+.expenses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+}
+
+.expense-slide-item {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Expense Card */
+.expense-card {
+  background: #FAFAFA;
+  border-radius: 12px;
+  border: 1px solid #E8E8E8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &:hover {
+    background: #FFFFFF;
+    border-color: #D0D0D0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+}
+
+.expense-item {
+  padding: 16px 20px;
+  min-height: auto;
+
+  .q-item__section--avatar {
+    padding-right: 12px;
+  }
+
+  .q-item__section--side {
+    padding-left: 12px;
+  }
+}
+
+/* Status Dot */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.3);
+  }
+
+  &.paid {
+    background: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+  }
+
+  &.unpaid {
+    background: #E0E0E0;
+    border: 2px solid #BDBDBD;
+  }
+}
+
+/* Expense Title */
+.expense-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #263238;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+/* Expense Meta (date + category chip) */
+.expense-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.expense-date {
+  font-size: 13px;
+  color: #757575;
+}
+
+/* Category Chip */
+.category-chip {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+  height: 24px;
+}
+
+/* Notes Icon */
+.notes-icon {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+/* Expense Amount */
+.expense-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #EF5350;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: right;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+/* Dark Mode Overrides */
+body.body--dark {
+  .expense-card {
+    background: #2C2C2C;
+    border-color: #3A3A3A;
+
+    &:hover {
+      border-color: #4A4A4A;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .expense-title {
+    color: #E0E0E0;
+  }
+
+  .expense-date {
+    color: #B0B0B0;
+  }
+
+  .expense-amount {
+    color: #EF5350;
+  }
+
+  .status-dot {
+    &.paid {
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+    }
+
+    &.unpaid {
+      background: #424242;
+      border-color: #616161;
+    }
+  }
+
+  .category-chip {
+    border-width: 1px;
+  }
+}
+
+/* Fixed width for amount column */
+.fixed-width {
+  min-width: 120px;
+}
+</style>

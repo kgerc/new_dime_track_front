@@ -12,14 +12,27 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary   : #f08417;
-$secondary : #26A69A;
-$accent    : #9C27B0;
+// Blue-Green Palette (YNAB-inspired)
+$primary   : #1E88E5;  // Bright Blue - main action color
+$primary-light: #42A5F5;  // Light Blue - hover states
+$primary-dark: #1565C0;   // Dark Blue - pressed states
 
-$dark      : #1D1D1D;
-$dark-page : #121212;
+$secondary : #26A69A;  // Teal - secondary actions
+$accent    : #66BB6A;  // Green - accents, success
 
-$positive  : #7eb004;
-$negative  : #d73f01;
-$info      : #31CCEC;
-$warning   : #F2C037;
+// Semantic Colors
+$positive  : #4CAF50;  // Green - income, savings, success
+$negative  : #EF5350;  // Red - expenses, errors
+$info      : #29B6F6;  // Light Blue - information
+$warning   : #FFA726;  // Orange - warnings
+
+// Dark Mode
+$dark      : #263238;  // Dark Blue Gray - main text in light mode
+$dark-page : #121212;  // Dark mode background
+
+// Neutrals for Light Mode
+$grey-1    : #F5F5F5;  // Lightest - app background (stonowany)
+$grey-2    : #EEEEEE;  // Light - card backgrounds (stonowany)
+$grey-3    : #E0E0E0;  // Medium-light - separators
+$grey-6    : #757575;  // Medium-dark - secondary text
+$grey-8    : #424242;  // Dark - dark elements

@@ -1,82 +1,124 @@
 <template>
-<q-dialog v-model="isOpen">
-  <q-card style="width: 400px">
-    <q-card-section class="row justify-between items-center">
-      <div class="text-h6">{{ isNewExpense ? t('newExpense') : t('editExpense') }}</div>
-
-      <!-- Currency Dropdown -->
-      <q-select
-        v-model="localExpense.currency"
-        :options="currencyOptions"
-        dense
-        outlined
-        style="min-width: 100px;"
-      />
+<q-dialog v-model="isOpen" class="modern-dialog">
+  <q-card class="dialog-card">
+    <!-- Header -->
+    <q-card-section class="dialog-header">
+      <div class="header-content">
+        <h6>{{ isNewExpense ? t('newExpense') : t('editExpense') }}</h6>
+        <q-select
+          v-model="localExpense.currency"
+          :options="currencyOptions"
+          dense
+          outlined
+          class="currency-select"
+        />
+      </div>
     </q-card-section>
 
-    <q-card-section class="q-gutter-md">
-      <q-input v-model="localExpense.title" :label="t('title')" outlined dense />
-      <q-input v-model="localExpense.notes" :label="t('notes')" outlined dense />
-      <q-input
-        v-model.number="localExpense.amount"
-        :label="t('amount')"
-        type="number"
-        outlined
-        dense
-        :prefix="getCurrencySymbol(localExpense.currency)"
-      />
-      <q-select
-        v-if="isNewExpense"
-        v-model="localExpense.recurrenceFrequency"
-        :options="recurrenceOptions"
-        :label="t('recurrence')"
-        outlined
-        dense
-      />
-      <q-input
-        v-if="localExpense.recurrenceFrequency !== 'None'"
-        v-model.number="localExpense.recurrence"
-        :label="t('repeatCount')"
-        type="number"
-        outlined
-        dense
-      />
-      <q-input
-        outlined
-        dense
-        :label="t('paymentDate')"
-        v-model="localExpense.paymentDate"
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-              <q-date
-                v-model="localExpense.paymentDate"
-                mask="YYYY-MM-DD"
-                :locale="enLocale"
-                bordered
-                minimal
-              />
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
-      <q-toggle v-model="localExpense.isPaid" :label="t('isPaid')" />
+    <q-separator />
 
-      <q-select
-        v-model="categoryTitle"
-        :options="categoryTitles"
-        :label="t('category')"
-        outlined
-        dense
-      />
+    <!-- Content -->
+    <q-card-section class="dialog-content">
+      <div class="form-field">
+        <label>{{ t('title') }}</label>
+        <q-input v-model="localExpense.title" outlined dense />
+      </div>
+
+      <div class="form-field">
+        <label>{{ t('notes') }}</label>
+        <q-input v-model="localExpense.notes" outlined dense type="textarea" rows="2" />
+      </div>
+
+      <div class="form-field">
+        <label>{{ t('amount') }}</label>
+        <q-input
+          v-model.number="localExpense.amount"
+          type="number"
+          outlined
+          dense
+          :prefix="getCurrencySymbol(localExpense.currency)"
+        />
+      </div>
+
+      <div class="form-field" v-if="isNewExpense">
+        <label>{{ t('recurrence') }}</label>
+        <q-select
+          v-model="localExpense.recurrenceFrequency"
+          :options="recurrenceOptions"
+          outlined
+          dense
+        />
+      </div>
+
+      <div class="form-field" v-if="localExpense.recurrenceFrequency !== 'None'">
+        <label>{{ t('repeatCount') }}</label>
+        <q-input
+          v-model.number="localExpense.recurrence"
+          type="number"
+          outlined
+          dense
+        />
+      </div>
+
+      <div class="form-field">
+        <label>{{ t('paymentDate') }}</label>
+        <q-input
+          outlined
+          dense
+          v-model="localExpense.paymentDate"
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date
+                  v-model="localExpense.paymentDate"
+                  mask="YYYY-MM-DD"
+                  :locale="enLocale"
+                  bordered
+                  minimal
+                />
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+      </div>
+
+      <div class="form-field">
+        <label>{{ t('category') }}</label>
+        <q-select
+          v-model="categoryTitle"
+          :options="categoryTitles"
+          outlined
+          dense
+        />
+      </div>
+
+      <div class="form-field toggle-field">
+        <q-toggle v-model="localExpense.isPaid" :label="t('isPaid')" color="positive" />
+      </div>
     </q-card-section>
 
-    <q-card-actions align="right">
-      <q-btn flat :label="t('cancel')" color="grey" @click="closeDialog" />
-      <q-space />  <!-- This pushes the next buttons to the right -->
-      <q-btn v-if="!isNewExpense" flat :label="t('moveToSavings')" color="primary" @click="moveExpenseToSavings" />
-      <q-btn flat :label="t('save')" color="blue" @click="saveChanges" />
+    <q-separator />
+
+    <!-- Actions -->
+    <q-card-actions class="dialog-actions">
+      <q-btn
+        :label="t('cancel')"
+        class="btn-secondary"
+        @click="closeDialog"
+      />
+      <q-space />
+      <q-btn
+        v-if="!isNewExpense"
+        :label="t('moveToSavings')"
+        class="btn-tertiary"
+        @click="moveExpenseToSavings"
+      />
+      <q-btn
+        :label="t('save')"
+        class="btn-primary"
+        @click="saveChanges"
+      />
     </q-card-actions>
   </q-card>
 </q-dialog>
@@ -161,3 +203,190 @@ function moveExpenseToSavings() {
 
 const recurrenceOptions = ['None', 'Monthly', 'Quarterly', 'Yearly'];
 </script>
+
+<style scoped lang="scss">
+/* Modern Dialog Styling */
+.modern-dialog {
+  :deep(.q-dialog__backdrop) {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+  }
+}
+
+.dialog-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  max-width: 480px;
+  width: 100%;
+}
+
+/* Header */
+.dialog-header {
+  padding: 24px 24px 16px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  h6 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: #263238;
+  }
+
+  .currency-select {
+    min-width: 100px;
+  }
+}
+
+/* Content */
+.dialog-content {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.form-field {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #757575;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  :deep(.q-field) {
+    .q-field__control {
+      border-radius: 8px;
+      min-height: 48px;
+
+      &:hover {
+        border-color: #BDBDBD;
+      }
+    }
+
+    &.q-field--focused .q-field__control {
+      border-color: #1E88E5;
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+    }
+  }
+
+  &.toggle-field {
+    padding-top: 8px;
+
+    :deep(.q-toggle) {
+      font-size: 15px;
+
+      .q-toggle__label {
+        color: #263238;
+      }
+    }
+  }
+}
+
+/* Actions */
+.dialog-actions {
+  padding: 16px 24px 24px;
+  gap: 12px;
+}
+
+.btn-primary {
+  background: #1E88E5;
+  color: white;
+  border-radius: 8px;
+  min-width: 100px;
+  height: 40px;
+  font-weight: 500;
+  text-transform: none;
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.25);
+
+  &:hover {
+    background: #1565C0;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.35);
+  }
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #757575;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  min-width: 100px;
+  height: 40px;
+  text-transform: none;
+
+  &:hover {
+    background: #FAFAFA;
+    border-color: #BDBDBD;
+  }
+}
+
+.btn-tertiary {
+  background: transparent;
+  color: #26A69A;
+  border: 1px solid #26A69A;
+  border-radius: 8px;
+  min-width: 120px;
+  height: 40px;
+  text-transform: none;
+
+  &:hover {
+    background: rgba(38, 166, 154, 0.08);
+  }
+}
+
+/* Dark Mode */
+body.body--dark {
+  .dialog-card {
+    background: #1E1E1E;
+  }
+
+  .dialog-header h6 {
+    color: #FFFFFF;
+  }
+
+  .form-field label {
+    color: #B0B0B0;
+  }
+
+  .form-field.toggle-field :deep(.q-toggle__label) {
+    color: #E0E0E0;
+  }
+
+  .btn-secondary {
+    color: #B0B0B0;
+    border-color: #3A3A3A;
+
+    &:hover {
+      background: #2C2C2C;
+      border-color: #4A4A4A;
+    }
+  }
+
+  :deep(.q-field__control) {
+    background: #2C2C2C;
+    border-color: #3A3A3A;
+
+    &:hover {
+      border-color: #4A4A4A;
+    }
+  }
+
+  :deep(.q-field--focused .q-field__control) {
+    border-color: #1E88E5;
+    background: #252525;
+  }
+}
+</style>

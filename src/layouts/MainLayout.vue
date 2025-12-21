@@ -81,24 +81,23 @@
       @mouseleave="miniState = true"
       mini-to-overlay
       bordered
-      :width="250"
-      :breakpoint="767"
-
     >
       <q-list style="margin-top: 5px;">
         <q-item v-for="link in navLinks" :key="link.title" clickable @click="navigate(link)">
           <q-item-section avatar>
-            <q-icon :name="link.icon" style="margin-bottom: 2px;" :color="isDarkMode ? 'lightgray' : 'white'"/>
+            <q-icon :name="link.icon" :color="isDarkMode ? 'lightgray' : 'white'"/>
           </q-item-section>
           <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'">{{ link.title }}</q-item-section>
         </q-item>
       </q-list>
       <!-- Icon at the bottom -->
-      <q-item clickable class="absolute-bottom">
+      <q-item clickable class="absolute-bottom" @click="logout">
         <q-item-section avatar>
           <q-icon name="logout" :color="isDarkMode ? 'lightgray' : 'white'"/>
         </q-item-section>
-        <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'" @click="logout">Logout</q-item-section>
+        <q-item-section :style="isDarkMode ? 'color: lightgray;' : 'color: white;'">
+          Logout
+        </q-item-section>
       </q-item>
     </q-drawer>
 
@@ -138,11 +137,9 @@ const leftDrawerOpen = ref(false);
 const miniState = ref(true);
 const languageMenu = ref(false);
 const navLinks = ref([
-  { title: t('overview'), to: '/', icon: 'home' },
-  { title: t('savings'), to: '/savings', icon: 'savings' },
+  { title: t('statistics'), to: '/statistics', icon: 'insert_chart' },
   { title: t('expenses'), to: '/expenses', icon: 'credit_card' },
   { title: t('incomes'), to: '/incomes', icon: 'attach_money' },
-  { title: t('statistics'), to: '/statistics', icon: 'insert_chart' },
   { title: t('uploadTansactions'), to: '/import_transactions', icon: 'upload' }
 ]);
 
@@ -163,7 +160,7 @@ const toggleLanguage = (lang) => {
 
 const footerClasses = computed(() =>  isDarkMode.value ? 'bg-dark text-white' : 'bg-primary');
 
-const headerClasses = computed(() =>  isDarkMode.value ? 'bg-grey-9' : 'bg-primary');
+const headerClasses = computed(() =>  isDarkMode.value ? 'bg-grey-9' : 'bg-white shadow-1');
 
 const navigate = (link) => {
   router.push(link.to);
@@ -178,6 +175,125 @@ function logout() {
 
 </script>
 
-<style scoped>
-/* No absolute positioning needed; Quasar’s "view" prop pins the header automatically. */
+<style scoped lang="scss">
+/* Modern Design - Blue-Green Theme */
+
+// Header styling
+.q-header {
+  &.bg-white {
+    color: #263238 !important;
+
+    .q-toolbar-title {
+      color: #263238;
+      font-weight: 600;
+    }
+
+    .q-avatar {
+      background-color: #1E88E5 !important;
+    }
+
+    .q-btn {
+      color: #757575;
+
+      &:hover {
+        color: #1E88E5;
+      }
+    }
+  }
+}
+
+// Drawer modern styling
+// Drawer modern styling
+.q-drawer {
+  .q-list {
+    padding: 16px 0;
+  }
+
+  .q-item {
+    padding: 12px 16px !important; // Stały padding całego wiersza
+    min-height: 50px;
+    margin: 4px 0;
+    transition: background 0.2s ease;
+
+    // Sekcja ikony - to tutaj dzieje się "skakanie"
+    .q-item__section--avatar {
+      padding-right: 0 !important;
+      min-width: 24px !important; // Szerokość samej ikony
+      max-width: 24px !important;
+      margin-right: 20px !important; // Odstęp między ikoną a tekstem
+      flex-shrink: 0 !important;
+      justify-content: flex-start !important;
+      color: inherit;
+    }
+  }
+
+  // KLUCZ: Wymuszenie identycznego układu w trybie MINI
+  &.q-drawer--mini {
+    .q-item {
+      padding: 12px 16px !important; // Musi być taki sam jak wyżej
+
+      .q-item__section--avatar {
+        margin-right: 0 !important; // W trybie mini nie ma tekstu, więc margines nie przeszkadza
+        justify-content: flex-start !important;
+      }
+    }
+  }
+
+  // Naprawa animacji - Quasar dodaje tę klasę podczas przechodzenia między stanami
+  &.q-drawer--mini-animate {
+    .q-item__section--avatar {
+      transition: none !important; // Wyłączamy animację samej sekcji ikony, by nie "płynęła"
+    }
+  }
+}
+
+// Globalne nadpisanie dla pewności (poza scoped, jeśli to konieczne)
+.q-drawer--mini .q-item__section--main {
+  display: none !important; // Ukrywamy tekst natychmiast, by nie rozpychał ikony
+}
+
+// Dark mode drawer
+body.body--dark .q-drawer {
+  .q-item {
+    &.q-router-link--exact-active {
+      background: #1E3A5F !important;
+      color: #42A5F5 !important;
+
+      .q-icon {
+        color: #42A5F5 !important;
+      }
+    }
+
+    &:hover:not(.q-router-link--exact-active) {
+      background: #2C2C2C;
+
+      .q-icon {
+        color: #42A5F5;
+      }
+    }
+  }
+}
+
+// Language menu styling
+.q-menu {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  .q-item {
+    border-radius: 8px;
+    margin: 4px;
+
+    &.q-item--active {
+      background: #E3F2FD;
+      color: #1E88E5;
+    }
+  }
+}
+
+body.body--dark .q-menu {
+  .q-item.q-item--active {
+    background: #1E3A5F;
+    color: #42A5F5;
+  }
+}
 </style>

@@ -3,7 +3,7 @@
     <q-card class="upload-card">
       <q-card-section>
         <h5 class="text-h5">{{ t('uploadTitle') }}</h5>
-        <p class="text-caption text-grey">
+        <p class="text-caption" :class="isDarkMode ? 'text-grey-6' : 'text-grey-7'">
           {{ t('uploadSubtitle') }}
         </p>
       </q-card-section>

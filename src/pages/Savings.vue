@@ -33,84 +33,98 @@
       <q-icon name="filter_alt" size="md" style="margin-right:25px;" color="primary"/>
     </div>
 
-    <div class="q-pa-md" style="margin-top: -20px;">
-      <q-list bordered separator v-if="!loadingSavings">
-        <q-item-label v-if="currentMonthEntries.length > 0" header>{{ t("savings") }}</q-item-label>
-
+    <div class="q-pa-md savings-container" style="margin-top: -20px;">
+      <q-list v-if="!loadingSavings" class="savings-list">
         <template v-for="entry in currentMonthEntries" :key="entry.id">
-          <q-slide-item @right="removeSavingGoal(entry.id)">
+          <q-slide-item @right="removeSavingGoal(entry.id)" class="saving-goal-item">
             <template v-slot:right>
               <q-btn flat dense color="negative" icon="delete" @click="removeSavingGoal(entry.id)" />
             </template>
 
-            <q-item clickable @click="toggleExpand(entry.id)">
-              <q-item-section>
-                <div class="row items-center">
-                  <q-icon
-                    :name="getSavingStatusIcon(entry)"
-                    :color="getSavingStatusColor(entry)"
-                    class="q-mr-sm" size="sm"
-                  />
-                  <div>
-                    <q-item-label class="text-weight-bold">{{ entry.title }}</q-item-label>
-                    <q-item-label caption v-if="entry.amount">
-                      {{ formatCurrency(entry.currentAmount, entry.currency, true) }} / {{ formatCurrency(entry.amount, entry.currency, true) }}
-                    </q-item-label>
-                    <q-item-label caption v-else>
-                      {{ formatCurrency(entry.currentAmount, entry.currency, true) }} ({{ t("noGoal") }})
-                    </q-item-label>
-                    <q-linear-progress
-                      v-if="entry.amount"
-                      :value="getProgress(entry)"
-                      :color="getProgressColor(entry)"
-                      class="q-mt-xs"
-                      rounded
-                    />
+            <q-card class="saving-goal-card" :class="{ 'expanded': expandedSavingId === entry.id }">
+              <q-card-section @click="toggleExpand(entry.id)" class="cursor-pointer">
+                <div class="goal-header">
+                  <div class="goal-info">
+                    <div class="goal-title-row">
+                      <q-badge
+                        :color="getStatusBadgeColor(entry)"
+                        :label="getStatusLabel(entry)"
+                        class="status-badge"
+                      />
+                      <h6 class="goal-title">{{ entry.title }}</h6>
+                    </div>
+                    <div class="goal-amounts">
+                      <span class="current-amount">{{ formatCurrency(entry.currentAmount, entry.currency, true) }}</span>
+                      <span class="separator" v-if="entry.amount">/</span>
+                      <span class="target-amount" v-if="entry.amount">{{ formatCurrency(entry.amount, entry.currency, true) }}</span>
+                      <span class="no-goal" v-else>({{ t("noGoal") }})</span>
+                    </div>
                   </div>
-                  <q-icon
-                    v-if="expandedSavingId === entry.id"
-                    name="edit"
-                    size="sm"
-                    color="primary"
-                    style="margin-left: 12px;"
-                    @click.stop="openDialog(entry)"
-                    clickable
-                  />
+                  <div class="goal-month-change">
+                    <div class="change-label">{{ t('thisMonth') }}</div>
+                    <div class="change-amount text-secondary">
+                      {{ formatCurrency(entry.currentMonthAmountChange, entry.currency) }}
+                    </div>
+                  </div>
                 </div>
-              </q-item-section>
 
-              <q-item-section side class="text-weight-bold text-positive">
-                {{ formatCurrency(entry.currentMonthAmountChange, entry.currency) }}
-              </q-item-section>
-            </q-item>
+                <div class="progress-section" v-if="entry.amount">
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-track">
+                      <div
+                        class="progress-bar-fill"
+                        :class="getProgressClass(entry)"
+                        :style="{ width: `${getProgress(entry) * 100}%` }"
+                      />
+                    </div>
+                  </div>
+                  <div class="progress-percentage">
+                    {{ Math.round(getProgress(entry) * 100) }}%
+                  </div>
+                </div>
+
+                <div class="goal-actions" v-if="expandedSavingId === entry.id">
+                  <q-btn
+                    flat
+                    dense
+                    icon="edit"
+                    color="primary"
+                    size="sm"
+                    @click.stop="openDialog(entry)"
+                  >
+                    <q-tooltip>{{ t('edit') }}</q-tooltip>
+                  </q-btn>
+                </div>
+              </q-card-section>
+
+              <q-slide-transition>
+                <div v-if="expandedSavingId === entry.id">
+                  <q-item style="margin-left: 5px;max-width: 80px;">
+                    <q-item-section style="margin-bottom: 8px;">
+                      <q-icon name="subdirectory_arrow_right" size="sm"/>
+                    </q-item-section>
+                    <q-item-section style="margin-left: -25px;">
+                      <q-item-label header>{{ t("contributions") }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-list dense>
+                    <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id"
+                      style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)">
+                      <q-item-section>
+                        <q-item-label>
+                          {{ formatCurrency(contribution.amount, contribution.currency) }}
+                          <span :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">({{ formatDate(contribution.contributionDate) }})</span>
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item v-if="!isAnyGoalContribution(entry.id)" style="margin-left: 33px;">
+                      <q-item-section>{{ t("noContributionsYet") }}</q-item-section>
+                    </q-item>
+                  </q-list>
+                </div>
+              </q-slide-transition>
+            </q-card>
           </q-slide-item>
-
-          <q-slide-transition>
-            <div v-if="expandedSavingId === entry.id">
-              <q-item style="margin-left: 5px;max-width: 80px;">
-                <q-item-section style="margin-bottom: 8px;">
-                  <q-icon name="subdirectory_arrow_right" size="sm"/>
-                </q-item-section>
-                <q-item-section style="margin-left: -25px;">
-                  <q-item-label header>{{ t("contributions") }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-list dense>
-                <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id"
-                  style="margin-left: 35px;" clickable @click="openSavingContributionDialog(contribution)">
-                  <q-item-section>
-                    <q-item-label>
-                      {{ formatCurrency(contribution.amount, contribution.currency) }}
-                      <span class="text-grey-7">({{ formatDate(contribution.contributionDate) }})</span>
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-item v-if="!isAnyGoalContribution(entry.id)" style="margin-left: 33px;">
-                  <q-item-section>{{ t("noContributionsYet") }}</q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-          </q-slide-transition>
         </template>
       </q-list>
     </div>
@@ -156,8 +170,8 @@
     </div>
 
     <div v-if="currentMonthEntries.length === 0 && !loadingSavings" class="q-pa-md flex flex-center column" style="margin-right: 30px;">
-      <q-icon name="savings" size="4em" color="grey-6" />
-      <div class="text-h6 text-grey-6 q-mt-md">{{ t('noSavingsThisMonth') }}</div>
+      <q-icon name="savings" size="4em" :color="isDarkMode ? 'grey-7' : 'grey-5'" />
+      <div class="text-h6 q-mt-md" :class="isDarkMode ? 'text-grey-6' : 'text-grey-6'">{{ t('noSavingsThisMonth') }}</div>
     </div>
 
     <SavingGoalDialog
@@ -418,6 +432,24 @@ function getProgressColor(saving) {
         : saving.status === "behind" ? "red"
         : "orange";
 }
+
+function getProgressClass(saving) {
+  return saving.status === "completed" ? "completed"
+        : saving.status === "behind" ? "behind"
+        : "on-track";
+}
+
+function getStatusBadgeColor(saving) {
+  return saving.status === "completed" ? "positive"
+        : saving.status === "behind" ? "negative"
+        : "secondary";
+}
+
+function getStatusLabel(saving) {
+  return saving.status === "completed" ? t("completed")
+        : saving.status === "behind" ? t("behind")
+        : t("onTrack");
+}
 function toggleExpand(savingId) {
   expandedSavingId.value = expandedSavingId.value === savingId ? null : savingId;
 }
@@ -506,3 +538,266 @@ const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary'
 
 const searchClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-white');
 </script>
+
+<style scoped lang="scss">
+// Modern Savings Page Styling
+
+.savings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.savings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saving-goal-item {
+  margin-bottom: 0;
+}
+
+.saving-goal-card {
+  border-radius: 16px;
+  border: 1px solid #F0F0F0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &:hover {
+    border-color: #26A69A;
+    box-shadow: 0 4px 12px rgba(38, 166, 154, 0.15);
+  }
+
+  &.expanded {
+    border-color: #26A69A;
+  }
+
+  .q-card__section {
+    padding: 20px;
+  }
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.goal-info {
+  flex: 1;
+}
+
+.goal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.goal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #263238;
+  margin: 0;
+}
+
+.goal-amounts {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 15px;
+  color: #757575;
+
+  .current-amount {
+    color: #26A69A;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .separator {
+    color: #BDBDBD;
+  }
+
+  .target-amount {
+    color: #757575;
+  }
+
+  .no-goal {
+    color: #BDBDBD;
+    font-style: italic;
+  }
+}
+
+.goal-month-change {
+  text-align: right;
+  min-width: 120px;
+
+  .change-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #757575;
+    margin-bottom: 4px;
+  }
+
+  .change-amount {
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.progress-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.progress-bar-container {
+  flex: 1;
+}
+
+.progress-bar-track {
+  height: 12px;
+  border-radius: 6px;
+  background: #F0F0F0;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, #26A69A 0%, #4DB6AC 100%);
+
+  &.completed {
+    background: linear-gradient(90deg, #4CAF50 0%, #66BB6A 100%);
+  }
+
+  &.behind {
+    background: linear-gradient(90deg, #FFA726 0%, #FFB74D 100%);
+  }
+
+  &.on-track {
+    background: linear-gradient(90deg, #26A69A 0%, #4DB6AC 100%);
+  }
+}
+
+.progress-percentage {
+  font-size: 14px;
+  font-weight: 600;
+  color: #26A69A;
+  min-width: 45px;
+  text-align: right;
+}
+
+.goal-actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #F0F0F0;
+  display: flex;
+  gap: 8px;
+}
+
+// Contributions section
+.q-slide-transition {
+  .q-item {
+    background: #FAFAFA;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .q-list {
+    background: #FAFAFA;
+
+    .q-item {
+      background: transparent;
+      margin: 0 16px;
+      padding: 8px 12px;
+      border-radius: 8px;
+
+      &:hover {
+        background: rgba(38, 166, 154, 0.08);
+      }
+    }
+  }
+}
+
+// Dark Mode
+body.body--dark {
+  .saving-goal-card {
+    background: #1E1E1E;
+    border-color: #3A3A3A;
+
+    &:hover {
+      border-color: #26A69A;
+      background: #252525;
+    }
+
+    &.expanded {
+      border-color: #26A69A;
+    }
+  }
+
+  .goal-title {
+    color: #FFFFFF;
+  }
+
+  .goal-amounts {
+    .current-amount {
+      color: #4DB6AC;
+    }
+
+    .target-amount {
+      color: #B0B0B0;
+    }
+
+    .no-goal {
+      color: #757575;
+    }
+  }
+
+  .goal-month-change {
+    .change-label {
+      color: #B0B0B0;
+    }
+  }
+
+  .progress-bar-track {
+    background: #3A3A3A;
+  }
+
+  .progress-percentage {
+    color: #4DB6AC;
+  }
+
+  .goal-actions {
+    border-top-color: #3A3A3A;
+  }
+
+  .q-slide-transition {
+    .q-item {
+      background: #2C2C2C;
+    }
+
+    .q-list {
+      background: #2C2C2C;
+
+      .q-item:hover {
+        background: rgba(38, 166, 154, 0.15);
+      }
+    }
+  }
+}
+</style>
