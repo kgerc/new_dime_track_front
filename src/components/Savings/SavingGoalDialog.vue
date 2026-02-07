@@ -46,7 +46,7 @@
   });
 
   const emit = defineEmits(['update:modelValue', 'save']);
-  const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+  const currencyOptions = ["PLN", "PLN", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
   const localSavingGoal = ref({ ...props.savingGoal });  // Local copy for editing
 
   const isOpen = computed({
@@ -57,7 +57,7 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newSavingGoal = props.isNewSavingGoal
-        ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'USD', savingContributions: [] }
+        ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', savingContributions: [] }
         : { ...props.savingGoal };
        localSavingGoal.value = newSavingGoal;
     }

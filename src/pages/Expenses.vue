@@ -238,7 +238,7 @@
     <div :class="isDarkMode ? 'row q-mb-sm q-px-md q-py-sm thin-border' : 'row q-mb-sm q-px-md q-py-sm shadow-up-3'">
       <div class="col" :class="titleClasses">{{ t('expensesSum') }}</div>
       <div class="col text-h6 text-right" :class="amountColor(totalBalance)">
-        {{ formatCurrency(totalBalance, 'USD') }}
+        {{ formatCurrency(totalBalance, 'PLN') }}
       </div>
     </div>
 
@@ -301,7 +301,7 @@ const { isDarkMode } = storeToRefs(themeStore);
 const { t, currentLanguage } = useLangStore();
 const balancesStore = useBalancesStore()
 const { reloadSavingsDictionary, reloadIncomeExpensesDictionary } = storeToRefs(balancesStore)
-const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+const currencyOptions = ["PLN", "PLN", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const selectedCurrency = ref(null)
 
 /* 🗓️ Date and Calendar Handling */

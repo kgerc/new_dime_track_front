@@ -10,7 +10,7 @@
             <div class="text-caption">{{t('balance')}}</div>
           </q-tooltip>
         </q-icon>
-        <span :class="amountColor(balance)" style="margin-left: 5px;">{{formatCurrency(getMonthBalance(selectedYear, selectedMonth), 'USD')}}</span>
+        <span :class="amountColor(balance)" style="margin-left: 5px;">{{formatCurrency(getMonthBalance(selectedYear, selectedMonth), 'PLN')}}</span>
       </div>
     </div>
       <div class="row items-center justify-center col" :style="{ 'margin-right': viewMode === 'monthly' ? '70px' : '-180px' }">
@@ -60,9 +60,9 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-negative">
-                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'USD') }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                   <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/>
-                    {{ formatCurrency(getMonthBalance(selectedYear, idx), 'USD', true) }}
+                    {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -97,9 +97,9 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
-                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'USD') }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'PLN') }}</q-item-label>
                   <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>
-                      {{ formatCurrency(getMonthBalance(selectedYear, idx), 'USD', true) }}
+                      {{ formatCurrency(getMonthBalance(selectedYear, idx), 'PLN', true) }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -204,9 +204,9 @@
                   </q-item-label>
                 </q-item-section>
                 <q-item-section side top class="text-weight-bold text-positive">
-                  <q-item-label>{{ formatCurrency(getAmount(entry), 'USD') }}</q-item-label>
+                  <q-item-label>{{ formatCurrency(getAmount(entry), 'PLN') }}</q-item-label>
                   <q-item-label class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>
-                    {{ formatCurrency(getSavingsMonthBalance(selectedYear, idx), 'USD', true) }}
+                    {{ formatCurrency(getSavingsMonthBalance(selectedYear, idx), 'PLN', true) }}
                   </q-item-label>
                 </q-item-section>
               </q-item>

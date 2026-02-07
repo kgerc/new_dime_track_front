@@ -82,7 +82,7 @@
   });
 
   const emit = defineEmits(['update:modelValue', 'save']);
-  const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+  const currencyOptions = ["PLN", "PLN", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
   const localIncome = ref({ ...props.income });  // Local copy for editing
 
   const isOpen = computed({
@@ -111,7 +111,7 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newIncome = props.isNewIncome
-        ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'USD', recurrence: 0, recurrenceFrequency: 'None', incomeDate: '', isReceived: false, expenseCategory: null }
+        ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', recurrence: 0, recurrenceFrequency: 'None', incomeDate: '', isReceived: false, expenseCategory: null }
         : { ...props.income, incomeDate: format(new Date(props.income.incomeDate), 'yyyy-MM-dd') };
 
       localIncome.value = newIncome;

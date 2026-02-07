@@ -86,7 +86,7 @@
     monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_')
   }
   const emit = defineEmits(['update:modelValue', 'save']);
-  const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+  const currencyOptions = ["PLN", "PLN", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
   const localSavingContribution = ref({ ...props.savingContribution });  // Local copy for editing
   const isWarningDialogOpened = ref(false)
 
@@ -117,7 +117,7 @@
   watch(isOpen, (newVal) => {
     if (newVal) {
       const newSavingContribution = props.isNewSavingContribution
-        ? { id: uuidv4(), amount: 0, currency: 'USD', contributionDate: '', savingGoal: null, savingGoalId: null }
+        ? { id: uuidv4(), amount: 0, currency: 'PLN', contributionDate: '', savingGoal: null, savingGoalId: null }
         : { ...props.savingContribution, contributionDate: format(new Date(props.savingContribution.contributionDate), 'yyyy-MM-dd') };
 
         localSavingContribution.value = newSavingContribution;

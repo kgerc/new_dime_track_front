@@ -32,7 +32,7 @@
           Balance
         </div>
         <div class="col text-h6 text-right" :class="amountColor(balance)">
-          {{ formatCurrency(balance, 'USD') }}
+          {{ formatCurrency(balance, 'PLN') }}
         </div>
       </div>
       <q-form
@@ -80,7 +80,7 @@ const entries = ref([
     id: 'id1',
     name: 'Salary',
     amount: 4999.99,
-    currency: 'USD'
+    currency: 'PLN'
   },
   {
     id: 'id2',

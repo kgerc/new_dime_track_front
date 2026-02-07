@@ -3,7 +3,7 @@
     <q-card-section class="text-center q-py-sm">
       <div class="text-h6">Expense Limits</div>
       <div class="text-body2">
-        Spent: {{ totalSpent }} USD / Limit: {{ totalLimit }} USD
+        Spent: {{ totalSpent }} PLN / Limit: {{ totalLimit }} PLN
       </div>
       <q-linear-progress
         :value="getProgressValue"
@@ -26,7 +26,7 @@
           <q-item>
               <q-item-section>
               <q-chip>
-                  Spent: {{ formatCurrency(limit.spent, 'USD', true) }} / Limit: {{ limit.limit }} USD
+                  Spent: {{ formatCurrency(limit.spent, 'PLN', true) }} / Limit: {{ limit.limit }} PLN
               </q-chip>
               <div
                   :class="isLimitExceeded(limit) ? 'text-red' : 'text-green'"
@@ -41,7 +41,7 @@
                       class="q-mr-xs"
                   />
                   <span v-if="isLimitExceeded(limit)">
-                      Exceeded by {{ getExceededAmount(limit) }} USD
+                      Exceeded by {{ getExceededAmount(limit) }} PLN
                   </span>
                   <span v-else>
                       Within limit

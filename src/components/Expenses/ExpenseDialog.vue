@@ -108,7 +108,7 @@ const enLocale = {
   monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_')
 }
 const emit = defineEmits(['update:modelValue', 'save', 'moveExpenseToSavings']);
-const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+const currencyOptions = ["PLN", "PLN", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const localExpense = ref({ ...props.expense });  // Local copy for editing
 
 const isOpen = computed({
@@ -137,7 +137,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newExpense = props.isNewExpense
-      ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'USD', recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
+      ? { id: uuidv4(), title: '', notes: '', amount: 0, currency: 'PLN', recurrence: 0, recurrenceFrequency: 'None', paymentDate: '', isPaid: false, expenseCategory: null }
       : { ...props.expense, paymentDate: format(new Date(props.expense.paymentDate), "yyyy-MM-dd'T00:00:00'") };
 
     localExpense.value = newExpense;

@@ -70,14 +70,19 @@ export const useBalancesStore = defineStore('balances', () => {
         balanceDict.value[year][month - 1] = amount;
     });
     
-    // Check if 2024 exists but 2025 doesn't, and add 2025 if necessary
-    if (yearsInEntries.has(2024) && !yearsInEntries.has(2025)) {
-      balanceDict.value[2025] = Array.from({ length: 12 }, () => 0);
+    // Fill gaps between the earliest year in entries and the current year
+    if (yearsInEntries.size > 0) {
+      const minYear = Math.min(...yearsInEntries);
+      for (let y = minYear; y <= currentYear; y++) {
+        if (!balanceDict.value[y]) {
+          balanceDict.value[y] = Array.from({ length: 12 }, () => 0);
+        }
+      }
     }
 
     // Fill missing months with the previous month's balance
     Object.keys(balanceDict.value).forEach(year => {
-        const isPrecedingYear = yearsInEntries.has(year - 1)
+        const isPrecedingYear = !!balanceDict.value[year - 1]
         const yearlyExpenses = expenses
           .filter(entry => {
             const entryDate = new Date(entry.paymentDate)
@@ -172,14 +177,21 @@ export const useBalancesStore = defineStore('balances', () => {
         savingsBalanceDict.value[year][month - 1] = 0;
     });
     
-    // Check if 2024 exists but 2025 doesn't, and add 2025 if necessary
-    if (yearsInEntries.has(2024) && !yearsInEntries.has(2025)) {
-      savingsBalanceDict.value[2025] = Array.from({ length: 12 }, () => 0);
+    // Fill gaps between the earliest year in entries and the current year
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    if (yearsInEntries.size > 0) {
+      const minYear = Math.min(...yearsInEntries);
+      for (let y = minYear; y <= currentYear; y++) {
+        if (!savingsBalanceDict.value[y]) {
+          savingsBalanceDict.value[y] = Array.from({ length: 12 }, () => 0);
+        }
+      }
     }
 
     // Fill missing months with the previous month's balance
     Object.keys(savingsBalanceDict.value).forEach(year => {
-        const isPrecedingYear = yearsInEntries.has(year - 1)
+        const isPrecedingYear = !!savingsBalanceDict.value[year - 1]
         const yearlyContributions = contributions
           .filter(entry => {
             const entryDate = new Date(entry.contributionDate)

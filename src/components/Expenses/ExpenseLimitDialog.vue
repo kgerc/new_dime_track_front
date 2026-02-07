@@ -85,7 +85,7 @@ const props = defineProps({
   isNewLimit: Boolean, // Flag to distinguish between new and existing limit
 })
 
-const currencyOptions = ["PLN", "USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
+const currencyOptions = ["PLN", "PLN", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD"];
 const emit = defineEmits(['update:modelValue', 'save'])
 const localLimit = ref({ ...props.limit }) // Copy limit for local editing
 
@@ -117,7 +117,7 @@ const categoryTitle = computed({
 watch(isOpen, (newVal) => {
   if (newVal) {
     const newLimit = props.isNewLimit
-      ? { id: uuidv4(), title: '', limit: 0, currency: 'USD', month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
+      ? { id: uuidv4(), title: '', limit: 0, currency: 'PLN', month: '', year: '', recurrence: 0, recurrenceFrequency: 'None', expenseCategory: null }
       : { ...props.limit }
 
     localLimit.value = newLimit
