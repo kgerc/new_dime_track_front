@@ -23,7 +23,7 @@
         <q-card flat bordered class="summary-card income-card">
           <q-card-section>
             <div class="row items-center justify-between q-mb-sm">
-              <div class="text-caption" :class="isDarkMode ? 'text-grey-6' : 'text-grey-7'">{{ t('totalIncome') }}</div>
+              <div class="text-caption text-grey">{{ t('totalIncome') }}</div>
               <q-icon name="trending_up" color="positive" size="20px" />
             </div>
 
@@ -31,7 +31,7 @@
 
             <!-- Projected income bar -->
             <div class="q-mt-md">
-              <div class="row items-center justify-between text-body2" :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">
+              <div class="row items-center justify-between text-body2 text-grey-7">
                 <span>{{ t('incomeStability') }}</span>
                 <span class="text-positive">{{ incomeStabilityLabel }}</span>
               </div>
@@ -45,7 +45,7 @@
             </div>
 
             <!-- Growth percentage -->
-            <div class="row items-center q-mt-md text-body2" :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">
+            <div class="row items-center q-mt-md text-body2 text-grey-7">
               <q-icon name="north_east" size="18px" color="positive" class="q-mr-xs" />
               <span>{{ t('incomeGrowth') }}:</span>
               <span class="text-positive q-ml-xs">{{ incomeGrowthLabel }}</span>
@@ -59,7 +59,7 @@
         <q-card flat bordered class="summary-card expense-card">
           <q-card-section>
             <div class="row items-center justify-between q-mb-sm">
-              <div class="text-caption" :class="isDarkMode ? 'text-grey-6' : 'text-grey-7'">{{ t('totalExpenses') }}</div>
+              <div class="text-caption text-grey">{{ t('totalExpenses') }}</div>
               <q-icon name="trending_down" color="negative" size="20px" />
             </div>
 
@@ -67,7 +67,7 @@
 
             <!-- Over Budget Progress -->
             <div class="q-mt-md">
-              <div class="row items-center justify-between text-body2" :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">
+              <div class="row items-center justify-between text-body2 text-grey-7">
                 <span>{{ t('overBudget') }}</span>
                 <span class="text-negative">{{ overBudgetLabel }}</span>
               </div>
@@ -81,7 +81,7 @@
             </div>
 
             <!-- Expense growth -->
-            <div class="row items-center q-mt-md text-body2" :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">
+            <div class="row items-center q-mt-md text-body2 text-grey-7">
               <q-icon name="south_east" size="18px" color="orange" class="q-mr-xs" />
               <span>{{ t('expenseGrowth') }}:</span>
               <span class="text-orange q-ml-xs">{{ expenseGrowthLabel }}</span>
@@ -95,7 +95,7 @@
         <q-card flat bordered class="summary-card saving-card">
           <q-card-section>
             <div class="row items-center justify-between q-mb-sm">
-              <div class="text-caption" :class="isDarkMode ? 'text-grey-6' : 'text-grey-7'">{{ t('totalSavings') }}</div>
+              <div class="text-caption text-grey">{{ t('totalSavings') }}</div>
               <q-icon name="savings" color="primary" size="20px" />
             </div>
 
@@ -103,7 +103,7 @@
 
             <!-- Percent of income saved -->
             <div class="q-mt-md">
-              <div class="row items-center justify-between text-body2" :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">
+              <div class="row items-center justify-between text-body2 text-grey-7">
                 <span>{{ Math.round(savingsPercent * 100) }}% {{ t('ofIncomeSaved') }}</span>
               </div>
               <q-linear-progress
@@ -116,7 +116,7 @@
             </div>
 
             <!-- Remaining to goals -->
-            <div class="row items-center q-mt-md text-body2" :class="isDarkMode ? 'text-grey-6' : 'text-grey-8'">
+            <div class="row items-center q-mt-md text-body2 text-grey-7">
               <q-icon name="flag" size="18px" color="accent" class="q-mr-xs" />
               <span>{{ t('remainingToGoals') }}:</span>
               <span class="text-negative q-ml-xs">{{ remainingToGoalsLabel }}</span>
@@ -254,137 +254,28 @@
   </q-page>
 </template>
 
-<style scoped lang="scss">
-// Modern Statistics Page Styling
-
+<style scoped>
 .summary-card {
-  background: #FAFAFA;
   border-radius: 16px;
-  border: 1px solid #E8E8E8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
   min-height: 150px;
-
-  &:hover {
-    background: #FFFFFF;
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .q-card__section {
-    padding: 20px;
-  }
-
-  .text-caption {
-    font-size: 13px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #616161;
-  }
-
-  .text-h5 {
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    margin: 12px 0;
-  }
-
-  .text-body2 {
-    font-size: 14px;
-    color: #616161;
-  }
-
-  .q-linear-progress {
-    height: 8px;
-    border-radius: 4px;
-  }
-
-  .q-icon {
-    opacity: 0.9;
-  }
 }
 
-// Color accents for cards
+.summary-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* Light color accents for visual distinction */
 .income-card {
-  border-top: 4px solid #4CAF50;
-
-  .q-icon {
-    color: #4CAF50;
-  }
+  border-top: 4px solid var(--q-positive);
 }
-
 .expense-card {
-  border-top: 4px solid #EF5350;
-
-  .q-icon {
-    color: #EF5350;
-  }
+  border-top: 4px solid var(--q-negative);
 }
-
 .saving-card {
-  border-top: 4px solid #26A69A;
-
-  .q-icon {
-    color: #26A69A;
-  }
-}
-
-// Dark Mode
-body.body--dark {
-  .summary-card {
-    background: #1E1E1E;
-    border-color: #3A3A3A;
-
-    .text-caption {
-      color: #B0B0B0;
-    }
-
-    .text-h5 {
-      color: #FFFFFF;
-    }
-
-    .text-body2 {
-      color: #B0B0B0;
-    }
-
-    &:hover {
-      background: #252525;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    }
-  }
-}
-
-// Tab styling
-.q-tabs {
-  margin-bottom: 16px;
-}
-
-:deep(.q-tab) {
-  text-transform: none;
-  font-weight: 500;
-  font-size: 14px;
-  padding: 12px 20px;
-  border-radius: 8px 8px 0 0;
-}
-
-:deep(.q-tab__label) {
-  font-weight: 500;
-}
-
-:deep(.q-tab--active) {
-  color: #1E88E5;
-}
-
-:deep(.q-tab__indicator) {
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-}
-
-body.body--dark {
-  :deep(.q-tab--active) {
-    color: #42A5F5;
-  }
+  border-top: 4px solid var(--q-primary);
 }
 </style>
 
@@ -423,12 +314,7 @@ const selectedMonth = ref(new Date().getMonth())
 const activeTab = ref('all')
 const chartKey = ref(0)
 
-onMounted(async () => {
-  await Promise.all([
-    expensesStore.fetchExpenses(),
-    incomesStore.fetchIncomes(),
-    savingsStore.fetchSavingGoals()
-  ])
+onMounted(() => {
   setTimeout(() => {
     chartKey.value++
   }, 100)
@@ -690,48 +576,22 @@ const barSeries = computed(() => {
 })
 
 const barOptions = computed(() => ({
-  chart: {
-    stacked: false,
-    foreColor: isDarkMode.value ? '#B0B0B0' : '#757575',
-    fontFamily: 'Inter, Roboto, sans-serif',
-    toolbar: { show: false }
-  },
-  dataLabels: {
-    enabled: false
+  chart: { stacked: false , foreColor: '#999' },
+    dataLabels: {
+    enabled: false // ❌ hides numbers directly on the pie slices
   },
   tooltip: {
-    enabled: true,
-    theme: isDarkMode.value ? 'dark' : 'light'
+    enabled: true // ✅ keeps hover tooltips with numbers
   },
   xaxis: {
     categories: viewMode.value === 'monthly'
       ? [monthNames.value[selectedMonth.value]]
       : monthNames.value,
-    labels: {
-      style: {
-        colors: isDarkMode.value ? '#B0B0B0' : '#757575',
-        fontSize: '13px'
-      }
-    },
-    axisBorder: { show: false },
-    axisTicks: { show: false }
+    labels: { style: { colors: '#999' } }
   },
-  yaxis: {
-    labels: {
-      style: {
-        colors: isDarkMode.value ? '#B0B0B0' : '#757575',
-        fontSize: '13px'
-      }
-    }
-  },
-  grid: {
-    borderColor: isDarkMode.value ? '#3A3A3A' : '#F0F0F0',
-    strokeDashArray: 0
-  },
-  plotOptions: {
-    bar: { horizontal: false, columnWidth: '55%', borderRadius: 4 }
-  },
-  colors: ['#4CAF50', '#EF5350']
+  yaxis: { labels: { style: { colors: '#999' } } },
+  plotOptions: { bar: { horizontal: false, columnWidth: '50%' } },
+  colors: ['#21BA45', '#DB2828']
 }))
 
 // LINE: savings over time
@@ -746,37 +606,14 @@ const lineSeries = computed(() => {
 })
 
 const lineOptions = computed(() => ({
-  chart: {
-    stacked: false,
-    foreColor: isDarkMode.value ? '#B0B0B0' : '#757575',
-    fontFamily: 'Inter, Roboto, sans-serif',
-    toolbar: { show: false }
-  },
+  chart: { stacked: false , foreColor: '#999' },
   xaxis: {
     categories: viewMode.value === 'monthly' ? [monthNames.value[selectedMonth.value]] : monthNames.value,
-    labels: {
-      style: {
-        colors: isDarkMode.value ? '#B0B0B0' : '#757575',
-        fontSize: '13px'
-      }
-    },
-    axisBorder: { show: false },
-    axisTicks: { show: false }
+    labels: { style: { colors: '#999' } }
   },
-  yaxis: {
-    labels: {
-      style: {
-        colors: isDarkMode.value ? '#B0B0B0' : '#757575',
-        fontSize: '13px'
-      }
-    }
-  },
-  grid: {
-    borderColor: isDarkMode.value ? '#3A3A3A' : '#F0F0F0',
-    strokeDashArray: 0
-  },
-  stroke: { curve: 'smooth', width: 3 },
-  colors: ['#26A69A']
+  yaxis: { labels: { style: { colors: '#999' } } },
+  stroke: { curve: 'smooth' },
+  colors: ['#007BFF']
 }))
 
 // LIMITS / tracking: creates actual vs limit per category for current year or month
@@ -825,6 +662,7 @@ const limitSeries = computed(() => {
         return categoryName === cat
       })
       .reduce((acc, e) => roundToTwo(acc) + roundToTwo(e.amount), 0)
+    debugger;
     return roundToTwo(sum * -1);
   })
 
@@ -887,44 +725,17 @@ const balanceSeries = computed(() => {
 })
 
 const balanceOptions = computed(() => ({
-  chart: {
-    type: 'line',
-    height: 300,
-    foreColor: isDarkMode.value ? '#B0B0B0' : '#757575',
-    fontFamily: 'Inter, Roboto, sans-serif',
-    toolbar: { show: false }
-  },
-  stroke: { curve: 'smooth', width: 3 },
+  chart: { type: 'line', height: 300, foreColor: '#999' },
+  stroke: { curve: 'smooth' },
   xaxis: {
     categories: viewMode.value === 'monthly'
       ? [monthNames.value[selectedMonth.value]]
       : monthNames.value,
-    labels: {
-      style: {
-        colors: isDarkMode.value ? '#B0B0B0' : '#757575',
-        fontSize: '13px'
-      }
-    },
-    axisBorder: { show: false },
-    axisTicks: { show: false }
+    labels: { style: { colors: '#999' } }
   },
-  yaxis: {
-    labels: {
-      style: {
-        colors: isDarkMode.value ? '#B0B0B0' : '#757575',
-        fontSize: '13px'
-      }
-    }
-  },
-  grid: {
-    borderColor: isDarkMode.value ? '#3A3A3A' : '#F0F0F0',
-    strokeDashArray: 0
-  },
-  colors: ['#1E88E5'],
-  tooltip: {
-    theme: isDarkMode.value ? 'dark' : 'light',
-    y: { formatter: val => `${val} zł` }
-  }
+  yaxis: { labels: { style: { colors: '#999' } } },
+  colors: ['#00C853'],
+  tooltip: { y: { formatter: val => `${val} zł` } }
 }))
 
 // UI helpers for toggling and navigation

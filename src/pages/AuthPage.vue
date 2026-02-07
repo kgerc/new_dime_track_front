@@ -95,7 +95,7 @@ function handleSubmit() {
 
 <style scoped>
 .q-page {
-  background: linear-gradient(135deg, #E3F2FD 0%, #F1F8E9 100%);
+  background: linear-gradient(to right, #ff7e5f, #feb47b);
 }
 .auth-wrapper {
   display: flex;
@@ -108,9 +108,9 @@ function handleSubmit() {
   width: 800px;
   height: 500px;
   display: flex;
-  border-radius: 24px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
   position: relative;
 }
 
@@ -136,13 +136,13 @@ function handleSubmit() {
 
 /* Left Panel (Form) */
 .panel-left {
-  background: #FAFAFA;
+  background: white;
   z-index: 2;
 }
 
 /* Right Panel (Message) */
 .panel-right {
-  background: linear-gradient(135deg, #1E88E5 0%, #26A69A 100%);
+  background: #ff6b81;
   color: white;
   z-index: 1;
   display: flex;
@@ -177,73 +177,12 @@ function handleSubmit() {
 
 .app-title .q-avatar {
   margin-right: 8px;
-  background-color: #1E88E5;
+  background-color: #f57c00; /* orange accent */
   color: white;
 }
 
 .title-text {
   font-family: "Roboto", sans-serif;
-}
-
-/* Form styling */
-.form-container {
-  h2 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #263238;
-    margin-bottom: 32px;
-    text-align: center;
-  }
-
-  .q-input {
-    margin-bottom: 16px;
-  }
-
-  .q-btn {
-    margin-top: 16px;
-    background: #1E88E5;
-    border-radius: 8px;
-    height: 48px;
-    font-weight: 500;
-    text-transform: none;
-    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
-
-    &:hover {
-      background: #1565C0;
-      box-shadow: 0 6px 16px rgba(30, 136, 229, 0.4);
-    }
-  }
-}
-
-/* Switch panel styling */
-.switch-panel {
-  h2 {
-    font-size: 32px;
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
-
-  p {
-    font-size: 16px;
-    opacity: 0.9;
-    line-height: 1.6;
-    margin-bottom: 32px;
-    max-width: 320px;
-    text-align: center;
-  }
-
-  .q-btn {
-    border: 2px solid white;
-    color: white;
-    border-radius: 8px;
-    font-weight: 500;
-    padding: 12px 32px;
-    text-transform: none;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-  }
 }
 
 </style>

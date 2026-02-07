@@ -43,131 +43,98 @@
       <q-icon name="filter_alt" size="sm" style="margin-right:25px;" color="primary"/>
     </div>
 
-    <div class="row q-col-gutter-lg q-px-md" style="margin-top: -10px;">
+    <div class="row q-col-gutter-lg" style="margin-top: -20px;margin-left: 2px;">
       <div class="col">
-        <div class="incomes-container" v-if="!loadingIncomes">
-          <!-- Recurring Incomes Section -->
-          <div v-if="filteredRecurrentEntries.length > 0" class="incomes-section">
-            <div class="section-header">
-              <q-icon name="autorenew" size="sm" :color="isDarkMode ? 'grey-5' : 'grey-7'" class="q-mr-xs" />
-              <span>{{ t('recurringIncomes') }}</span>
-            </div>
-
-            <q-slide-item
-              v-for="income in filteredRecurrentEntries"
-              :key="income.id"
-              @right="removeIncome(income.id)"
-              right-color="negative"
-              class="income-slide-item"
-            >
-              <template v-slot:right>
-                <q-icon name="delete" />
-              </template>
-              <q-card class="income-card" clickable @click="openDialog(income)">
-                <q-item class="income-item">
-                  <!-- Status Dot -->
-                  <q-item-section avatar style="min-width: 24px;">
-                    <div
-                      class="status-dot"
-                      :class="income.isReceived ? 'received' : 'not-received'"
-                    >
-                      <q-tooltip anchor="top middle" self="bottom middle">
-                        <div class="text-caption">{{ income.isReceived ? t('received') : t('notReceived') }}</div>
-                      </q-tooltip>
-                    </div>
-                  </q-item-section>
-
-                  <q-item-section>
-                    <q-item-label class="income-title">
-                      {{ income.title }}
+        <q-list bordered separator v-if="!loadingIncomes">
+          <q-item-label header v-if="filteredRecurrentEntries.length > 0">{{ t('recurringIncomes') }}</q-item-label>
+          <q-slide-item v-for="income in filteredRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
+            <template v-slot:right>
+              <q-icon name="delete" />
+            </template>
+            <q-item clickable @click="openDialog(income)">
+              <q-item-section>
+                <div class="row items-center">
+                  <q-icon
+                    :name="getIncomeIcon(income)"
+                    class="q-mr-sm"
+                    size="sm"
+                    :color="getIncomeColor(income)"
+                    style="margin-top: -5px;"/>
+                  <div>
+                    <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
+                    <q-item-label caption style="margin-top: -5px;">
+                      {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
+                      <q-chip
+                        :label="t('noCategory')"
+                        text-color="white"
+                        style="{ backgroundColor: '#fffff'}"
+                        size="sm"
+                      />
                     </q-item-label>
-                    <q-item-label caption class="income-meta">
-                      <span class="income-date">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}</span>
+                  </div>
+                </div>
+              </q-item-section>
+              <q-item-section side class="text-weight-bold text-positive">
+                {{ formatCurrency(income.amount, income.currency) }}
+              </q-item-section>
+            </q-item>
+          </q-slide-item>
+
+          <q-item-label header v-if="filteredNonRecurrentEntries.length > 0">{{ t('nonRecurringIncomes') }}</q-item-label>
+          <q-slide-item v-for="income in filteredNonRecurrentEntries" :key="income.id" @right="removeIncome(income.id)" right-color="negative">
+            <template v-slot:right>
+              <q-icon name="delete" />
+            </template>
+            <q-item clickable @click="openDialog(income)">
+              <q-item-section>
+                <div class="row items-center">
+                  <q-icon
+                    :name="getIncomeIcon(income)"
+                    class="q-mr-sm"
+                    size="sm"
+                    :color="getIncomeColor(income)"
+                    style="margin-top: -5px;"/>
+                  <div>
+                    <q-item-label class="text-weight-bold">{{ income.title }}</q-item-label>
+                    <q-item-label caption style="margin-top: -5px;">
+                      {{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}
+                      <q-chip
+                        :label="t('noCategory')"
+                        text-color="white"
+                        style="{ backgroundColor: '#fffff'}"
+                        size="sm"
+                      />
                     </q-item-label>
-                  </q-item-section>
-
-                  <!-- Amount -->
-                  <q-item-section side class="income-amount">
-                    {{ formatCurrency(income.amount, income.currency) }}
-                  </q-item-section>
-                </q-item>
-              </q-card>
-            </q-slide-item>
-          </div>
-
-          <!-- Non-Recurring Incomes Section -->
-          <div v-if="filteredNonRecurrentEntries.length > 0" class="incomes-section">
-            <div class="section-header">
-              <q-icon name="payments" size="sm" :color="isDarkMode ? 'grey-5' : 'grey-7'" class="q-mr-xs" />
-              <span>{{ t('nonRecurringIncomes') }}</span>
-            </div>
-
-            <q-slide-item
-              v-for="income in filteredNonRecurrentEntries"
-              :key="income.id"
-              @right="removeIncome(income.id)"
-              right-color="negative"
-              class="income-slide-item"
-            >
-              <template v-slot:right>
-                <q-icon name="delete" />
-              </template>
-              <q-card class="income-card" clickable @click="openDialog(income)">
-                <q-item class="income-item">
-                  <!-- Status Dot -->
-                  <q-item-section avatar style="min-width: 24px;">
-                    <div
-                      class="status-dot"
-                      :class="income.isReceived ? 'received' : 'not-received'"
-                    >
-                      <q-tooltip anchor="top middle" self="bottom middle">
-                        <div class="text-caption">{{ income.isReceived ? t('received') : t('notReceived') }}</div>
-                      </q-tooltip>
-                    </div>
-                  </q-item-section>
-
-                  <q-item-section>
-                    <q-item-label class="income-title">
-                      {{ income.title }}
-                    </q-item-label>
-                    <q-item-label caption class="income-meta">
-                      <span class="income-date">{{ format(new Date(income.incomeDate), 'dd.MM.yyyy') }}</span>
-                    </q-item-label>
-                  </q-item-section>
-
-                  <!-- Notes Icon -->
-                  <q-item-section side class="q-mr-sm" v-if="income.notes">
-                    <q-icon
-                      name="description"
-                      size="sm"
-                      class="cursor-pointer notes-icon"
-                      :color="isDarkMode ? 'grey-6' : 'grey-5'"
-                    >
-                      <q-tooltip anchor="top middle" self="bottom middle">
-                        <div class="text-caption">{{ income.notes }}</div>
-                      </q-tooltip>
-                    </q-icon>
-                  </q-item-section>
-
-                  <!-- Amount -->
-                  <q-item-section side class="income-amount">
-                    {{ formatCurrency(income.amount, income.currency) }}
-                  </q-item-section>
-                </q-item>
-              </q-card>
-            </q-slide-item>
-          </div>
-        </div>
+                  </div>
+                </div>
+              </q-item-section>
+              <q-item-section side class="q-mr-xs">
+                <q-icon
+                  v-if="income.notes"
+                  name="description"
+                  size="sm"
+                  class="cursor-pointer"
+                  color="grey-6"
+                >
+                  <q-tooltip v-if="income.notes" anchor="top middle" self="bottom middle">
+                    <div class="text-caption">{{ income.notes }}</div>
+                  </q-tooltip>
+                </q-icon>
+              </q-item-section>
+              <q-item-section side class="text-weight-bold text-positive fixed-width">
+                {{ formatCurrency(income.amount, income.currency) }}
+              </q-item-section>
+            </q-item>
+          </q-slide-item>
+        </q-list>
       </div>
       <div class="col-shrink" style="width:500px;">
         <SavingsList :selectedYear="selectedYear" :selectedMonth="selectedMonth"/>
       </div>
     </div>
-    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="empty-state">
-      <q-icon name="account_balance_wallet" size="4em" :color="isDarkMode ? 'grey-7' : 'grey-5'" />
-      <div class="text-h6 q-mt-md" :class="isDarkMode ? 'text-grey-6' : 'text-grey-6'">
-        {{ t('noIncomes') }}
-      </div>
+    <div v-if="currentMonthEntries.length === 0 && !loadingIncomes" class="q-pa-md flex flex-center column" style="margin-right: 80px;">
+      <q-icon name="account_balance_wallet" size="4em" color="grey-6" />
+      <div class="text-h6 text-grey-6 q-mt-md">{{ t('noIncomes') }}</div>
     </div>
 
     <q-footer :class="footerClasses">
@@ -186,21 +153,23 @@
         </div>
       </div>
 
-      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary items-center" :class="formClasses" style="margin-left: -1px;">
+      <q-form class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary justify-between" :class="formClasses" style="margin-left: -1px;">
         <div class="row items-center q-pr-md">
           <q-btn icon="add" :label="t('newIncome')" color="white" flat class="q-mr-sm" @click="openNewIncomeDialog"/>
           <q-btn icon="add_box" :label="t('newCategory')" color="white" flat class="q-mr-sm" @click="isCategoryDialogOpen = true"/>
           <q-btn icon="category" :label="`${t('categories')} (${incomeCategoriesCount})`" color="white" flat class="q-mr-sm" @click="isCategoriesListDialogOpen = true"/>
         </div>
-        <q-space />
-        <q-input
-          v-model="searchQuery"
-          outlined
-          dense
-          :class="searchClasses"
-          style="width: 300px;"
-          :placeholder="t('searchIncomes')"
-        />
+        <div class="row items-center justify-end col-auto" style="margin-bottom: -5px;">
+          <q-input
+            v-model="searchQuery"
+            outlined
+            dense
+            :class="searchClasses"
+            style="width: 400px;"
+            :placeholder="t('searchIncomes')"
+            class="q-mb-sm"
+          />
+        </div>
       </q-form>
     </q-footer>
 
@@ -239,6 +208,7 @@ import { useThemeStore } from 'src/stores/themeStore';
 import { useLangStore } from "src/stores/langStore"
 import { amountColor } from 'src/helpers/amountColor.js'
 import { formatCurrency } from 'src/helpers/formatCurrency.js'
+import { getIncomeIcon, getIncomeColor } from 'src/helpers/incomeUtils.js'
 import IncomeDialog from 'src/components/Incomes/IncomeDialog.vue'
 import IncomeCategoryDialog from 'src/components/Incomes/IncomeCategoryDialog.vue'
 import IncomeCategoriesDialog from 'src/components/Incomes/IncomeCategoriesDialog.vue'
@@ -461,189 +431,3 @@ const formClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-primary'
 
 const searchClasses = computed(() => isDarkMode.value ? 'bg-grey-9' : 'bg-white');
 </script>
-
-<style scoped lang="scss">
-/* Incomes Container */
-.incomes-container {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-bottom: 16px;
-}
-
-.incomes-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Section Header */
-.section-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #757575;
-  margin-bottom: 4px;
-}
-
-.income-slide-item {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* Income Card */
-.income-card {
-  background: #FAFAFA;
-  border-radius: 12px;
-  border: 1px solid #E8E8E8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-
-  &:hover {
-    background: #FFFFFF;
-    border-color: #D0D0D0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-  }
-}
-
-.income-item {
-  padding: 16px 20px;
-  min-height: auto;
-
-  .q-item__section--avatar {
-    padding-right: 12px;
-  }
-
-  .q-item__section--side {
-    padding-left: 12px;
-  }
-}
-
-/* Status Dot */
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.3);
-  }
-
-  &.received {
-    background: #4CAF50;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
-  }
-
-  &.not-received {
-    background: #E0E0E0;
-    border: 2px solid #BDBDBD;
-  }
-}
-
-/* Income Title */
-.income-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: #263238;
-  line-height: 1.4;
-  margin-bottom: 4px;
-}
-
-/* Income Meta */
-.income-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.income-date {
-  font-size: 13px;
-  color: #757575;
-}
-
-/* Notes Icon */
-.notes-icon {
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 1;
-  }
-}
-
-/* Income Amount - Green Palette */
-.income-amount {
-  font-size: 16px;
-  font-weight: 600;
-  color: #4CAF50;
-  white-space: nowrap;
-  min-width: 100px;
-  text-align: right;
-}
-
-/* Empty State */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  margin-top: 40px;
-  margin-right: 80px;
-  text-align: center;
-}
-
-/* Dark Mode Overrides */
-body.body--dark {
-  .section-header {
-    color: #B0B0B0;
-  }
-
-  .income-card {
-    background: #2C2C2C;
-    border-color: #3A3A3A;
-
-    &:hover {
-      border-color: #4A4A4A;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  .income-title {
-    color: #E0E0E0;
-  }
-
-  .income-date {
-    color: #B0B0B0;
-  }
-
-  .income-amount {
-    color: #66BB6A;
-  }
-
-  .status-dot {
-    &.received {
-      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
-    }
-
-    &.not-received {
-      background: #424242;
-      border-color: #616161;
-    }
-  }
-}
-
-/* Fixed width for amount column */
-.fixed-width {
-  min-width: 120px;
-}
-</style>

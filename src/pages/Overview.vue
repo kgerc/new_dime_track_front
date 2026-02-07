@@ -1,7 +1,18 @@
 <template>
-  <q-page :class="isDarkMode ? 'black' : 'bg-grey-1'" class="overview-page">
+  <q-page :class="isDarkMode ? 'black' : 'bg-grey-1'">
     <!-- Month/Year Filter & View Toggle -->
-    <div class="row justify-between items-center q-my-md q-px-md page-header">
+    <div class="row justify-between items-center q-my-md q-px-md ">
+    <!-- Balance Display with Edit Option (Left-aligned) -->
+    <div class="row q-mt-md q-px-md q-py-sm shadow-2 rounded-borders" :class="isDarkMode ? 'bg-grey-10' : 'bg-white'" v-if="viewMode === 'monthly'">
+      <div class="text-h6 q-mr-sm">
+        <q-icon name="account_balance" size="md" color="grey" style="margin-top: -5px;">
+          <q-tooltip anchor="top middle" self="bottom middle">
+            <div class="text-caption">{{t('balance')}}</div>
+          </q-tooltip>
+        </q-icon>
+        <span :class="amountColor(balance)" style="margin-left: 5px;">{{formatCurrency(getMonthBalance(selectedYear, selectedMonth), 'USD')}}</span>
+      </div>
+    </div>
       <div class="row items-center justify-center col" :style="{ 'margin-right': viewMode === 'monthly' ? '70px' : '-180px' }">
         <q-btn icon="arrow_back" flat @click="prevPeriod" />
         <div class="q-mx-md text-h6">
@@ -29,30 +40,184 @@
       </q-btn>
     </div>
 
-    <!-- Balance Overview Table -->
-    <div class="row q-px-md q-pb-md">
-      <div class="col-12">
+    <!-- Three panels for Savings, Expenses, Incomes -->
+    <div class="row q-col-gutter-md q-px-md q-pb-md">
+      <div class="col-12 col-md-4">
         <q-card :class="isDarkMode ? 'bg-grey-10' : 'bg-white'">
-          <q-card-section class="card-title-section">
-            <div class="text-h6">{{ viewMode === 'yearly' ? `${t('balance')} - ${selectedYear}` : `${t('balance')} - ${currentMonthName} ${selectedYear}` }}</div>
+          <q-card-section>
+            <div class="text-h6 text-center">{{ t('expenses') }}</div>
           </q-card-section>
           <q-separator />
-          <q-card-section style="max-height: 600px; overflow-y: auto;" class="custom-scroll">
-            <q-list bordered separator v-if="!loadingExpenses && !loadingIncomes">
-              <q-item v-for="(month, idx) in monthNames" :key="idx">
+          <q-card-section style="max-height: 713px; overflow-y: auto;" class="custom-scroll">
+            <q-list bordered separator v-if="!loadingExpenses">
+              <q-item v-for="(entry, idx) in displayedExpenses" :key="idx">
                 <q-item-section>
                   <q-item-label class="text-weight-bold">
-                    {{ month }}
+                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
+                  </q-item-label>
+                  <q-item-label caption v-if="viewMode === 'monthly'">
+                    {{ formatDate(entry.paymentDate) }}
                   </q-item-label>
                 </q-item-section>
-                <q-item-section side top class="text-weight-bold" :class="amountColor(getMonthBalance(selectedYear, idx))">
-                  <q-item-label>{{ formatCurrency(getMonthBalance(selectedYear, idx), 'USD') }}</q-item-label>
+                <q-item-section side top class="text-weight-bold text-negative">
+                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'USD') }}</q-item-label>
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance"/>
+                    {{ formatCurrency(getMonthBalance(selectedYear, idx), 'USD', true) }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
-            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses || loadingIncomes">
-              <q-spinner color="primary" size="3em" :thickness="2" />
-              <span class="q-mt-xs">{{ t('loading') }}</span>
+            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingExpenses">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="2"
+              />
+              <span class="q-mt-xs">{{ t('loadingExpenses') }}</span>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <q-card :class="isDarkMode ? 'bg-grey-10' : 'bg-white'">
+          <q-card-section>
+            <div class="text-h6 text-center">{{ t('incomes') }}</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section style="max-height: 800px; overflow-y: auto;" class="custom-scroll">
+            <q-list bordered separator v-if="!loadingIncomes">
+              <q-item v-for="(entry, idx) in displayedIncomes" :key="idx">
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">
+                    {{ viewMode === 'yearly' ? monthNames[idx] : entry.title }}
+                  </q-item-label>
+                  <q-item-label caption v-if="viewMode === 'monthly'">
+                    {{ formatDate(entry.incomeDate) }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section side top class="text-weight-bold text-positive">
+                  <q-item-label>{{ formatCurrency(getAmount(entry), viewMode === 'monthly' ? entry.currency : 'USD') }}</q-item-label>
+                  <q-item-label v-if="viewMode === 'yearly'" class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>
+                      {{ formatCurrency(getMonthBalance(selectedYear, idx), 'USD', true) }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingIncomes">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="2"
+              />
+              <span class="q-mt-xs">{{ t('loadingIncomes') }}</span>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-md-4">
+        <q-card :class="isDarkMode ? 'bg-grey-10' : 'bg-white'">
+          <q-card-section>
+        <div class="text-h6 text-center">{{ t('savings') }}</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section style="max-height: 713px; overflow-y: auto;" class="custom-scroll">
+            <q-list bordered separator v-if="viewMode === 'monthly' && !loadingSavings">
+              <template v-for="entry in savings" :key="entry.id">
+                <q-item clickable @click="toggleExpand(entry.id)">
+                  <q-item-section>
+                    <div class="row items-center">
+                      <q-icon
+                        :name="getSavingStatusIcon(entry)"
+                        :color="getSavingStatusColor(entry)"
+                        class="q-mr-sm" size="sm"
+                      />
+                      <div>
+                        <!-- Saving Title -->
+                        <q-item-label class="text-weight-bold">{{ getTitle(entry) }}</q-item-label>
+                        <!-- Amounts -->
+                        <q-item-label caption v-if="entry.amount">
+                          {{ formatCurrency(entry.currentAmount, entry.currency, true) }} / {{ formatCurrency(entry.amount, entry.currency, true) }}
+                        </q-item-label>
+                        <q-item-label caption v-else>
+                          {{ formatCurrency(entry.currentAmount, entry.currency, true) }} (No Goal)
+                        </q-item-label>
+                        <!-- Progress Bar -->
+                        <q-linear-progress
+                          v-if="entry.amount"
+                          :value="getProgress(entry)"
+                          :color="getProgressColor(entry)"
+                          class="q-mt-xs"
+                          rounded
+                        />
+                      </div>
+                      <q-icon
+                        v-if="expandedSavingId === entry.id"
+                        name="edit"
+                        size="sm"
+                        color="primary"
+                        style="margin-left: 12px;"
+                        clickable
+                      />
+                    </div>
+                  </q-item-section>
+
+                  <q-item-section side class="text-weight-bold text-positive">
+                    {{ formatCurrency(entry.currentMonthAmountChange, entry.currency) }}
+                  </q-item-section>
+                </q-item>
+
+                <!-- Smooth Sliding Contributions List -->
+                <q-slide-transition>
+                  <div v-if="expandedSavingId === entry.id">
+                    <q-item style="margin-left: 5px;max-width: 80px;" >
+                      <q-item-section style="margin-bottom: 8px;">
+                        <q-icon name="subdirectory_arrow_right" size="sm"/>
+                      </q-item-section>
+                      <q-item-section style="margin-left: -25px;">
+                        <q-item-label header>Contributions</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-list dense>
+                      <q-item v-for="contribution in getCurrentMonthContributionsByGoalId(entry.id)" :key="contribution.id"
+                        style="margin-left: 35px;">
+                        <q-item-section>
+                          <q-item-label>
+                            {{ formatCurrency(contribution.amount, contribution.currency) }}
+                            <span class="text-grey-7">({{ formatDate(contribution.contributionDate) }})</span>
+                          </q-item-label>
+                        </q-item-section>
+                      </q-item>
+                      <q-item v-if="!isAnyGoalContribution(entry.id)" style="margin-left: 33px;">
+                        <q-item-section>No contributions yet.</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </div>
+                </q-slide-transition>
+              </template>
+            </q-list>
+            <q-list bordered separator v-else-if="!loadingSavings">
+              <q-item v-for="(entry, idx) in displayedSavings" :key="idx">
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">
+                    {{ monthNames[idx] }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section side top class="text-weight-bold text-positive">
+                  <q-item-label>{{ formatCurrency(getAmount(entry), 'USD') }}</q-item-label>
+                  <q-item-label class="text-grey-6"><q-icon name="account_balance" style="margin-bottom: 2px;"/>
+                    {{ formatCurrency(getSavingsMonthBalance(selectedYear, idx), 'USD', true) }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <div class="q-pa-xs row justify-center items-center q-gutter-sm column" v-if="loadingSavings">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="2"
+              />
+              <span class="q-mt-xs">{{ t('loadingSavings') }}</span>
             </div>
           </q-card-section>
         </q-card>
@@ -283,33 +448,12 @@ function nextPeriod() {
 
 const balance = ref(6000)
 const isEditingBalance = ref(false)
-
-// Computed totals for summary cards
-const getTotalExpenses = () => {
-  if (viewMode.value === 'yearly') {
-    return yearlyExpenseSummary(expenses).reduce((sum, val) => sum + Math.abs(val), 0)
-  }
-  return displayedExpenses.value.reduce((sum, entry) => sum + Math.abs(entry.amount), 0)
+function editBalance() {
+  isEditingBalance.value = true
 }
 
-const getTotalIncomes = () => {
-  if (viewMode.value === 'yearly') {
-    return yearlyIncomesSummary(incomes).reduce((sum, val) => sum + val, 0)
-  }
-  return displayedIncomes.value.reduce((sum, entry) => sum + entry.amount, 0)
-}
-
-const getTotalSavings = () => {
-  if (viewMode.value === 'yearly') {
-    return yearlySavingsSummary(savings).reduce((sum, val) => sum + val, 0)
-  }
-  return savings.value.reduce((sum, goal) => {
-    const monthContributions = goal.savingContributions?.filter(c => {
-      const d = new Date(c.contributionDate)
-      return d.getMonth() === selectedMonth.value && d.getFullYear() === selectedYear.value
-    }) || []
-    return sum + monthContributions.reduce((s, c) => s + c.amount, 0)
-  }, 0)
+function saveBalance() {
+  isEditingBalance.value = false
 }
 
 const expandedSavingId = ref(null)
@@ -420,220 +564,3 @@ const currentYearLimits = computed(() => {
   })
 })
 </script>
-
-<style scoped lang="scss">
-// Modern Overview Page Styling
-
-.overview-page {
-  padding-bottom: 24px;
-}
-
-// Summary Cards
-.summary-card {
-  border-radius: 16px;
-  border: 1px solid #F0F0F0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 140px;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .q-card__section {
-    padding: 20px;
-  }
-
-  .card-label {
-    font-size: 13px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #757575;
-    margin-bottom: 12px;
-  }
-
-  .card-amount {
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
-  }
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .card-info, .card-trend {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    color: #757575;
-
-    .q-icon {
-      font-size: 18px;
-    }
-  }
-
-  .card-trend {
-    &.positive {
-      color: #4CAF50;
-      .q-icon {
-        color: #4CAF50;
-      }
-    }
-
-    &.negative {
-      color: #EF5350;
-      .q-icon {
-        color: #EF5350;
-      }
-    }
-
-    &.secondary {
-      color: #26A69A;
-      .q-icon {
-        color: #26A69A;
-      }
-    }
-  }
-}
-
-// Balance Card - Special Gradient
-.balance-card {
-  background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
-  color: white;
-  border: none;
-
-  .card-label {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .card-amount {
-    color: white;
-    font-size: 40px;
-  }
-
-  .card-info {
-    color: rgba(255, 255, 255, 0.85);
-
-    .q-icon {
-      color: rgba(255, 255, 255, 0.85);
-    }
-  }
-}
-
-// Income Card - Accent Border
-.income-card {
-  border-top: 4px solid #4CAF50;
-}
-
-// Expense Card - Accent Border
-.expense-card {
-  border-top: 4px solid #EF5350;
-}
-
-// Saving Card - Accent Border
-.saving-card {
-  border-top: 4px solid #26A69A;
-}
-
-// Detail Cards (3-column panels)
-.detail-card {
-  border-radius: 16px;
-  border: 1px solid #F0F0F0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-
-  .card-title-section {
-    padding: 20px;
-
-    .text-h6 {
-      font-size: 18px;
-      font-weight: 600;
-    }
-  }
-
-  .q-list {
-    .q-item {
-      padding: 12px 16px;
-      border-radius: 0;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.02);
-      }
-    }
-  }
-}
-
-// Dark Mode
-body.body--dark {
-  .summary-card {
-    background: #1E1E1E;
-    border-color: #3A3A3A;
-
-    .card-label {
-      color: #B0B0B0;
-    }
-
-    .card-amount {
-      color: #FFFFFF;
-    }
-
-    .card-info, .card-trend {
-      color: #B0B0B0;
-    }
-
-    &:hover {
-      background: #252525;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  .balance-card {
-    background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
-  }
-
-  .detail-card {
-    background: #1E1E1E;
-    border-color: #3A3A3A;
-
-    .q-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
-}
-
-// Page Header
-.page-header {
-  .q-btn {
-    color: #757575;
-
-    &:hover {
-      color: #1E88E5;
-      background: rgba(30, 136, 229, 0.08);
-    }
-  }
-
-  .text-h6 {
-    font-weight: 600;
-    color: #263238;
-  }
-}
-
-body.body--dark .page-header {
-  .q-btn:hover {
-    color: #42A5F5;
-    background: rgba(66, 165, 245, 0.12);
-  }
-
-  .text-h6 {
-    color: #FFFFFF;
-  }
-}
-</style>
